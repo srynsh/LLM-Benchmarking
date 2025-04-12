@@ -7,37 +7,14 @@ from tqdm import tqdm
 import pickle
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from utils import get_GV, get_VALIDATOR_COUNTS, get_precision
+from config import PV_START, PVIV_START, PG_START, NUM_RUNS, ERR_EPSILON, GENS, MODELS, MODEL_NAMES, MODEL_ENUM
 np.random.seed(42)
 
 """CONSTANTS"""
 
 pGa = get_precision()
 
-GENS = ['gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo', 'claude_3_opus', 'gemini-1.5-pro', 'qwen-coder-plus', 'deepseek-chat']
-
-MODELS = [
-    'gpt-3.5-turbo', 'gpt-4-turbo', 'gpt-4o-mini', 'gpt-4o',
-    'claude_3_opus', 'claude_3.5_sonnet',
-    'gemini-1.5-flash', 'gemini-1.5-pro',
-    'qwen-coder-plus',
-    'deepseek-chat'
-]
-
-MODEL_NAMES = [
-    'GPT 3.5T', 'GPT-4', 'GPT 4o-M', 'GPT 4o',
-    'Opus 3', 'Sonnet 3.5',
-    'G 1.5 flash', 'G 1.5 pro',
-    'Qwen', 'Deepseek'
-]
-
-MODEL_ENUM = {model: i for i, model in enumerate(MODELS)}
-
 GV = get_GV()
-
-# data new umair
-PVVA = np.array([0.9109457143, 0.9466071429, 0.9437971429, 0.9406471429, 0.9383457143, 0.9487385714, 0.9628328571, 0.9386271429, 0.9253528571, 0.9600028571])
-PVIVA = np.array([0.14737, 0.2565528571, 0.2690871429, 0.2636271429, 0.2331457143, 0.2617742857, 0.1460542857, 0.2489071429, 0.29158, 0.2088228571])
-
 
 """-----------------CONSTANTS END HERE----------------"""
 
@@ -157,21 +134,35 @@ def estimate_probs(GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]):
     # val = total_loss(np.concatenate([pVv, pViv, pG]), GV, pVva, pViva, pGa, idV, idG, w)
     val = np.inf
 
-    for _ in range (1):
-        pG = np.mean(GV, axis=1) #+ np.random.uniform(-0.05, 0.05, GV.shape[0])
+    NUM_VALIDATORS = GV.shape[1]
+    NUM_GENERATORS = GV.shape[0]
+
+    for run_count in range (NUM_RUNS):
+        if PG_START == 'mean':
+            pG = np.mean(GV, axis=1)
+        elif PG_START == 'uniform':
+            pG = np.random.uniform(0, 1, NUM_GENERATORS)
+        else:
+            pG = np.ones(NUM_GENERATORS) * PG_START
+
+        if PV_START == 'uniform':
+            pVv_hat = np.random.uniform(0, 1, NUM_VALIDATORS)
+        else:
+            pVv_hat = np.ones(NUM_VALIDATORS) * PV_START
+
+        if PVIV_START == 'uniform':
+            pViv_hat = np.random.uniform(0, 1, NUM_VALIDATORS)
+        else:
+            pViv_hat = np.ones(NUM_VALIDATORS) * PVIV_START
+
+        if run_count != 0:
+            pG = pG + np.random.uniform(-ERR_EPSILON/2, ERR_EPSILON/2, NUM_GENERATORS)
+            pVv_hat = pVv_hat + np.random.uniform(-ERR_EPSILON/2, ERR_EPSILON/2, NUM_VALIDATORS)
+            pViv_hat = pViv_hat + np.random.uniform(-ERR_EPSILON/2, ERR_EPSILON/2, NUM_VALIDATORS)
+
         pG = np.clip(pG, 0, 1)
- 
-        pVv_hat = np.ones_like(PVVA) / 2 #+ np.random.uniform(-0.05, 0.05, GV.shape[1])
-        pViv_hat = np.ones_like(PVIVA) / 2 #+ np.random.uniform(-0.05, 0.05, GV.shape[1])
-
-        # pVv_hat = np.random.uniform(0, 1, GV.shape[1])
-        # pViv_hat = np.random.uniform(0, 1, GV.shape[1])
-
         pVv_hat = np.clip(pVv_hat, 0, 1)
         pViv_hat = np.clip(pViv_hat, 0, 1)  
-
-        NUM_VALIDATORS = GV.shape[1]
-        NUM_GENERATORS = GV.shape[0]
 
         x = np.concatenate([pVv_hat, pViv_hat, pG])
 
@@ -240,7 +231,7 @@ def estimate_probs_ga(GV, pVva, pViva, pGa, idV, idG, w=[1, 0, 0], population_si
     pG = res[2*nV:]
     return pVv, pViv, pG
 
-def print_GV_hat(pVv, pViv, pG_min, pG_max, pG_mean):
+def print_GV_hat(pVv, pViv, pG_min, pG_max, pG_mean, PVVA, PVIVA):
     G_hat = np.outer(pG_mean, pVv) + np.outer((1 - pG_mean), (1 - pViv))
     # print(np.round(G_hat, 1))
     s = r'''
@@ -366,8 +357,12 @@ def regress(GV, pGa, gens, k1, VALIDATOR_COUNTS, w=[1, 0, 0]):
     mean_pVv = np.mean([combi[0] for combi in logs], axis=0)
     mean_pViv = np.mean([combi[1] for combi in logs], axis=0)
 
+    _piv, _pv = get_pViv_full(GENS, VALIDATOR_COUNTS)
+    PVVA = np.array([_pv[m] for m in MODELS])
+    PVIVA = np.array([_piv[m] for m in MODELS])
+
     print('Mean GV_hat', k1)
-    print_GV_hat(mean_pVv, mean_pViv, min_pG, max_pG, mean_pG)
+    print_GV_hat(mean_pVv, mean_pViv, min_pG, max_pG, mean_pG, PVVA, PVIVA)
 
     return pGs, errors, avg_errors, logs
 
@@ -836,6 +831,7 @@ if __name__ == '__main__':
     # print_pred_prec_invalid()
     # exit()
     VALIDATOR_COUNTS = get_VALIDATOR_COUNTS()
+
     redo = True
     if redo:
         all_errors = []
@@ -860,7 +856,6 @@ if __name__ == '__main__':
             all_avg_errors.append(avg_error)
             print("Done with k =", k)
 
-        # save all_logs to file
         with open('all_logs.pkl', 'wb') as f:
             pickle.dump(all_logs, f)
     else:
@@ -869,7 +864,6 @@ if __name__ == '__main__':
     
 
     print('============================================')
-    # print(all_logs)
     plot_data_no_exclude(all_logs, pGa, np.mean(GV, axis=1))
     print('============================================')
     # print_latex_table(all_logs, pGa, np.mean(GV, axis=1))

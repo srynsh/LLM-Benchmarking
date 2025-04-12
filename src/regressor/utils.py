@@ -2,6 +2,7 @@ import json
 import os
 import numpy as np
 import sys
+from config import GENS, MODELS, MODEL_NAMES, MODEL_ENUM
 # from data import *
 # parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 # if parent_dir not in sys.path:
@@ -54,7 +55,7 @@ def get_counts_total_from_dir(directory):
     
     counts = {}
 
-    vals = ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4o-mini", "gpt-4o", "claude_3_opus", "claude_3.5_sonnet", "gemini-1.5-flash", "gemini-1.5-pro", "qwen-coder-plus", "deepseek-chat"]
+    vals = MODELS
 
     for file in os.listdir(directory):
         if not file.endswith(".json"):
@@ -100,29 +101,8 @@ def get_GV(directory="../../data/GAIED/validator_data"): # This gives the GV arr
     return np.array(x)
 
 def get_VALIDATOR_COUNTS(directory="../../data/GAIED/validator_data"):
-    print(1)
-    gens = [
-        "gpt-4o",
-        "gpt-4-turbo",
-        "gpt-3.5-turbo",
-        "claude_3_opus",
-        "gemini-1.5-pro",
-        'qwen-coder-plus',
-        'deepseek-chat'
-    ]
-
-    vals = [
-        'gpt-3.5-turbo',
-        'gpt-4-turbo',
-        'gpt-4o-mini',
-        'gpt-4o',
-        'claude_3_opus',
-        'claude_3.5_sonnet',
-        'gemini-1.5-flash',
-        'gemini-1.5-pro',
-        'qwen-coder-plus',
-        'deepseek-chat'
-    ]
+    gens = GENS
+    vals = MODELS
 
     tables = np.zeros((len(gens), len(vals), 4))
 
@@ -207,15 +187,7 @@ def get_VALIDATOR_COUNTS(directory="../../data/GAIED/validator_data"):
 
 def get_precision(directory="../../data/GAIED/generator_data"):
 
-    pGa = { 
-        'gpt-4o': 0,
-        'gpt-4-turbo': 0,
-        'gpt-3.5-turbo': 0,
-        'claude_3_opus': 0,
-        'gemini-1.5-pro': 0,
-        'deepseek-chat': 0,
-        'qwen-coder-plus': 0,
-    }
+    pGa = {}
 
     def get_true_precision(file):
         with open(file, 'r') as f:
@@ -244,10 +216,4 @@ def get_precision(directory="../../data/GAIED/generator_data"):
                 pGa[gen] = v / (v + iv)
             except:
                 pass
-
-            # try:
-            #     print(file, f'{v}/({v}+{iv})', 100 * v / (v + iv))
-            # except:
-            #     print(file, v, iv, 0)
-
     return pGa
