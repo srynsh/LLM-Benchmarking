@@ -8,13 +8,16 @@ import pickle
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from utils import get_GV, get_VALIDATOR_COUNTS, get_precision
 from config import PV_START, PVIV_START, PG_START, NUM_RUNS, ERR_EPSILON, GENS, MODELS, MODEL_NAMES, MODEL_ENUM
+from config import VALIDATOR_COUNTS_CONST, pGa_CONST, GV_CONST, PVVA_CONST, PVIVA_CONST
 np.random.seed(42)
 
 """CONSTANTS"""
 
-pGa = get_precision()
+# pGa = get_precision()
+pGa = pGa_CONST
 
-GV = get_GV()
+# GV = get_GV()
+GV = GV_CONST
 
 """-----------------CONSTANTS END HERE----------------"""
 
@@ -137,24 +140,24 @@ def estimate_probs(GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]):
     NUM_VALIDATORS = GV.shape[1]
     NUM_GENERATORS = GV.shape[0]
 
-    for run_count in range (NUM_RUNS):
-        if PG_START == 'mean':
+    if PG_START == 'mean':
             pG = np.mean(GV, axis=1)
-        elif PG_START == 'uniform':
-            pG = np.random.uniform(0, 1, NUM_GENERATORS)
-        else:
-            pG = np.ones(NUM_GENERATORS) * PG_START
+    elif PG_START == 'uniform':
+        pG = np.random.uniform(0, 1, NUM_GENERATORS)
+    else:
+        pG = np.ones(NUM_GENERATORS) * PG_START
 
-        if PV_START == 'uniform':
-            pVv_hat = np.random.uniform(0, 1, NUM_VALIDATORS)
-        else:
-            pVv_hat = np.ones(NUM_VALIDATORS) * PV_START
+    if PV_START == 'uniform':
+        pVv_hat = np.random.uniform(0, 1, NUM_VALIDATORS)
+    else:
+        pVv_hat = np.ones(NUM_VALIDATORS) * PV_START
 
-        if PVIV_START == 'uniform':
-            pViv_hat = np.random.uniform(0, 1, NUM_VALIDATORS)
-        else:
-            pViv_hat = np.ones(NUM_VALIDATORS) * PVIV_START
+    if PVIV_START == 'uniform':
+        pViv_hat = np.random.uniform(0, 1, NUM_VALIDATORS)
+    else:
+        pViv_hat = np.ones(NUM_VALIDATORS) * PVIV_START
 
+    for run_count in range (NUM_RUNS):
         if run_count != 0:
             pG = pG + np.random.uniform(-ERR_EPSILON/2, ERR_EPSILON/2, NUM_GENERATORS)
             pVv_hat = pVv_hat + np.random.uniform(-ERR_EPSILON/2, ERR_EPSILON/2, NUM_VALIDATORS)
@@ -358,8 +361,11 @@ def regress(GV, pGa, gens, k1, VALIDATOR_COUNTS, w=[1, 0, 0]):
     mean_pViv = np.mean([combi[1] for combi in logs], axis=0)
 
     _piv, _pv = get_pViv_full(GENS, VALIDATOR_COUNTS)
-    PVVA = np.array([_pv[m] for m in MODELS])
-    PVIVA = np.array([_piv[m] for m in MODELS])
+    # PVVA = np.array([_pv[m] for m in MODELS])
+    # PVIVA = np.array([_piv[m] for m in MODELS])
+
+    PVVA = PVVA_CONST
+    PVIVA = PVIVA_CONST
 
     print('Mean GV_hat', k1)
     print_GV_hat(mean_pVv, mean_pViv, min_pG, max_pG, mean_pG, PVVA, PVIVA)
@@ -830,7 +836,8 @@ if __name__ == '__main__':
     # print('Invalid Precision')
     # print_pred_prec_invalid()
     # exit()
-    VALIDATOR_COUNTS = get_VALIDATOR_COUNTS()
+    # VALIDATOR_COUNTS = get_VALIDATOR_COUNTS()
+    VALIDATOR_COUNTS = VALIDATOR_COUNTS_CONST
 
     redo = True
     if redo:
