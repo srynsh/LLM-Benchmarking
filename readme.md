@@ -1,0 +1,1 @@
+# Automated Benchmarking of LLMs: Applying Regression to Estimate LLM Model Accuracy
