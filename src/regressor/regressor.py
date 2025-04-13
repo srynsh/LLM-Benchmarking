@@ -6,7 +6,7 @@ import seaborn as sns
 from tqdm import tqdm
 import pickle
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from utils import get_GV, get_VALIDATOR_COUNTS, get_precision
+from utils import   get_GV, get_VALIDATOR_COUNTS, get_precision
 from config import PV_START, PVIV_START, PG_START, NUM_RUNS, ERR_EPSILON, GENS, MODELS, MODEL_NAMES, MODEL_ENUM
 from config import VALIDATOR_COUNTS_CONST, pGa_CONST, GV_CONST, PVVA_CONST, PVIVA_CONST
 np.random.seed(42)
@@ -14,10 +14,10 @@ np.random.seed(42)
 """CONSTANTS"""
 
 # pGa = get_precision()
-pGa = pGa_CONST
+pGa = pGa_CONST if pGa_CONST is not None else get_precision()
 
 # GV = get_GV()
-GV = GV_CONST
+GV = GV_CONST if GV_CONST is not None else get_GV()
 
 """-----------------CONSTANTS END HERE----------------"""
 
@@ -364,8 +364,8 @@ def regress(GV, pGa, gens, k1, VALIDATOR_COUNTS, w=[1, 0, 0]):
     # PVVA = np.array([_pv[m] for m in MODELS])
     # PVIVA = np.array([_piv[m] for m in MODELS])
 
-    PVVA = PVVA_CONST
-    PVIVA = PVIVA_CONST
+    PVVA = PVVA_CONST if PVVA_CONST is not None else np.array([_pv[m] for m in MODELS])
+    PVIVA = PVIVA_CONST if PVIVA_CONST is not None else np.array([_piv[m] for m in MODELS])
 
     print('Mean GV_hat', k1)
     print_GV_hat(mean_pVv, mean_pViv, min_pG, max_pG, mean_pG, PVVA, PVIVA)
@@ -837,7 +837,7 @@ if __name__ == '__main__':
     # print_pred_prec_invalid()
     # exit()
     # VALIDATOR_COUNTS = get_VALIDATOR_COUNTS()
-    VALIDATOR_COUNTS = VALIDATOR_COUNTS_CONST
+    VALIDATOR_COUNTS = VALIDATOR_COUNTS_CONST if VALIDATOR_COUNTS_CONST is not None else get_VALIDATOR_COUNTS()
 
     redo = True
     if redo:
