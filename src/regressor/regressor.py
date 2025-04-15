@@ -7,7 +7,7 @@ from tqdm import tqdm
 import pickle
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from utils import   get_GV, get_VALIDATOR_COUNTS, get_precision
-from config import PV_START, PVIV_START, PG_START, NUM_RUNS, ERR_EPSILON, GENS, MODELS, MODEL_NAMES, MODEL_ENUM
+from config import PV_START, PVIV_START, PG_START, NUM_RUNS, ERR_EPSILON, GENS, MODELS, MODEL_NAMES, MODEL_ENUM, MAX_WORKERS
 from config import VALIDATOR_COUNTS_CONST, pGa_CONST, GV_CONST, PVVA_CONST, PVIVA_CONST
 np.random.seed(42)
 
@@ -846,7 +846,7 @@ if __name__ == '__main__':
         all_logs = []
 
         futures = {}
-        with ProcessPoolExecutor() as executor:
+        with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
             for k in range(0, len(GENS)+1):
                 futures[executor.submit(regress, GV, pGa, GENS, k, VALIDATOR_COUNTS, w=[10, 1, 10])] = k
 

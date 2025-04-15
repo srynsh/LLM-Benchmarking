@@ -4,10 +4,10 @@ PV_START = 0.5 # options are 'uniform', float
 PVIV_START = 0.5 # options are 'uniform', float
 PG_START = 'mean' # options are 'mean', 'uniform', float
 
-NUM_RUNS = 10 # number of runs to min over
+NUM_RUNS = 1 # number of runs to min over
 
 ERR_EPSILON = 0.001 # For adding to start point
-
+MAX_WORKERS = 1 # number of workers for parallelization
 ### constants
 
 GENS = ['gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo', 'claude_3_opus', 'gemini-1.5-pro', 'qwen-coder-plus', 'deepseek-chat']
