@@ -29,7 +29,6 @@ MODEL_NAMES = [
 
 MODEL_ENUM = {model: i for i, model in enumerate(MODELS)}
 
-
 VALIDATOR_COUNTS_CONST = np.array(
 [[[6, 59, 73, 863],
   [6, 60, 20, 915],
