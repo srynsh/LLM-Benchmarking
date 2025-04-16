@@ -14,10 +14,7 @@ scipy_seed = 42
 
 """CONSTANTS"""
 
-# pGa = get_precision()
 pGa = pGa_CONST if pGa_CONST is not None else get_precision()
-
-# GV = get_GV()
 GV = GV_CONST if GV_CONST is not None else get_GV()
 
 """-----------------CONSTANTS END HERE----------------"""
@@ -98,7 +95,7 @@ def estimate_probs(GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]):
 
 def print_GV_hat(pVv, pViv, pG_min, pG_max, pG_mean, PVVA, PVIVA):
     G_hat = np.outer(pG_mean, pVv) + np.outer((1 - pG_mean), (1 - pViv))
-    # print(np.round(G_hat, 1))
+    
     s = r'''
   \begin{adjustbox}{max width=\textwidth}
      \begin{tabular}{@{}ccccccccccc||cccc}
@@ -402,19 +399,12 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
     yerrs = np.transpose([(np.mean(d) - np.min(d), np.max(d) - np.mean(d)) for d in data])
     x_pos = range(1, len(all_logs))
 
-    # print('-----------------------------info-----------------------------')
-    # print(x_pos, means, stds, base_max[0][0])
-
-    # # print(means)
-    # # print(stds)
-
     ax.errorbar(x_pos, means_vals, yerr=yerrs, fmt='-o', label='Regression', color='black', capsize=5)
     ax.set_xticks(x_pos)
     ax.fill_between(range(1, len(all_logs)), 2.7, 15.9, color='blue', alpha=0.1, label='Individual LLM')
     ax.axhline(y=4.7, color='red', label='Ensemble', linestyle='-.')
     ax.axhline(y=base_max[0][0]*100, color='gray', label='Mean Prediction', linestyle='--')
 
-    # ax.set_xticklabels(range(0, len(all_logs) - 1))
     ax.set_xticklabels(range(0, len(all_logs) - 1), fontsize=14)
     ax.set_xlabel('k', fontsize=16)
     ax.set_ylabel('Maximum Error', fontsize=16)
@@ -423,7 +413,6 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
 
     handles, labels = plt.gca().get_legend_handles_labels()
     order = [3,0,1,2]
-    # order = [0,1,2,3]
     plt.legend([handles[idx] for idx in order],[labels[idx] for idx in order], fontsize=16, loc='upper right')
 
     plt.savefig('images/pngs/regressor_max_comparison.png')
