@@ -84,9 +84,9 @@ def estimate_probs(GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]):
 
         x = np.concatenate([pVv_hat, pViv_hat, pG])
 
-        res1 = minimize(total_loss, x, args=(GV, pVva, pViva, pGa, idV, idG, w), bounds=[(0, 1)] * len(x))
+        res1 = minimize(total_loss, x, args=(GV, pVva, pViva, pGa, idV, idG, w), bounds=[(0, 1)] * len(x), method='L-BFGS-B')
 
-        print(res1)
+        # print(res1)
 
         res1 = res1.x
 
@@ -175,8 +175,8 @@ def get_pViv_full(gens, VALIDATOR_COUNTS):
     return pViva, pVva
 
 def regress(GV, pGa, gens, k1, VALIDATOR_COUNTS, w=[1, 0, 0]):
-    if k1 != 1:
-        return None, None, None, None
+    # if k1 != 1:
+    #     return None, None, None, None
 
     idG = list(combinations(pGa.keys(), k1))
     pGs = []
