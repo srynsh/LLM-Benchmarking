@@ -6,7 +6,9 @@ PG_START = 'mean' # options are 'mean', 'uniform', float
 
 NUM_RUNS = 10 # number of runs to min over
 
-ERR_EPSILON = 0.001 # For adding to start point
+ERR_EPSILON_PV = 0.01 # For adding to start point
+ERR_EPSILON_PIV = 0.01 # For adding to start point
+ERR_EPSILON_PG = 0.001 # For adding to start point
 MAX_WORKERS = None # number of workers for parallelization
 ### constants
 

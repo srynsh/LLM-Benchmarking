@@ -7,7 +7,7 @@ from tqdm import tqdm
 import pickle
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from utils import   get_GV, get_VALIDATOR_COUNTS, get_precision
-from config import PV_START, PVIV_START, PG_START, NUM_RUNS, ERR_EPSILON, GENS, MODELS, MODEL_NAMES, MODEL_ENUM, MAX_WORKERS
+from config import PV_START, PVIV_START, PG_START, NUM_RUNS, ERR_EPSILON_PG, ERR_EPSILON_PIV, ERR_EPSILON_PV, GENS, MODELS, MODEL_NAMES, MODEL_ENUM, MAX_WORKERS
 from config import VALIDATOR_COUNTS_CONST, pGa_CONST, GV_CONST, PVVA_CONST, PVIVA_CONST
 np.random.seed(42)
 scipy_seed = 42
@@ -72,9 +72,9 @@ def estimate_probs(GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]):
 
     for run_count in range (NUM_RUNS):
         if run_count != 0:
-            pG = pG_ + np.random.uniform(-ERR_EPSILON/2, ERR_EPSILON/2, NUM_GENERATORS)
-            pVv_hat = pVv_hat_ + np.random.uniform(-ERR_EPSILON/2, ERR_EPSILON/2, NUM_VALIDATORS)
-            pViv_hat = pViv_hat_ + np.random.uniform(-ERR_EPSILON/2, ERR_EPSILON/2, NUM_VALIDATORS)
+            pG = pG_ + np.random.uniform(-ERR_EPSILON_PG/2, ERR_EPSILON_PG/2, NUM_GENERATORS)
+            pVv_hat = pVv_hat_ + np.random.uniform(-ERR_EPSILON_PV/2, ERR_EPSILON_PV/2, NUM_VALIDATORS)
+            pViv_hat = pViv_hat_ + np.random.uniform(-ERR_EPSILON_PIV/2, ERR_EPSILON_PIV/2, NUM_VALIDATORS)
         else:
             pG, pVv_hat, pViv_hat = pG_, pVv_hat_, pViv_hat_
 
@@ -84,11 +84,7 @@ def estimate_probs(GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]):
 
         x = np.concatenate([pVv_hat, pViv_hat, pG])
 
-        res1 = minimize(total_loss, x, args=(GV, pVva, pViva, pGa, idV, idG, w), bounds=[(0, 1)] * len(x), method='L-BFGS-B')
-
-        # print(res1)
-
-        res1 = res1.x
+        res1 = minimize(total_loss, x, args=(GV, pVva, pViva, pGa, idV, idG, w), bounds=[(0, 1)] * len(x), method='L-BFGS-B').x
 
         if total_loss(res1, GV, pVva, pViva, pGa, idV, idG, w) < val:
             val = total_loss(res1, GV, pVva, pViva, pGa, idV, idG, w)
@@ -175,9 +171,6 @@ def get_pViv_full(gens, VALIDATOR_COUNTS):
     return pViva, pVva
 
 def regress(GV, pGa, gens, k1, VALIDATOR_COUNTS, w=[1, 0, 0]):
-    # if k1 != 1:
-    #     return None, None, None, None
-
     idG = list(combinations(pGa.keys(), k1))
     pGs = []
 
@@ -537,13 +530,8 @@ if __name__ == '__main__':
         with open('all_logs.pkl', 'rb') as f:
             all_logs = pickle.load(f)
     
-
     print('============================================')
     plot_data_no_exclude(all_logs, pGa, np.mean(GV, axis=1))
     print('============================================')
-    # print_latex_table(all_logs, pGa, np.mean(GV, axis=1))
 
     print('Baseline: ', np.round(100*np.mean(GV, axis=1), 1))
-    
-    # plot_lambda_errors(GV, pGa, GENS, 0)
-    # plot_lambda_loss(GV, pGa, GENS, 0)
