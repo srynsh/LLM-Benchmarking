@@ -9,8 +9,12 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from utils import   get_GV, get_VALIDATOR_COUNTS, get_precision
 from config import PV_START, PVIV_START, PG_START, NUM_RUNS, ERR_EPSILON_PG, ERR_EPSILON_PIV, ERR_EPSILON_PV, GENS, MODELS, MODEL_NAMES, MODEL_ENUM, MAX_WORKERS
 from config import VALIDATOR_COUNTS_CONST, pGa_CONST, GV_CONST, PVVA_CONST, PVIVA_CONST
+import sys
 np.random.seed(42)
 scipy_seed = 42
+
+import warnings
+warnings.filterwarnings("always", category=UserWarning)
 
 """CONSTANTS"""
 
@@ -40,6 +44,8 @@ def total_loss(x, GV, pVva, pViva, pGa, idV, idG, w):
     l2 = reg(x[2*NUM_VALIDATORS:], pGa, idG)
     l3_1 = reg(x[:NUM_VALIDATORS], pVva, idV)
     l3_2 = reg(x[NUM_VALIDATORS:2*NUM_VALIDATORS], pViva, idV)
+
+    # print(f"Loss GV: {l1:.4f}, pG: {l2:.4f}, pV+: {l3_1:.4f}, pV-: {l3_2:.4f}")
 
     return l1 + w[0]*l2 + w[1]*l3_1 + w[2]*l3_2
 
@@ -176,6 +182,7 @@ def regress(GV, pGa, gens, k1, VALIDATOR_COUNTS, w=[1, 0, 0]):
 
     logs = []
 
+    numComb = 0
     for j in idG:
         stats = np.zeros_like(VALIDATOR_COUNTS[0])
 
@@ -199,6 +206,15 @@ def regress(GV, pGa, gens, k1, VALIDATOR_COUNTS, w=[1, 0, 0]):
 
         avg_errors.append(100*np.mean(abs(p_hat_temp - p_temp)))
         errors.append(100*max(abs(p_hat_temp - p_temp)) if len(p_temp) > 0 else 0)
+
+        numComb += 1
+        print(f"\nC{numComb} Running {k1} with {j}")
+        print(f"\tpG: {pG}")
+        print(f"\tpV+: {pVv}")
+        print(f"\tpV-: {pViv}")
+        print(f"\tMax Error: {errors[-1]}")
+        print(f"\tAvg Error: {avg_errors[-1]}")
+
 
     errors = []
     for (pv1, pv2, pg, combo) in logs:
@@ -498,6 +514,8 @@ if __name__ == '__main__':
         futures = {}
         with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
             for k in range(0, len(GENS)+1):
+                if k!=2:
+                    continue
                 futures[executor.submit(regress, GV, pGa, GENS, k, VALIDATOR_COUNTS, w=[10, 1, 10])] = k
 
         results = []
@@ -512,6 +530,7 @@ if __name__ == '__main__':
             all_logs.append(logs)
             all_avg_errors.append(avg_error)
             print("Done with k =", k)
+
 
         with open('all_logs.pkl', 'wb') as f:
             pickle.dump(all_logs, f)
