@@ -24,6 +24,33 @@ GV = GV_CONST if GV_CONST is not None else get_GV()
 """-----------------CONSTANTS END HERE----------------"""
 
 def loss_function(pVv, pViv, pG, GV):
+    """
+    Calculate the cross-entropy loss between the predicted and actual gene-variant matrices.
+    
+    This function computes a binary cross-entropy loss between the generator precision 
+    prediction by validator (GV) and its estimate by regression method (GV_hat). 
+    The GV_hat matrix is constructed using outer products of generator and validator performance vectors.
+    
+    Parameters:
+    -----------
+    pVv : numpy.ndarray
+        Probability vector of a validator classifying output as valid.
+    pViv : numpy.ndarray
+        Probability vector of a validator classifying output as invalid.
+    pG : numpy.ndarray
+        Probability vector for generator output being valid.
+    GV : numpy.ndarray
+        Generator precision prediction by validator matrix.
+    
+    Returns:
+    --------
+    float
+        Negative mean of the cross-entropy values, representing the loss.
+        
+    Notes:
+    ------
+    A small epsilon (1e-9) is added to avoid log(0) errors through clipping.
+    """
     G_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
     epsilon = 1e-9
     return -np.mean([
@@ -34,8 +61,30 @@ def loss_function(pVv, pViv, pG, GV):
     ])
 
 def reg(p_hat, p, id):
+    """
+    Calculate the root mean squared error (RMSE) between predicted and actual values.
+
+    This function computes the RMSE for a specific subset of indices, comparing
+    predictions from a model to the actual values.
+
+    Parameters:
+    ----------
+    p_hat : dict
+        Dictionary mapping model names to their predictions.
+    p : list or array-like
+        The actual/ground truth values.
+    id : list or array-like
+        Indices for which to calculate the error. If empty, returns 0.
+
+    Returns:
+    -------
+    float
+        The RMSE between predictions and actual values for the specified indices.
+        Returns 0 if `id` is empty.
+    """
     return np.sqrt(np.mean([(p[i] - p_hat[MODEL_ENUM[i]])**2 for i in id]) if len(id) > 0 else 0)
 
+GLOBAL_LOSS_COUNT = 0
 def total_loss(x, GV, pVva, pViva, pGa, idV, idG, w):
     NUM_VALIDATORS = GV.shape[1]
     NUM_GENERATORS = GV.shape[0]
@@ -45,7 +94,9 @@ def total_loss(x, GV, pVva, pViva, pGa, idV, idG, w):
     l3_1 = reg(x[:NUM_VALIDATORS], pVva, idV)
     l3_2 = reg(x[NUM_VALIDATORS:2*NUM_VALIDATORS], pViva, idV)
 
-    # print(f"Loss GV: {l1:.4f}, pG: {l2:.4f}, pV+: {l3_1:.4f}, pV-: {l3_2:.4f}")
+    global GLOBAL_LOSS_COUNT
+    GLOBAL_LOSS_COUNT += 1
+    # print(f"{GLOBAL_LOSS_COUNT}. Loss GV: {l1}, pG: {l2}, pV+: {l3_1}, pV-: {l3_2}")
 
     return l1 + w[0]*l2 + w[1]*l3_1 + w[2]*l3_2
 
@@ -73,6 +124,7 @@ def estimate_probs(GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]):
     else:
         pViv_hat_ = np.ones(NUM_VALIDATORS) * PVIV_START
 
+    print(f"pG: {pG_}, pVv: {pVv_hat_}, pViv: {pViv_hat_}")
     for run_count in range (NUM_RUNS):
         if run_count != 0:
             pG = pG_ + np.random.uniform(-ERR_EPSILON_PG/2, ERR_EPSILON_PG/2, NUM_GENERATORS)
@@ -208,7 +260,8 @@ def regress(GV, pGa, gens, k1, VALIDATOR_COUNTS, w=[1, 0, 0]):
         errors.append(100*max(abs(p_hat_temp - p_temp)) if len(p_temp) > 0 else 0)
 
         numComb += 1
-        print(f"\nC{numComb} Running {k1} with {j}")
+        GLOBAL_LOSS_COUNT = 0
+        print(f"\nC{numComb} k={k1} with {j}")
         print(f"\tpG: {pG}")
         print(f"\tpV+: {pVv}")
         print(f"\tpV-: {pViv}")
@@ -513,9 +566,8 @@ if __name__ == '__main__':
 
         futures = {}
         with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            for k in range(0, len(GENS)+1):
-                if k!=2:
-                    continue
+            # for k in range(0, len(GENS)+1):
+            for k in [2]:
                 futures[executor.submit(regress, GV, pGa, GENS, k, VALIDATOR_COUNTS, w=[10, 1, 10])] = k
 
         results = []
