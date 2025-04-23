@@ -139,7 +139,11 @@ def estimate_probs(GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]):
 
         x = np.concatenate([pVv_hat, pViv_hat, pG])
 
-        res1 = minimize(total_loss, x, args=(GV, pVva, pViva, pGa, idV, idG, w), bounds=[(0, 1)] * len(x), method='L-BFGS-B').x
+        res1 = minimize(total_loss, x, args=(GV, pVva, pViva, pGa, idV, idG, w), bounds=[(0, 1)] * len(x), method='L-BFGS-B')
+
+        print(res1)
+
+        res1 = res1.x
 
         if total_loss(res1, GV, pVva, pViva, pGa, idV, idG, w) < val:
             val = total_loss(res1, GV, pVva, pViva, pGa, idV, idG, w)
