@@ -10,7 +10,7 @@ with open('./gaide_queries.json', 'r') as f:
 # model = "gpt-4o-2024-08-06"
 # model = "gpt-4o"
 # model = "gpt-3.5-turbo"
-model = "gpt-4o-mini-2024-07-18"
+# model = "gpt-4o-mini-2024-07-18"
 # model = "o1-mini"
 # model = "o1-preview"
 # model = "claude_3_opus"
@@ -19,7 +19,9 @@ model = "gpt-4o-mini-2024-07-18"
 # model = "gemini-1.5-flash"
 # model="qwen-plus"
 # model="qwen-coder-plus"
-model="deepseek-chat"
+# model="deepseek-chat"
+model = "gemini-2.5-pro"
+model = "gemini-2.5-flash"
 
 model = input("Enter model: ")
 

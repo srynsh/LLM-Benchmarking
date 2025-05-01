@@ -16,7 +16,6 @@ def get_gemini_response(prompt, model):
     except Exception as e:
         return e
     
-
 QUERIES_PATH = "../../data/GAIED/gaide_queries.json"
 
 with open(QUERIES_PATH) as f:
@@ -26,4 +25,3 @@ for query in queries:
     resp  = get_gemini_response(query["prompt"], "gemini-1.5-flash")
 
     print(resp)
-

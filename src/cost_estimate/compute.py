@@ -6,7 +6,6 @@ def extract_usage_metadata(filename):
     with open(filename, 'r') as file:
         data = file.read()
 
-    # Find all "usage_metadata": { ... } blocks
     pattern = r'"usage_metadata"\s*:\s*\{.*?\}'
     matches = re.findall(pattern, data, flags=re.DOTALL)
 
@@ -14,7 +13,6 @@ def extract_usage_metadata(filename):
 
     for match in matches:
         try:
-            # Add braces to make it a complete JSON object
             json_text = '{' + match + '}'
             parsed_json = json.loads(json_text)
             usage_metadata_list.append(parsed_json['usage_metadata'])
@@ -24,14 +22,13 @@ def extract_usage_metadata(filename):
 
     return usage_metadata_list
 
-# Example usage:
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python temp.py <filename>")
         sys.exit(1)
     filename = sys.argv[1]
     metadata = extract_usage_metadata(filename)
-    # print(json.dumps(metadata, indent=2))
+    print(len(metadata))
 
     total_inputs = 0
     total_outputs = 0
@@ -45,4 +42,3 @@ if __name__ == "__main__":
     print(f"Total Inputs: {total_inputs}")
     print(f"Total Outputs: {total_outputs}")
     print(f"Total Tokens: {total_tokens}")
-#         # print(file)
