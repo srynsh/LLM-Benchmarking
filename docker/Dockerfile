@@ -1,6 +1,6 @@
 # cd ..
 # sudo docker build -t llm-benchmarking -f docker/Dockerfile .
-# sudo docker run --rm llm-benchmarking
+# sudo docker run --rm -v $(pwd)/output:/app/output llm-benchmarking
 
 FROM python:3.11-slim
 
@@ -19,12 +19,16 @@ COPY src/requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Create directory for output images
+RUN mkdir -p /app/src
+RUN mkdir -p /app/data
+RUN mkdir -p /app/output /app/output/images /app/output/images/pdfs /app/output/images/pngs /app/output/latex /app/output/interim /app/output/logs
+RUN chmod 777 /app/output  
+
+
 # Copy the rest of the code
 COPY src/ /app/src/
 COPY data/ /app/data/
-
-# Create directory for output images
-RUN mkdir -p /app/src/regressor/images/pdfs /app/src/regressor/images/pngs
 
 # Set working directory to the regressor directory
 WORKDIR /app/src/regressor
