@@ -172,7 +172,7 @@ GV_CONST = np.array([
 NUM_RUNS = 1 # number of runs to min over
 MAX_WORKERS = 6 # number of workers for parallelization
 K_LIST = range(0, len(GENS)+1) # number of generators to peek at
-K_LIST = [1] 
+# K_LIST = [1] 
 
 # =========================
 #   LOSS CONSTANTS
@@ -196,3 +196,10 @@ PG_START = 'mean' # options are 'mean', 'uniform', float
 ERR_EPSILON_PV = 0.01 # For adding to start point
 ERR_EPSILON_PIV = 0.01 # For adding to start point
 ERR_EPSILON_PG = 0.001 # For adding to start point
+
+# =========================
+#   PRETTY PRINTING
+# =========================
+
+COLOR_GREEN_DELTA = 0.02    # 2% tolerance
+COLOR_YELLOW_DELTA = 0.05   # 5%

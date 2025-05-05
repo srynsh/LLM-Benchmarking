@@ -7,7 +7,7 @@ from tqdm import tqdm
 import pickle
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from utils import   get_GV, get_VALIDATOR_COUNTS, get_precision
-from config import K_LIST, LOSS_PRED, NUM_RUNS, MAX_WORKERS, WEIGHTS
+from config import COLOR_GREEN_DELTA, COLOR_YELLOW_DELTA, K_LIST, LOSS_PRED, NUM_RUNS, MAX_WORKERS, WEIGHTS
 from config import PV_START, PVIV_START, PG_START, ERR_EPSILON_PG, ERR_EPSILON_PIV, ERR_EPSILON_PV, GENS, MODELS, MODEL_NAMES, MODEL_ENUM
 from config import VALIDATOR_COUNTS_CONST, pGa_CONST, GV_CONST, PVVA_CONST, PVIVA_CONST
 from config import PATH_LOGS, PATH_IMAGES, PATH_LATEX, PATH_LOGS_LOSS_ITER
@@ -92,9 +92,13 @@ def write_latex_table(k1, pVv, pViv, pG_min, pG_max, pG_mean, PVVA, PVIVA):
     with open(f"{PATH_LATEX}GV_hat.tex", "a") as f:
         f.write(s)
 
-def print_values_pair(Y, Y_HAT):
-    for y, y_hat in zip(Y, Y_HAT):
-        print(f"({y:.4f}, {y_hat:.4f})", end=' ')
+def print_values_pair(Y, Y_HAT, labels):
+    for y, y_hat, label in zip(Y, Y_HAT, labels):
+        diff = abs(y - y_hat)
+        color = "\033[92m" if diff < COLOR_GREEN_DELTA \
+            else "\033[93m" if diff < COLOR_YELLOW_DELTA \
+            else "\033[91m"
+        print(f"{label}: {y*100:.1f}% vs {y_hat*100:.1f}% {color}(Δ{diff*100:.1f}%)\033[0m", end='  ')
 
 
 def print_values_k(k1, numComb, j, pGa, VALIDATOR_COUNTS, log, max_errors, avg_errors):
@@ -105,18 +109,18 @@ def print_values_k(k1, numComb, j, pGa, VALIDATOR_COUNTS, log, max_errors, avg_e
     G, Ghat, errorG, pVv, pViv = extract_values_log(pGa, VALIDATOR_COUNTS, log)
     
     print(f'\tG vs G_hat:', end=' ')
-    print_values_pair(G, Ghat)
+    print_values_pair(G, Ghat, pGa.keys())
 
     print(f"\n\tV+ vs V+_hat:", end=' ')
-    print_values_pair(PVVA_CONST, pVv)
+    print_values_pair(PVVA_CONST, pVv, MODELS)
 
     print(f"\n\tV- vs V-_hat:", end=' ')
-    print_values_pair(PVIVA_CONST, pViv)
+    print_values_pair(PVIVA_CONST, pViv, MODELS)
     
-    print(f"\n\tMax Error (Validation): {max_errors[-1]}")
-    print(f"\tAvg Error (Validation): {avg_errors[-1]}")
+    print(f"\n\tMax G Error (Validation): {max_errors[-1]}")
+    print(f"\tAvg G Error (Validation): {avg_errors[-1]}")
 
-    print(f"\tError (Test): {errorG}")
+    print(f"\tG Error (Test): {errorG}")
 
 # =========================
 #   EXTRACT VALUES
