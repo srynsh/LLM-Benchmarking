@@ -4,7 +4,7 @@ from utils import get_claude_response, get_gemini_response, get_openai_response,
 
 results = []
 
-with open('./gaide_queries.json', 'r') as f:
+with open('../../data/prompts/gaide_queries.json', 'r') as f:
     data = json.load(f)
 
 # model = "gpt-4o-2024-08-06"

@@ -324,7 +324,7 @@ def write_iterLoss_csv(x, pGa, pVva, pViva, idG, idV):
     loss_train_viv = loss_reg(pViv_hat, pViva, idV)
 
     # Calculate test loss
-    with open('temp.txt', 'w') as f:
+    with open(f'{PATH_LOGS}temp.txt', 'w') as f:
         f.write(f"idVV_test: {idVV_test}\n")
         f.write(f"pVva: {pVva}\n")
         f.write(f"pVv_hat: {pVv_hat}\n")
