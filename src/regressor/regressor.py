@@ -7,155 +7,30 @@ from tqdm import tqdm
 import pickle
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from utils import   get_GV, get_VALIDATOR_COUNTS, get_precision
-from config import PV_START, PVIV_START, PG_START, NUM_RUNS, ERR_EPSILON_PG, ERR_EPSILON_PIV, ERR_EPSILON_PV, GENS, MODELS, MODEL_NAMES, MODEL_ENUM, MAX_WORKERS
+from config import K_LIST, LOSS_PRED, NUM_RUNS, MAX_WORKERS, WEIGHTS
+from config import PV_START, PVIV_START, PG_START, ERR_EPSILON_PG, ERR_EPSILON_PIV, ERR_EPSILON_PV, GENS, MODELS, MODEL_NAMES, MODEL_ENUM
 from config import VALIDATOR_COUNTS_CONST, pGa_CONST, GV_CONST, PVVA_CONST, PVIVA_CONST
-from config import PATH_LOGS, PATH_IMAGES, PATH_LATEX
+from config import PATH_LOGS, PATH_IMAGES, PATH_LATEX, PATH_LOGS_LOSS_ITER
+
+from loss import total_loss, write_loss_to_csv
+
 import sys
 np.random.seed(42)
 scipy_seed = 42
 
 import warnings
+import os
 warnings.filterwarnings("always", category=UserWarning)
 
-"""CONSTANTS"""
+# =========================
+#   PRETTY PRINT
+# =========================
 
-pGa = pGa_CONST if pGa_CONST is not None else get_precision()
-GV = GV_CONST if GV_CONST is not None else get_GV()
+# Initialize the file to empty
+with open(f"{PATH_LATEX}GV_hat.tex", "w") as f:
+    f.write('')
 
-"""-----------------CONSTANTS END HERE----------------"""
-
-def loss_function(pVv, pViv, pG, GV):
-    """
-    Calculate the cross-entropy loss between the predicted and actual gene-variant matrices.
-    
-    This function computes a binary cross-entropy loss between the generator precision 
-    prediction by validator (GV) and its estimate by regression method (GV_hat). 
-    The GV_hat matrix is constructed using outer products of generator and validator performance vectors.
-    
-    Parameters:
-    -----------
-    pVv : numpy.ndarray
-        Probability vector of a validator classifying output as valid.
-    pViv : numpy.ndarray
-        Probability vector of a validator classifying output as invalid.
-    pG : numpy.ndarray
-        Probability vector for generator output being valid.
-    GV : numpy.ndarray
-        Generator precision prediction by validator matrix.
-    
-    Returns:
-    --------
-    float
-        Negative mean of the cross-entropy values, representing the loss.
-        
-    Notes:
-    ------
-    A small epsilon (1e-9) is added to avoid log(0) errors through clipping.
-    """
-    G_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
-    epsilon = 1e-9
-    return -np.mean([
-        GV[i, j]*np.log(np.clip(G_hat[i, j], epsilon, 1))
-        + (1 - GV[i, j])*np.log(np.clip(1 - G_hat[i, j], epsilon, 1))
-        for i in range(GV.shape[0])
-        for j in range(GV.shape[1])
-    ])
-
-def reg(p_hat, p, id):
-    """
-    Calculate the root mean squared error (RMSE) between predicted and actual values.
-
-    This function computes the RMSE for a specific subset of indices, comparing
-    predictions from a model to the actual values.
-
-    Parameters:
-    ----------
-    p_hat : dict
-        Dictionary mapping model names to their predictions.
-    p : list or array-like
-        The actual/ground truth values.
-    id : list or array-like
-        Indices for which to calculate the error. If empty, returns 0.
-
-    Returns:
-    -------
-    float
-        The RMSE between predictions and actual values for the specified indices.
-        Returns 0 if `id` is empty.
-    """
-    return np.sqrt(np.mean([(p[i] - p_hat[MODEL_ENUM[i]])**2 for i in id]) if len(id) > 0 else 0)
-
-GLOBAL_LOSS_COUNT = 0
-def total_loss(x, GV, pVva, pViva, pGa, idV, idG, w):
-    NUM_VALIDATORS = GV.shape[1]
-    NUM_GENERATORS = GV.shape[0]
-    l1 = loss_function(x[:NUM_VALIDATORS], x[NUM_VALIDATORS:2*NUM_VALIDATORS], x[2*NUM_VALIDATORS:], GV)
-    
-    l2 = reg(x[2*NUM_VALIDATORS:], pGa, idG)
-    l3_1 = reg(x[:NUM_VALIDATORS], pVva, idV)
-    l3_2 = reg(x[NUM_VALIDATORS:2*NUM_VALIDATORS], pViva, idV)
-
-    global GLOBAL_LOSS_COUNT
-    GLOBAL_LOSS_COUNT += 1
-    # print(f"{GLOBAL_LOSS_COUNT}. Loss GV: {l1}, pG: {l2}, pV+: {l3_1}, pV-: {l3_2}")
-
-    return l1 + w[0]*l2 + w[1]*l3_1 + w[2]*l3_2
-
-def estimate_probs(GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]):
-    res = None
-    val = np.inf
-
-    NUM_VALIDATORS = GV.shape[1]
-    NUM_GENERATORS = GV.shape[0]
-
-    if PG_START == 'mean':
-        pG_ = np.mean(GV, axis=1)
-    elif PG_START == 'uniform':
-        pG_ = np.random.uniform(0, 1, NUM_GENERATORS)
-    else:
-        pG_ = np.ones(NUM_GENERATORS) * PG_START
-
-    if PV_START == 'uniform':
-        pVv_hat_ = np.random.uniform(0, 1, NUM_VALIDATORS)
-    else:
-        pVv_hat_ = np.ones(NUM_VALIDATORS) * PV_START
-
-    if PVIV_START == 'uniform':
-        pViv_hat_ = np.random.uniform(0, 1, NUM_VALIDATORS)
-    else:
-        pViv_hat_ = np.ones(NUM_VALIDATORS) * PVIV_START
-
-    print(f"pG: {pG_}, pVv: {pVv_hat_}, pViv: {pViv_hat_}")
-    for run_count in range (NUM_RUNS):
-        if run_count != 0:
-            pG = pG_ + np.random.uniform(-ERR_EPSILON_PG/2, ERR_EPSILON_PG/2, NUM_GENERATORS)
-            pVv_hat = pVv_hat_ + np.random.uniform(-ERR_EPSILON_PV/2, ERR_EPSILON_PV/2, NUM_VALIDATORS)
-            pViv_hat = pViv_hat_ + np.random.uniform(-ERR_EPSILON_PIV/2, ERR_EPSILON_PIV/2, NUM_VALIDATORS)
-        else:
-            pG, pVv_hat, pViv_hat = pG_, pVv_hat_, pViv_hat_
-
-        pG = np.clip(pG, 0, 1)
-        pVv_hat = np.clip(pVv_hat, 0, 1)
-        pViv_hat = np.clip(pViv_hat, 0, 1)  
-
-        x = np.concatenate([pVv_hat, pViv_hat, pG])
-
-        res1 = minimize(total_loss, x, args=(GV, pVva, pViva, pGa, idV, idG, w), bounds=[(0, 1)] * len(x), method='L-BFGS-B')
-        if(res1.success == False):
-            print(f"\033[91mRun {run_count} failed to converge\033[0m")
-
-        res1 = res1.x
-        if total_loss(res1, GV, pVva, pViva, pGa, idV, idG, w) < val:
-            val = total_loss(res1, GV, pVva, pViva, pGa, idV, idG, w)
-            res = res1
-
-    pVv = res[:NUM_VALIDATORS]
-    pViv = res[NUM_VALIDATORS:2*NUM_VALIDATORS]
-    pG = res[2*NUM_VALIDATORS:]
-
-    return pVv, pViv, pG
-
-def print_GV_hat(k1, pVv, pViv, pG_min, pG_max, pG_mean, PVVA, PVIVA):
+def write_latex_table(k1, pVv, pViv, pG_min, pG_max, pG_mean, PVVA, PVIVA):
     G_hat = np.outer(pG_mean, pVv) + np.outer((1 - pG_mean), (1 - pViv))
     
     s = f'\n\nk = {k1}'
@@ -179,36 +54,36 @@ def print_GV_hat(k1, pVv, pViv, pG_min, pG_max, pG_mean, PVVA, PVIVA):
         s += f"{(100*pG_mean[i]):.1f}\\% & "
         s += f"{(100*pG_max[i]):.1f}\\% & "
         s += f"{(100*pG_min[i]):.1f}\\% & "
-        if pGa.get(MODELS[i], None) is not None:
-            s += f"{(100*pGa[MODELS[i]]):.1f}\\% \\\\ \n"
+        if pGa_CONST.get(MODELS[i], None) is not None:
+            s += f"{(100*pGa_CONST[MODELS[i]]):.1f}\\% \\\\ \n"
         else:
             s += f"\\\\ \n"
 
-    s += r'\midrule \n'
+    s += r'\midrule' + '\n'
 
     s += r'$\hat{\pvalid}$ '
     for x in pVv:
         s += f'& {100*x:.1f} '
 
-    s += r'\\'
+    s += '\\\\ \n'
 
     s += r'$\pvalid$ '
     for x in PVVA:
         s += f'& {100*x:.1f} '
 
-    s += r'\\'
+    s += '\\\\ \n'
 
     s += r'$\hat{\pinvalid}$ '
     for x in pViv:
         s += f'& {100*x:.1f} '
 
-    s += r'\\'
+    s += '\\\\ \n'
 
     s += r'$\pinvalid$ '
     for x in PVIVA:
         s += f'& {100*x:.1f} '
 
-    s += r'\\'
+    s += '\\\\ \n'
     s += r'''\bottomrule
     \end{tabular}%
   \end{adjustbox}
@@ -217,23 +92,134 @@ def print_GV_hat(k1, pVv, pViv, pG_min, pG_max, pG_mean, PVVA, PVIVA):
     with open(f"{PATH_LATEX}GV_hat.tex", "a") as f:
         f.write(s)
 
-def get_pViv_full(gens, VALIDATOR_COUNTS):
-    pViva = {}
+def print_values_pair(Y, Y_HAT):
+    for y, y_hat in zip(Y, Y_HAT):
+        print(f"({y:.4f}, {y_hat:.4f})", end=' ')
 
-    stats = np.zeros_like(VALIDATOR_COUNTS[0])
-    for i in gens:
-        stats += VALIDATOR_COUNTS[GENS.index(i)]
 
-    pViva = {k: (stats[i][0])/(stats[i][0] + stats[i][1]) for i, k in enumerate(MODELS)}
-    pVva = {k: (stats[i][3])/(stats[i][2] + stats[i][3]) for i, k in enumerate(MODELS)}
+def print_values_k(k1, numComb, j, pGa, VALIDATOR_COUNTS, log, max_errors, avg_errors):
+    print(f"\n=========================")
+    print(f"k{k1} C{numComb} with {j}")
+    print(f"=========================")
 
-    return pViva, pVva
+    G, Ghat, errorG, pVv, pViv = extract_values_log(pGa, VALIDATOR_COUNTS, log)
+    
+    print(f'\tG vs G_hat:', end=' ')
+    print_values_pair(G, Ghat)
+
+    print(f"\n\tV+ vs V+_hat:", end=' ')
+    print_values_pair(PVVA_CONST, pVv)
+
+    print(f"\n\tV- vs V-_hat:", end=' ')
+    print_values_pair(PVIVA_CONST, pViv)
+    
+    print(f"\n\tMax Error (Validation): {max_errors[-1]}")
+    print(f"\tAvg Error (Validation): {avg_errors[-1]}")
+
+    print(f"\tError (Test): {errorG}")
+
+# =========================
+#   EXTRACT VALUES
+# ==========================
+
+def extract_values_log(pGa, VALIDATOR_COUNTS, log):
+    pVv, pViv, pG, j = log
+    
+    # Extract generator values
+    idxs = [MODEL_ENUM[m] for m in pGa]
+    G = np.array([pGa[m] for m in pGa])
+    Ghat = pG[idxs]
+    errorG = np.sum(np.abs(Ghat - G))
+
+    return G, Ghat, errorG, pVv, pViv
+
+
+def extract_values_logs(pGa, VALIDATOR_COUNTS, logs):
+    errors = []
+    pG_combi, pVv_combi, pViv_combi = [], [], []
+   
+    # Extract generator values
+    for (pv1, pv2, pg, combo) in logs:
+        G, Ghat, errorG, pVv, pViv = extract_values_log(pGa, VALIDATOR_COUNTS, (pv1, pv2, pg, combo))
+        pG_combi.append(Ghat)
+        pVv_combi.append(pVv)
+        pViv_combi.append(pViv)
+        errors.append(errorG)
+
+    # Find the mean, max, min errors
+    m_idx = np.argsort(errors)[len(errors)//2]
+    mean_pG = logs[m_idx][2]
+    min_pG = logs[np.argmin(errors)][2]
+    max_pG = logs[np.argmax(errors)][2]
+
+    # Extract validator values. Take the mean across all combinations
+    mean_pVv = np.mean(pVv_combi, axis=0)
+    mean_pViv = np.mean(pViv_combi, axis=0)
+
+    return min_pG, max_pG, mean_pG, mean_pVv, mean_pViv, PVVA_CONST, PVIVA_CONST
+
+# =========================
+#   Estimate for a given k
+# =========================
+
+def estimate_probs(k, GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]):
+    final_loss_best = np.inf
+
+    NUM_VALIDATORS = GV.shape[1]
+    NUM_GENERATORS = GV.shape[0]
+
+    if PG_START == 'mean':
+        pG_ = np.mean(GV, axis=1)
+    elif PG_START == 'uniform':
+        pG_ = np.random.uniform(0, 1, NUM_GENERATORS)
+    else:
+        pG_ = np.ones(NUM_GENERATORS) * PG_START
+
+    if PV_START == 'uniform':
+        pVv_hat_ = np.random.uniform(0, 1, NUM_VALIDATORS)
+    else:
+        pVv_hat_ = np.ones(NUM_VALIDATORS) * PV_START
+
+    if PVIV_START == 'uniform':
+        pViv_hat_ = np.random.uniform(0, 1, NUM_VALIDATORS)
+    else:
+        pViv_hat_ = np.ones(NUM_VALIDATORS) * PVIV_START
+
+    for run_count in range (NUM_RUNS):
+        if run_count != 0:
+            pG = pG_ + np.random.uniform(-ERR_EPSILON_PG/2, ERR_EPSILON_PG/2, NUM_GENERATORS)
+            pVv_hat = pVv_hat_ + np.random.uniform(-ERR_EPSILON_PV/2, ERR_EPSILON_PV/2, NUM_VALIDATORS)
+            pViv_hat = pViv_hat_ + np.random.uniform(-ERR_EPSILON_PIV/2, ERR_EPSILON_PIV/2, NUM_VALIDATORS)
+        else:
+            pG, pVv_hat, pViv_hat = pG_, pVv_hat_, pViv_hat_
+
+        pG = np.clip(pG, 0, 1)
+        pVv_hat = np.clip(pVv_hat, 0, 1)
+        pViv_hat = np.clip(pViv_hat, 0, 1)  
+
+        x = np.concatenate([pVv_hat, pViv_hat, pG])
+
+        res = minimize(total_loss, x, args=(GV, pVva, pViva, pGa, idV, idG, w), bounds=[(0, 1)] * len(x), method='L-BFGS-B')
+        if(res.success == False):
+            print(f"\033[91mRun {run_count} failed to converge\033[0m")
+
+        final_loss, final_loss_best, pVv, pViv, pG = write_loss_to_csv(
+            k, idG, res, GV, pVva, pViva, pGa, idV, idG, w, NUM_VALIDATORS, final_loss_best
+        )
+        
+    return pVv, pViv, pG
+
+
+
+# =========================
+#   REGRESS
+# =========================
 
 def regress(GV, pGa, gens, k1, VALIDATOR_COUNTS, w=[1, 0, 0]):
     idG = list(combinations(pGa.keys(), k1))
     pGs = []
 
-    errors = []
+    max_errors = []
     avg_errors = []
 
     logs = []
@@ -246,55 +232,34 @@ def regress(GV, pGa, gens, k1, VALIDATOR_COUNTS, w=[1, 0, 0]):
             stats += VALIDATOR_COUNTS[gens.index(i)]
 
         if k1 == 0:
-            pVv, pViv, pG = estimate_probs(GV, {}, {}, pGa, (), j, w=w)
+            pVva, pViva = {}, {}
+            pVv, pViv, pG = estimate_probs(k1, GV, {}, {}, pGa, (), j, w=w)
         else:
             pVva  = {k: (stats[i][3])/(stats[i][2] + stats[i][3]) for i, k in enumerate(MODELS)}
             pViva = {k: (stats[i][0])/(stats[i][0] + stats[i][1]) for i, k in enumerate(MODELS)}
 
-            pVv, pViv, pG = estimate_probs(GV, pVva, pViva, pGa, MODELS, j, w=w)
+            pVv, pViv, pG = estimate_probs(k1, GV, pVva, pViva, pGa, MODELS, j, w=w)
 
-        logs.append((pVv, pViv, pG, j))
+        log = (pVv, pViv, pG, j)
+        logs.append(log)
         pGs.append(pG)
 
         excluded = [candidate for candidate in gens if candidate not in j]
-        p_temp = np.array([pGa[m] for m in excluded])
-        p_hat_temp = np.array([pG[MODEL_ENUM[m]] for m in excluded])
+        pG_temp = np.array([pGa[m] for m in excluded])
+        pG_hat_temp = np.array([pG[MODEL_ENUM[m]] for m in excluded])
+        error_temp = np.abs(pG_hat_temp - pG_temp)
 
-        avg_errors.append(100*np.mean(abs(p_hat_temp - p_temp)))
-        errors.append(100*max(abs(p_hat_temp - p_temp)) if len(p_temp) > 0 else 0)
+        avg_errors.append(100*np.mean(error_temp))
+        max_errors.append(100*max(error_temp) if len(pG_temp) > 0 else 0)
 
         numComb += 1
-        GLOBAL_LOSS_COUNT = 0
-        print(f"\nC{numComb} k={k1} with {j}")
-        print(f"\tpG: {pG}")
-        print(f"\tpV+: {pVv}")
-        print(f"\tpV-: {pViv}")
-        print(f"\tMax Error: {errors[-1]}")
-        print(f"\tAvg Error: {avg_errors[-1]}")
+        print_values_k(k1, numComb, j, pGa, VALIDATOR_COUNTS, log, max_errors, avg_errors)
+        
 
+    min_pG, max_pG, mean_pG, mean_pVv, mean_pViv, PVVA, PVIVA = extract_values_logs(pGa, VALIDATOR_COUNTS, logs)
+    write_latex_table(k1, mean_pVv, mean_pViv, min_pG, max_pG, mean_pG, PVVA, PVIVA)
 
-    errors = []
-    for (pv1, pv2, pg, combo) in logs:
-        idxs = [MODEL_ENUM[m] for m in pGa]
-        ref = np.array([pGa[m] for m in pGa])
-        errors.append(np.sum(np.abs(pg[idxs] - ref)))
-    m_idx = np.argsort(errors)[len(errors)//2]
-    mean_pG = logs[m_idx][2]
-    min_pG = logs[np.argmin(errors)][2]
-    max_pG = logs[np.argmax(errors)][2]
-
-    mean_pVv = np.mean([combi[0] for combi in logs], axis=0)
-    mean_pViv = np.mean([combi[1] for combi in logs], axis=0)
-
-    _piv, _pv = get_pViv_full(GENS, VALIDATOR_COUNTS)
-
-    PVVA = PVVA_CONST if PVVA_CONST is not None else np.array([_pv[m] for m in MODELS])
-    PVIVA = PVIVA_CONST if PVIVA_CONST is not None else np.array([_piv[m] for m in MODELS])
-
-    print('Mean GV_hat', k1)
-    print_GV_hat(k1, mean_pVv, mean_pViv, min_pG, max_pG, mean_pG, PVVA, PVIVA)
-
-    return pGs, errors, avg_errors, logs
+    return pGs, max_errors, avg_errors, logs
 
 def plot_data_no_exclude(all_logs, pGa, pG_mean):
     means = []
@@ -570,9 +535,8 @@ if __name__ == '__main__':
 
         futures = {}
         with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            for k in range(0, len(GENS)+1):
-            # for k in [2]:
-                futures[executor.submit(regress, GV, pGa, GENS, k, VALIDATOR_COUNTS, w=[10, 1, 10])] = k
+            for k in K_LIST:
+                futures[executor.submit(regress, GV_CONST, pGa_CONST, GENS, k, VALIDATOR_COUNTS, w=WEIGHTS)] = k
 
         results = []
         for future in as_completed(futures):
@@ -595,7 +559,7 @@ if __name__ == '__main__':
             all_logs = pickle.load(f)
     
     print('============================================')
-    plot_data_no_exclude(all_logs, pGa, np.mean(GV, axis=1))
+    plot_data_no_exclude(all_logs, pGa_CONST, np.mean(GV_CONST, axis=1))
     print('============================================')
 
-    print('Baseline: ', np.round(100*np.mean(GV, axis=1), 1))
+    print('Baseline: ', np.round(100*np.mean(GV_CONST, axis=1), 1))
