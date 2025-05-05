@@ -278,6 +278,12 @@ def total_loss(x, GV, pVva, pViva, pGa, idV, idG, w):
 # =========================
 
 GLOBAL_LOSS_COUNT = 0
+
+# Initialize CSV file for iteration losses
+csv_path = f"{PATH_LOGS_LOSS_ITER}iter_losses.csv"
+with open(csv_path, 'w') as f:
+    f.write("iter,train_loss_GV,train_loss_g,train_loss_vv,train_loss_viv,test_loss_GV,test_loss_g,test_loss_vv,test_loss_viv\n")
+
 def write_iterLoss_csv(x, pGa, pVva, pViva, idG, idV):
     """
     Write the iteration loss to a CSV file.
@@ -321,15 +327,6 @@ def write_iterLoss_csv(x, pGa, pVva, pViva, idG, idV):
     loss_test_g = loss_reg(pG_hat, pGa, idG_test)
     loss_test_vv = loss_reg(pVv_hat, pVva, idVV_test)
     loss_test_viv = loss_reg(pViv_hat, pViva, idVIV_test)
-
-    # Record the results in a CSV file
-    csv_path = f"{PATH_LOGS_LOSS_ITER}iter_losses.csv"
-
-    # Create header if file doesn't exist
-    if not os.path.exists(csv_path):
-        with open(csv_path, 'w') as f:
-            f.write("iter,train_loss_GV,train_loss_g,train_loss_vv,train_loss_viv,test_loss_GV,test_loss_g,test_loss_vv,test_loss_viv\n")
-
 
     # Append the current results
     with open(csv_path, 'a') as f:
@@ -391,6 +388,10 @@ def write_iterLoss_csv(x, pGa, pVva, pViva, idG, idV):
     # print(f"{GLOBAL_LOSS_COUNT}. Loss GV: {l1}, pG: {l2}, pV+: {l3_1}, pV-: {l3_2}")
 
 
+# Initialize CSV file for regression losses
+with open(csv_path, 'w') as f:
+    f.write("k,models,final_loss,gv_loss,pg_loss,pvv_loss,pviv_loss\n")
+
 def write_loss_to_csv(k, j, res, GV, pVva, pViva, pGa, idV, idG, w, NUM_VALIDATORS, final_loss_best):
     # find the hats
     pVv_hat = res.x[:NUM_VALIDATORS]
@@ -406,11 +407,6 @@ def write_loss_to_csv(k, j, res, GV, pVva, pViva, pGa, idV, idG, w, NUM_VALIDATO
 
     # Record the results in a CSV file
     csv_path = f"{PATH_LOGS}regression_losses.csv"
-
-    # Create header if file doesn't exist
-    if not os.path.exists(csv_path):
-        with open(csv_path, 'w') as f:
-            f.write("k,models,final_loss,gv_loss,pg_loss,pvv_loss,pviv_loss\n")
 
     # Convert the validation model combo to string
     models_str = ';'.join([str(m) for m in j])

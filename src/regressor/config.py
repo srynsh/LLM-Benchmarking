@@ -14,35 +14,6 @@ PATH_LOGS_LOSS_ITER = PATH_LOGS + 'loss iteration/'
 PATH_LOGS_PREDICTED = PATH_LOGS + 'predicted/'
 
 # =========================
-#   EXPERIMENT CONSTANTS
-# =========================
-NUM_RUNS = 1 # number of runs to min over
-MAX_WORKERS = 6 # number of workers for parallelization
-
-# =========================
-#   LOSS CONSTANTS
-# =========================
-# WEIGHTS = [0.1, 0.01, 0.1] # weights for each loss function
-WEIGHTS = [10, 1, 10] # weights for each loss function
-# WEIGHTS = [1, 1, 1] # weights for each loss function
-LOSS_PRED = 'huber' # options are 'crossEntropy', 'rmse', 'mse', 'mae', 'huber'
-LOSS_REG = 'huber' # options are 'rmse', 'mae', 'huber'
-
-# =========================
-#   STARTING PARAMETERS
-# =========================
-PV_START = 0.5 # options are 'uniform', float
-PVIV_START = 0.5 # options are 'uniform', float
-PG_START = 'mean' # options are 'mean', 'uniform', float
-
-# =========================
-#   ERROR CONSTANTS
-# =========================
-ERR_EPSILON_PV = 0.01 # For adding to start point
-ERR_EPSILON_PIV = 0.01 # For adding to start point
-ERR_EPSILON_PG = 0.001 # For adding to start point
-
-# =========================
 #   MODEL CONSTANTS
 # =========================
 
@@ -194,3 +165,34 @@ GV_CONST = np.array([
 
 # GV = GV_CONST if GV_CONST is not None else get_GV()
 
+
+# =========================
+#   EXPERIMENT CONSTANTS
+# =========================
+NUM_RUNS = 1 # number of runs to min over
+MAX_WORKERS = 6 # number of workers for parallelization
+K_LIST = range(0, len(GENS)+1) # number of generators to peek at
+K_LIST = [1] 
+
+# =========================
+#   LOSS CONSTANTS
+# =========================
+# WEIGHTS = [0.1, 0.01, 0.1] # weights for each loss function
+WEIGHTS = [10, 1, 10] # weights for each loss function
+# WEIGHTS = [1, 1, 1] # weights for each loss function
+LOSS_PRED = 'crossEntropy' # options are 'crossEntropy', 'rmse', 'mse', 'mae', 'huber'
+LOSS_REG = 'rmse' # options are 'rmse', 'mae', 'huber'
+
+# =========================
+#   STARTING PARAMETERS
+# =========================
+PV_START = 0.5 # options are 'uniform', float
+PVIV_START = 0.5 # options are 'uniform', float
+PG_START = 'mean' # options are 'mean', 'uniform', float
+
+# =========================
+#   ERROR CONSTANTS
+# =========================
+ERR_EPSILON_PV = 0.01 # For adding to start point
+ERR_EPSILON_PIV = 0.01 # For adding to start point
+ERR_EPSILON_PG = 0.001 # For adding to start point
