@@ -1,6 +1,11 @@
 import numpy as np
 
 # =========================
+#   INIT
+# =========================
+COMPUTE_REFERENCE_VALUES = False # Set to True to compute reference values. False to use pre-computed hardcoded values.
+
+# =========================
 #   FILE PATHS
 # =========================
 PATH_DATA = '../../data/'
@@ -55,9 +60,6 @@ pGa_CONST = {
     'deepseek-chat': 0.92841,
     'qwen-coder-plus': 0.93117
 }
-
-# pGa = pGa_CONST if pGa_CONST is not None else get_precision()
-
 
 # =========================
 #   VALIDATOR CONSTANTS
@@ -162,9 +164,6 @@ GV_CONST = np.array([
     [0.9334098737079999, 0.961451247166, 0.938118811881, 0.955782312925, 0.954389965792, 0.9614949037370001, 0.966396292005, 0.9371362048890001, 0.949714285714, 0.976510067114],
     [0.922922922923, 0.9514091350830001, 0.9487427466149999, 0.955980861244, 0.949268292683, 0.936647173489, 0.970703125, 0.9470588235290001, 0.92574734812, 0.968421052632]
 ])
-
-# GV = GV_CONST if GV_CONST is not None else get_GV()
-
 
 # =========================
 #   EXPERIMENT CONSTANTS

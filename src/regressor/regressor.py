@@ -6,8 +6,8 @@ import seaborn as sns
 from tqdm import tqdm
 import pickle
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from utils import   get_GV, get_VALIDATOR_COUNTS, get_precision
-from config import COLOR_GREEN_DELTA, COLOR_YELLOW_DELTA, K_LIST, LOSS_PRED, NUM_RUNS, MAX_WORKERS, WEIGHTS
+from utils import   get_GV, get_VALIDATOR_COUNTS, get_pViv_full, get_precision
+from config import COLOR_GREEN_DELTA, COLOR_YELLOW_DELTA, COMPUTE_REFERENCE_VALUES, K_LIST, LOSS_PRED, NUM_RUNS, MAX_WORKERS, WEIGHTS
 from config import PV_START, PVIV_START, PG_START, ERR_EPSILON_PG, ERR_EPSILON_PIV, ERR_EPSILON_PV, GENS, MODELS, MODEL_NAMES, MODEL_ENUM
 from config import VALIDATOR_COUNTS_CONST, pGa_CONST, GV_CONST, PVVA_CONST, PVIVA_CONST
 from config import PATH_LOGS, PATH_IMAGES, PATH_LATEX, PATH_LOGS_LOSS_ITER
@@ -22,6 +22,33 @@ import warnings
 import os
 warnings.filterwarnings("always", category=UserWarning)
 
+
+# =========================
+#   READ DATA
+# =========================
+
+def read_data():
+
+    if COMPUTE_REFERENCE_VALUES:
+        GV = get_GV(GENS)
+        pGa = get_precision(GV, GENS)
+        VALIDATOR_COUNTS = get_VALIDATOR_COUNTS()
+
+        _piv, _pv = get_pViv_full(GENS, VALIDATOR_COUNTS)
+        PVVA = np.array([_pv[m] for m in MODELS])
+        PVIVA = np.array([_piv[m] for m in MODELS])
+
+    else:
+        GV = GV_CONST
+        pGa = pGa_CONST
+        VALIDATOR_COUNTS = VALIDATOR_COUNTS_CONST
+        PVVA = PVVA_CONST
+        PVIVA = PVIVA_CONST
+
+    return GV, pGa, VALIDATOR_COUNTS, PVVA, PVIVA
+        
+
+
 # =========================
 #   PRETTY PRINT
 # =========================
@@ -30,7 +57,7 @@ warnings.filterwarnings("always", category=UserWarning)
 with open(f"{PATH_LATEX}GV_hat.tex", "w") as f:
     f.write('')
 
-def write_latex_table(k1, pVv, pViv, pG_min, pG_max, pG_mean, PVVA, PVIVA):
+def write_latex_table(k1, pVv, pViv, pG_min, pG_max, pG_mean, PVVA, PVIVA, pGa):
     G_hat = np.outer(pG_mean, pVv) + np.outer((1 - pG_mean), (1 - pViv))
     
     s = f'\n\nk = {k1}'
@@ -54,8 +81,8 @@ def write_latex_table(k1, pVv, pViv, pG_min, pG_max, pG_mean, PVVA, PVIVA):
         s += f"{(100*pG_mean[i]):.1f}\\% & "
         s += f"{(100*pG_max[i]):.1f}\\% & "
         s += f"{(100*pG_min[i]):.1f}\\% & "
-        if pGa_CONST.get(MODELS[i], None) is not None:
-            s += f"{(100*pGa_CONST[MODELS[i]]):.1f}\\% \\\\ \n"
+        if pGa.get(MODELS[i], None) is not None:
+            s += f"{(100*pGa[MODELS[i]]):.1f}\\% \\\\ \n"
         else:
             s += f"\\\\ \n"
 
@@ -101,7 +128,7 @@ def print_values_pair(Y, Y_HAT, labels):
         print(f"{label}: {y*100:.1f}% vs {y_hat*100:.1f}% {color}(Δ{diff*100:.1f}%)\033[0m", end='  ')
 
 
-def print_values_k(k1, numComb, j, pGa, VALIDATOR_COUNTS, log, max_errors, avg_errors):
+def print_values_k(k1, numComb, j, pGa, VALIDATOR_COUNTS, log, max_errors, avg_errors, PVVA, PVIVA):
     print(f"\n=========================")
     print(f"k{k1} C{numComb} with {j}")
     print(f"=========================")
@@ -112,10 +139,10 @@ def print_values_k(k1, numComb, j, pGa, VALIDATOR_COUNTS, log, max_errors, avg_e
     print_values_pair(G, Ghat, pGa.keys())
 
     print(f"\n\tV+ vs V+_hat:", end=' ')
-    print_values_pair(PVVA_CONST, pVv, MODELS)
+    print_values_pair(PVVA, pVv, MODELS)
 
     print(f"\n\tV- vs V-_hat:", end=' ')
-    print_values_pair(PVIVA_CONST, pViv, MODELS)
+    print_values_pair(PVIVA, pViv, MODELS)
     
     print(f"\n\tMax G Error (Validation): {max_errors[-1]}")
     print(f"\tAvg G Error (Validation): {avg_errors[-1]}")
@@ -160,7 +187,7 @@ def extract_values_logs(pGa, VALIDATOR_COUNTS, logs):
     mean_pVv = np.mean(pVv_combi, axis=0)
     mean_pViv = np.mean(pViv_combi, axis=0)
 
-    return min_pG, max_pG, mean_pG, mean_pVv, mean_pViv, PVVA_CONST, PVIVA_CONST
+    return min_pG, max_pG, mean_pG, mean_pVv, mean_pViv
 
 # =========================
 #   Estimate for a given k
@@ -219,7 +246,7 @@ def estimate_probs(k, GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]):
 #   REGRESS
 # =========================
 
-def regress(GV, pGa, gens, k1, VALIDATOR_COUNTS, w=[1, 0, 0]):
+def regress(GV, pGa, PVVA, PVIVA, gens, k1, VALIDATOR_COUNTS, w=[1, 0, 0]):
     idG = list(combinations(pGa.keys(), k1))
     pGs = []
 
@@ -257,15 +284,20 @@ def regress(GV, pGa, gens, k1, VALIDATOR_COUNTS, w=[1, 0, 0]):
         max_errors.append(100*max(error_temp) if len(pG_temp) > 0 else 0)
 
         numComb += 1
-        print_values_k(k1, numComb, j, pGa, VALIDATOR_COUNTS, log, max_errors, avg_errors)
+        print_values_k(k1, numComb, j, pGa, VALIDATOR_COUNTS, log, max_errors, avg_errors, PVVA, PVIVA)
         
 
-    min_pG, max_pG, mean_pG, mean_pVv, mean_pViv, PVVA, PVIVA = extract_values_logs(pGa, VALIDATOR_COUNTS, logs)
-    write_latex_table(k1, mean_pVv, mean_pViv, min_pG, max_pG, mean_pG, PVVA, PVIVA)
+    min_pG, max_pG, mean_pG, mean_pVv, mean_pViv = extract_values_logs(pGa, VALIDATOR_COUNTS, logs)
+    write_latex_table(k1, mean_pVv, mean_pViv, min_pG, max_pG, mean_pG, PVVA, PVIVA, pGa)
 
     return pGs, max_errors, avg_errors, logs
 
-def plot_data_no_exclude(all_logs, pGa, pG_mean):
+
+# =========================
+#   PLOT DATA
+# =========================
+
+def plot_data_no_exclude(all_logs, pG_mean):
     means = []
     maxs = []
     base_mean = []
@@ -528,8 +560,11 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
     plt.savefig(f'{PATH_IMAGES}pngs/regressor_mean_comparison.png')
     plt.savefig(f'{PATH_IMAGES}pdfs/regressor_mean_comparison.pdf', format='pdf')
 
+# =========================
+#   MAIN
+# =========================
 if __name__ == '__main__':
-    VALIDATOR_COUNTS = VALIDATOR_COUNTS_CONST if VALIDATOR_COUNTS_CONST is not None else get_VALIDATOR_COUNTS()
+    GV, pGa, VALIDATOR_COUNTS, PVVA, PVIVA = read_data()
 
     redo = True
     if redo:
@@ -540,7 +575,7 @@ if __name__ == '__main__':
         futures = {}
         with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
             for k in K_LIST:
-                futures[executor.submit(regress, GV_CONST, pGa_CONST, GENS, k, VALIDATOR_COUNTS, w=WEIGHTS)] = k
+                futures[executor.submit(regress, GV, pGa, PVVA, PVIVA, GENS, k, VALIDATOR_COUNTS, w=WEIGHTS)] = k
 
         results = []
         for future in as_completed(futures):
@@ -563,7 +598,7 @@ if __name__ == '__main__':
             all_logs = pickle.load(f)
     
     print('============================================')
-    plot_data_no_exclude(all_logs, pGa_CONST, np.mean(GV_CONST, axis=1))
+    plot_data_no_exclude(all_logs, pGa, np.mean(GV, axis=1))
     print('============================================')
 
-    print('Baseline: ', np.round(100*np.mean(GV_CONST, axis=1), 1))
+    print('Baseline: ', np.round(100*np.mean(GV, axis=1), 1))
