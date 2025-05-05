@@ -1,6 +1,6 @@
 
 
-from config import GENS, GV_CONST, MODEL_ENUM, MODELS, PATH_LOGS, PATH_LOGS_LOSS_ITER, PATH_LOGS_PREDICTED
+from config import GENS, GV_CONST, IS_WRITE_LOGS, MODEL_ENUM, MODELS, PATH_LOGS, PATH_LOGS_LOSS_ITER, PATH_LOGS_PREDICTED
 from config import LOSS_PRED, LOSS_REG
 
 import numpy as np
@@ -269,7 +269,8 @@ def total_loss(x, GV, pVva, pViva, pGa, idV, idG, w):
     l3_1 = loss_reg(x[:NUM_VALIDATORS], pVva, idV)
     l3_2 = loss_reg(x[NUM_VALIDATORS:2*NUM_VALIDATORS], pViva, idV)
 
-    write_iterLoss_csv(x, pGa, pVva, pViva, idG, idV)
+    if IS_WRITE_LOGS:
+        write_iterLoss_csv(x, pGa, pVva, pViva, idG, idV)
 
     return l1 + w[0]*l2 + w[1]*l3_1 + w[2]*l3_2
 
@@ -323,6 +324,11 @@ def write_iterLoss_csv(x, pGa, pVva, pViva, idG, idV):
     loss_train_viv = loss_reg(pViv_hat, pViva, idV)
 
     # Calculate test loss
+    with open('temp.txt', 'w') as f:
+        f.write(f"idVV_test: {idVV_test}\n")
+        f.write(f"pVva: {pVva}\n")
+        f.write(f"pVv_hat: {pVv_hat}\n")
+
     loss_test_GV = loss_pred(pVv_hat, pViv_hat, pG_hat, GV_CONST)
     loss_test_g = loss_reg(pG_hat, pGa, idG_test)
     loss_test_vv = loss_reg(pVv_hat, pVva, idVV_test)
@@ -412,8 +418,9 @@ def write_loss_to_csv(k, j, res, GV, pVva, pViva, pGa, idV, idG, w, NUM_VALIDATO
     models_str = ';'.join([str(m) for m in j])
 
     # Append the current results
-    with open(csv_path, 'a') as f:
-        f.write(f"{k},{models_str},{final_loss},{gv_loss},{pg_loss},{pvv_loss},{pviv_loss}\n")
+    if IS_WRITE_LOGS:
+        with open(csv_path, 'a') as f:
+            f.write(f"{k},{models_str},{final_loss},{gv_loss},{pg_loss},{pvv_loss},{pviv_loss}\n")
 
     # Check if this is the best loss so far
     if final_loss < final_loss_best:

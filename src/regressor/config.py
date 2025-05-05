@@ -198,8 +198,9 @@ ERR_EPSILON_PIV = 0.01 # For adding to start point
 ERR_EPSILON_PG = 0.001 # For adding to start point
 
 # =========================
-#   PRETTY PRINTING
+#   LOGS & PRINTING
 # =========================
 
 COLOR_GREEN_DELTA = 0.02    # 2% tolerance
 COLOR_YELLOW_DELTA = 0.05   # 5%
+IS_WRITE_LOGS = False

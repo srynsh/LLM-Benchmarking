@@ -206,7 +206,7 @@ def estimate_probs(k, GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]):
         res = minimize(total_loss, x, args=(GV, pVva, pViva, pGa, idV, idG, w), bounds=[(0, 1)] * len(x), method='L-BFGS-B')
         if(res.success == False):
             print(f"\033[91mRun {run_count} failed to converge\033[0m")
-
+        
         final_loss, final_loss_best, pVv, pViv, pG = write_loss_to_csv(
             k, idG, res, GV, pVva, pViva, pGa, idV, idG, w, NUM_VALIDATORS, final_loss_best
         )
