@@ -9,6 +9,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from utils import   get_GV, get_VALIDATOR_COUNTS, get_precision
 from config import PV_START, PVIV_START, PG_START, NUM_RUNS, ERR_EPSILON_PG, ERR_EPSILON_PIV, ERR_EPSILON_PV, GENS, MODELS, MODEL_NAMES, MODEL_ENUM, MAX_WORKERS
 from config import VALIDATOR_COUNTS_CONST, pGa_CONST, GV_CONST, PVVA_CONST, PVIVA_CONST
+from config import PATH_LOGS, PATH_IMAGES, PATH_LATEX
 import sys
 np.random.seed(42)
 scipy_seed = 42
@@ -154,10 +155,12 @@ def estimate_probs(GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]):
 
     return pVv, pViv, pG
 
-def print_GV_hat(pVv, pViv, pG_min, pG_max, pG_mean, PVVA, PVIVA):
+def print_GV_hat(k1, pVv, pViv, pG_min, pG_max, pG_mean, PVVA, PVIVA):
     G_hat = np.outer(pG_mean, pVv) + np.outer((1 - pG_mean), (1 - pViv))
     
-    s = r'''
+    s = f'\n\nk = {k1}'
+
+    s += r'''
   \begin{adjustbox}{max width=\textwidth}
      \begin{tabular}{@{}ccccccccccc||cccc}
         \toprule
@@ -167,54 +170,52 @@ def print_GV_hat(pVv, pViv, pG_min, pG_max, pG_mean, PVVA, PVIVA):
     \midrule
     '''
 
-    print(s)
-
     for i, row in enumerate(G_hat):
-        print(f'\\textbf{{{MODEL_NAMES[i]}}} & ', end='')
+        s += f'\\textbf{{{MODEL_NAMES[i]}}} & '
 
         for val in row:
-            print(f"{(100*val):.1f}\\%", end=' & ')
+            s += f"{(100*val):.1f}\\% & "
 
-        print(f"{(100*pG_mean[i]):.1f}\\%", end=' & ')
-        print(f"{(100*pG_max[i]):.1f}\\%", end=' & ')
-        print(f"{(100*pG_min[i]):.1f}\\%", end=' & ')
+        s += f"{(100*pG_mean[i]):.1f}\\% & "
+        s += f"{(100*pG_max[i]):.1f}\\% & "
+        s += f"{(100*pG_min[i]):.1f}\\% & "
         if pGa.get(MODELS[i], None) is not None:
-            print(f"{(100*pGa[MODELS[i]]):.1f}\\% \\\\")
+            s += f"{(100*pGa[MODELS[i]]):.1f}\\% \\\\ \n"
         else:
-            print(f"\\\\")
+            s += f"\\\\ \n"
 
-    print(r'\midrule')
+    s += r'\midrule \n'
 
-    s1 = r'''\bottomrule
+    s += r'$\hat{\pvalid}$ '
+    for x in pVv:
+        s += f'& {100*x:.1f} '
+
+    s += r'\\'
+
+    s += r'$\pvalid$ '
+    for x in PVVA:
+        s += f'& {100*x:.1f} '
+
+    s += r'\\'
+
+    s += r'$\hat{\pinvalid}$ '
+    for x in pViv:
+        s += f'& {100*x:.1f} '
+
+    s += r'\\'
+
+    s += r'$\pinvalid$ '
+    for x in PVIVA:
+        s += f'& {100*x:.1f} '
+
+    s += r'\\'
+    s += r'''\bottomrule
     \end{tabular}%
   \end{adjustbox}
 \end{table*}'''
 
-    print(r'$\hat{\pvalid}$ ', end='')
-    for x in pVv:
-        print(f'& {100*x:.1f} ', end='')
-
-    print(r'\\')
-
-    print(r'$\pvalid$ ', end='')
-    for x in PVVA:
-        print(f'& {100*x:.1f} ', end='')
-
-    print(r'\\')
-
-    print(r'$\hat{\pinvalid}$ ', end='')
-    for x in pViv:
-        print(f'& {100*x:.1f} ', end='')
-
-    print(r'\\')
-
-    print(r'$\pinvalid$ ', end='')
-    for x in PVIVA:
-        print(f'& {100*x:.1f} ', end='')
-
-    print(r'\\')
-
-    print(s1)
+    with open(f"{PATH_LATEX}GV_hat.tex", "a") as f:
+        f.write(s)
 
 def get_pViv_full(gens, VALIDATOR_COUNTS):
     pViva = {}
@@ -291,7 +292,7 @@ def regress(GV, pGa, gens, k1, VALIDATOR_COUNTS, w=[1, 0, 0]):
     PVIVA = PVIVA_CONST if PVIVA_CONST is not None else np.array([_piv[m] for m in MODELS])
 
     print('Mean GV_hat', k1)
-    print_GV_hat(mean_pVv, mean_pViv, min_pG, max_pG, mean_pG, PVVA, PVIVA)
+    print_GV_hat(k1, mean_pVv, mean_pViv, min_pG, max_pG, mean_pG, PVVA, PVIVA)
 
     return pGs, errors, avg_errors, logs
 
@@ -349,8 +350,8 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
 
     ax.legend()
     plt.tight_layout()
-    plt.savefig(f'images/pngs/all_regressor.png')
-    plt.savefig(f'images/pdfs/all_regressor.pdf', format='pdf')
+    plt.savefig(f'{PATH_IMAGES}pngs/all_regressor.png')
+    plt.savefig(f'{PATH_IMAGES}pdfs/all_regressor.pdf', format='pdf')
 
 
     fig, ax = plt.subplots()
@@ -375,8 +376,8 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
 
     ax.legend()
     plt.tight_layout()
-    plt.savefig(f'images/pngs/all_regressor_min.png')
-    plt.savefig(f'images/pdfs/all_regressor_min.pdf', format='pdf')
+    plt.savefig(f'{PATH_IMAGES}pngs/all_regressor_min.png')
+    plt.savefig(f'{PATH_IMAGES}pdfs/all_regressor_min.pdf', format='pdf')
 
 
     fig, ax = plt.subplots()
@@ -401,8 +402,8 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
 
     ax.legend()
     plt.tight_layout()
-    plt.savefig(f'images/pngs/all_regressor_max.png')
-    plt.savefig(f'images/pdfs/all_regressor_max.pdf', format='pdf')
+    plt.savefig(f'{PATH_IMAGES}pngs/all_regressor_max.png')
+    plt.savefig(f'{PATH_IMAGES}pdfs/all_regressor_max.pdf', format='pdf')
 
 
     for k, log in enumerate(all_logs):
@@ -458,8 +459,8 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
             ax.scatter(MODEL_ENUM[key], pGa[key]*100, color='black')
 
         plt.tight_layout()
-        plt.savefig(f'images/pngs/regressor_{k}.png')
-        plt.savefig(f'images/pdfs/regressor_{k}.pdf', format='pdf')
+        plt.savefig(f'{PATH_IMAGES}pngs/regressor_{k}.png')
+        plt.savefig(f'{PATH_IMAGES}pdfs/regressor_{k}.pdf', format='pdf')
 
 
     fig, ax = plt.subplots()
@@ -487,8 +488,8 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
     order = [3,0,1,2]
     plt.legend([handles[idx] for idx in order],[labels[idx] for idx in order], fontsize=16, loc='upper right')
 
-    plt.savefig('images/pngs/regressor_max_comparison.png')
-    plt.savefig('images/pdfs/regressor_max_comparison.pdf', format='pdf')
+    plt.savefig(f'{PATH_IMAGES}pngs/regressor_max_comparison.png')
+    plt.savefig(f'{PATH_IMAGES}pdfs/regressor_max_comparison.pdf', format='pdf')
 
 
     fig, ax = plt.subplots()
@@ -500,8 +501,8 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
     ax.set_ylabel('Maximum Error')
     plt.tight_layout()
     plt.legend()
-    plt.savefig('images/pngs/regressor_max_comparison_boxplot.png')
-    plt.savefig('images/pdfs/regressor_max_comparison_boxplot.pdf', format='pdf')
+    plt.savefig(f'{PATH_IMAGES}pngs/regressor_max_comparison_boxplot.png')
+    plt.savefig(f'{PATH_IMAGES}pdfs/regressor_max_comparison_boxplot.pdf', format='pdf')
     
 
     print(base_max[0][0]*100, end=' ')
@@ -555,8 +556,8 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
     handles, labels = plt.gca().get_legend_handles_labels()
     order = [3,1,0,2]
     plt.legend([handles[idx] for idx in order],[labels[idx] for idx in order], fontsize=16, loc='upper right')
-    plt.savefig('images/pngs/regressor_mean_comparison.png')
-    plt.savefig('images/pdfs/regressor_mean_comparison.pdf', format='pdf')
+    plt.savefig(f'{PATH_IMAGES}pngs/regressor_mean_comparison.png')
+    plt.savefig(f'{PATH_IMAGES}pdfs/regressor_mean_comparison.pdf', format='pdf')
 
 if __name__ == '__main__':
     VALIDATOR_COUNTS = VALIDATOR_COUNTS_CONST if VALIDATOR_COUNTS_CONST is not None else get_VALIDATOR_COUNTS()
@@ -569,8 +570,8 @@ if __name__ == '__main__':
 
         futures = {}
         with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            # for k in range(0, len(GENS)+1):
-            for k in [2]:
+            for k in range(0, len(GENS)+1):
+            # for k in [2]:
                 futures[executor.submit(regress, GV, pGa, GENS, k, VALIDATOR_COUNTS, w=[10, 1, 10])] = k
 
         results = []
@@ -587,10 +588,10 @@ if __name__ == '__main__':
             print("Done with k =", k)
 
 
-        with open('all_logs.pkl', 'wb') as f:
+        with open(PATH_LOGS + 'all_logs.pkl', 'wb') as f:
             pickle.dump(all_logs, f)
     else:
-        with open('all_logs.pkl', 'rb') as f:
+        with open(PATH_LOGS + 'all_logs.pkl', 'rb') as f:
             all_logs = pickle.load(f)
     
     print('============================================')

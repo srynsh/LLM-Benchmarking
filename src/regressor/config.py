@@ -1,18 +1,57 @@
 import numpy as np
 
+# =========================
+#   FILE PATHS
+# =========================
+PATH_DATA = '../../data/'
+
+PATH_OUTPUT = '../../output/'
+PATH_INTERIM = PATH_OUTPUT + 'interim/'
+PATH_IMAGES = PATH_OUTPUT + 'images/'
+PATH_LATEX = PATH_OUTPUT + 'latex/'
+PATH_LOGS = PATH_OUTPUT + 'logs/'
+PATH_LOGS_LOSS_ITER = PATH_LOGS + 'loss iteration/'
+PATH_LOGS_PREDICTED = PATH_LOGS + 'predicted/'
+
+# =========================
+#   EXPERIMENT CONSTANTS
+# =========================
+NUM_RUNS = 1 # number of runs to min over
+MAX_WORKERS = 6 # number of workers for parallelization
+
+# =========================
+#   LOSS CONSTANTS
+# =========================
+# WEIGHTS = [0.1, 0.01, 0.1] # weights for each loss function
+WEIGHTS = [10, 1, 10] # weights for each loss function
+# WEIGHTS = [1, 1, 1] # weights for each loss function
+LOSS_PRED = 'huber' # options are 'crossEntropy', 'rmse', 'mse', 'mae', 'huber'
+LOSS_REG = 'huber' # options are 'rmse', 'mae', 'huber'
+
+# =========================
+#   STARTING PARAMETERS
+# =========================
 PV_START = 0.5 # options are 'uniform', float
 PVIV_START = 0.5 # options are 'uniform', float
 PG_START = 'mean' # options are 'mean', 'uniform', float
 
-NUM_RUNS = 1 # number of runs to min over
-
+# =========================
+#   ERROR CONSTANTS
+# =========================
 ERR_EPSILON_PV = 0.01 # For adding to start point
 ERR_EPSILON_PIV = 0.01 # For adding to start point
 ERR_EPSILON_PG = 0.001 # For adding to start point
-MAX_WORKERS = None # number of workers for parallelization
-### constants
 
-GENS = ['gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo', 'claude_3_opus', 'gemini-1.5-pro', 'qwen-coder-plus', 'deepseek-chat']
+# =========================
+#   MODEL CONSTANTS
+# =========================
+
+GENS = ['gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo', 
+        'claude_3_opus', 
+        'gemini-1.5-pro',
+        'qwen-coder-plus', 
+        'deepseek-chat'
+]
 
 MODELS = [
     'gpt-3.5-turbo', 'gpt-4-turbo', 'gpt-4o-mini', 'gpt-4o',
@@ -30,6 +69,28 @@ MODEL_NAMES = [
 ]
 
 MODEL_ENUM = {model: i for i, model in enumerate(MODELS)}
+
+# =========================
+#   GENERATOR CONSTANTS
+# =========================
+
+# TODO: Update all the numbers below
+pGa_CONST = {
+    'gpt-4o': 0.93478,
+    'gpt-4-turbo': 0.87144,
+    'gpt-3.5-turbo': 0.69825,
+    'claude_3_opus': 0.95402,
+    'gemini-1.5-pro': 0.92846,
+    'deepseek-chat': 0.92841,
+    'qwen-coder-plus': 0.93117
+}
+
+# pGa = pGa_CONST if pGa_CONST is not None else get_precision()
+
+
+# =========================
+#   VALIDATOR CONSTANTS
+# =========================
 
 # TODO: Update all the numbers below
 VALIDATOR_COUNTS_CONST = np.array(
@@ -105,16 +166,17 @@ VALIDATOR_COUNTS_CONST = np.array(
   [20, 52, 13, 960]]]
 )
 
+# =========================
+#   PVVA & PVIVA CONSTANTS
+# =========================
+
 # TODO: Update all the numbers below
-pGa_CONST = {
-    'gpt-4o': 0.93478,
-    'gpt-4-turbo': 0.87144,
-    'gpt-3.5-turbo': 0.69825,
-    'claude_3_opus': 0.95402,
-    'gemini-1.5-pro': 0.92846,
-    'deepseek-chat': 0.92841,
-    'qwen-coder-plus': 0.93117
-}
+PVVA_CONST = np.array([0.9109457143, 0.9466071429, 0.9437971429, 0.9406471429, 0.9383457143, 0.9487385714, 0.9628328571, 0.9386271429, 0.9253528571, 0.9600028571])
+PVIVA_CONST = np.array([0.14737, 0.2565528571, 0.2690871429, 0.2636271429, 0.2331457143, 0.2617742857, 0.1460542857, 0.2489071429, 0.29158, 0.2088228571])
+
+# =========================
+#   GV MATRIX
+# =========================
 
 # TODO: Update all the numbers below
 GV_CONST = np.array([
@@ -130,6 +192,5 @@ GV_CONST = np.array([
     [0.922922922923, 0.9514091350830001, 0.9487427466149999, 0.955980861244, 0.949268292683, 0.936647173489, 0.970703125, 0.9470588235290001, 0.92574734812, 0.968421052632]
 ])
 
-# TODO: Update all the numbers below
-PVVA_CONST = np.array([0.9109457143, 0.9466071429, 0.9437971429, 0.9406471429, 0.9383457143, 0.9487385714, 0.9628328571, 0.9386271429, 0.9253528571, 0.9600028571])
-PVIVA_CONST = np.array([0.14737, 0.2565528571, 0.2690871429, 0.2636271429, 0.2331457143, 0.2617742857, 0.1460542857, 0.2489071429, 0.29158, 0.2088228571])
+# GV = GV_CONST if GV_CONST is not None else get_GV()
+
