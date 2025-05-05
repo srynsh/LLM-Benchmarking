@@ -1,0 +1,122 @@
+[
+    {
+        "sid": 1,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 2,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 3,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 4,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 5,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 6,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 7,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 8,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 9,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 10,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 11,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 12,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 13,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 14,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 15,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 16,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 17,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 18,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 19,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 20,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 21,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 22,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 23,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    },
+    {
+        "sid": 24,
+        "raw_response": "An error occurred (ValidationException) when calling the InvokeModel operation: Invocation of model ID anthropic.claude-3-7-sonnet-20250219-v1:0 with on-demand throughput isn\u2019t supported. Retry your request with the ID or ARN of an inference profile that contains this model.",
+        "output": []
+    }
+]
