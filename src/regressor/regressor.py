@@ -297,7 +297,7 @@ def regress(GV, pGa, PVVA, PVIVA, gens, k1, VALIDATOR_COUNTS, w=[1, 0, 0]):
 #   PLOT DATA
 # =========================
 
-def plot_data_no_exclude(all_logs, pG_mean):
+def plot_data_no_exclude(all_logs, pGa, pG_mean):
     means = []
     maxs = []
     base_mean = []
