@@ -475,8 +475,8 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
 
     ax.errorbar(x_pos, means_vals, yerr=yerrs, fmt='-o', label='Regression', color='black', capsize=5)
     ax.set_xticks(x_pos)
-    ax.fill_between(range(1, len(all_logs)), 2.7, 15.9, color='blue', alpha=0.1, label='Individual LLM')
-    ax.axhline(y=4.7, color='red', label='Ensemble', linestyle='-.')
+    ax.fill_between(range(1, len(all_logs)), 3.8, 15.3, color='blue', alpha=0.1, label='Individual LLM')
+    ax.axhline(y=7.2, color='red', label='Ensemble', linestyle='-.')
     ax.axhline(y=base_max[0][0]*100, color='gray', label='Mean Prediction', linestyle='--')
 
     ax.set_xticklabels(range(0, len(all_logs) - 1), fontsize=14)
@@ -545,8 +545,8 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
 
     fig, ax = plt.subplots()
     ax.errorbar(x_pos, means_vals_means, yerr=yerrs_means, fmt='-o', label='Regression', color='black', capsize=5)
-    ax.axhline(y=2.8, color='red', label='Ensemble', linestyle='-.')
-    ax.fill_between(range(1, len(all_logs)), 1.8, 5.5, color='blue', alpha=0.1, label='Individual LLM')
+    ax.axhline(y=4.3, color='red', label='Ensemble', linestyle='-.')
+    ax.fill_between(range(1, len(all_logs)), 1.9, 5.4, color='blue', alpha=0.1, label='Individual LLM')
     ax.axhline(y=base_mean[0][0]*100, color='gray', label='Mean Prediction', linestyle='--')
     ax.set_xticks(x_pos)
     ax.set_xticklabels(range(0, len(all_logs) - 1), fontsize=14)
@@ -566,7 +566,7 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
 if __name__ == '__main__':
     GV, pGa, VALIDATOR_COUNTS, PVVA, PVIVA = read_data()
 
-    redo = True
+    redo = False
     if redo:
         all_errors = []
         all_avg_errors = []
