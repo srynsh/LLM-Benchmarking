@@ -1,22 +1,22 @@
 import os
 import json
-from collections import defaultdict
+from collections import defaultdict, Counter
 from termcolor import colored
 
 generator_data_dir = "generator_data"
 validator_data_dir = "validator_data"
 
 
-def get_feedback_line_numbers(feedback_list):
-    """Extracts set of line_numbers from a feedback list."""
+def get_feedback_line_number_counts(feedback_list):
+    """Returns a Counter of line_number occurrences from a feedback list."""
     if not isinstance(feedback_list, list) or not feedback_list:
-        return set()
-    return set(str(fb["line_number"]) for fb in feedback_list if isinstance(fb, dict) and "line_number" in fb)
+        return Counter()
+    return Counter(str(fb["line_number"]) for fb in feedback_list if isinstance(fb, dict) and "line_number" in fb)
 
 
 def load_generator_feedback():
-    """Returns: dict[generator][sid] = set(line_numbers)"""
-    result = defaultdict(lambda: defaultdict(set))
+    """Returns: dict[generator][sid] = Counter(line_number)"""
+    result = defaultdict(lambda: defaultdict(Counter))
     for filename in os.listdir(generator_data_dir):
         if not filename.endswith("_feedback.json"):
             continue
@@ -26,14 +26,14 @@ def load_generator_feedback():
         for entry in data:
             sid = str(entry.get("sid"))
             feedback = entry.get("feedback", [])
-            result[gen][sid] = get_feedback_line_numbers(feedback)
+            result[gen][sid] = get_feedback_line_number_counts(feedback)
     return result
 
 
 def load_validator_feedback():
-    """Returns: dict[gen][val][sid] = set(line_numbers)"""
+    """Returns: dict[gen][val][sid] = Counter(line_number)"""
     import re
-    result = defaultdict(lambda: defaultdict(lambda: defaultdict(set)))
+    result = defaultdict(lambda: defaultdict(lambda: defaultdict(Counter)))
     for filename in os.listdir(validator_data_dir):
         m = re.match(
             r'new_labeller_gen_(.+?)_val_(.+?)_\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}\.json$', filename)
@@ -49,7 +49,8 @@ def load_validator_feedback():
                 feedback_lines = []
             else:
                 feedback_lines = output.get("feedback_lines", [])
-            result[gen][val][sid] = get_feedback_line_numbers(feedback_lines)
+            result[gen][val][sid] = get_feedback_line_number_counts(
+                feedback_lines)
     return result
 
 
@@ -76,11 +77,15 @@ def main():
             sids = set(gen_feedback[gen].keys()) | set(
                 val_feedback[gen][val].keys())
             for sid in sids:
-                gen_lines = gen_feedback[gen].get(sid, set())
-                val_lines = val_feedback[gen][val].get(sid, set())
-                matched += len(gen_lines & val_lines)
-                extra_gen += len(gen_lines - val_lines)
-                extra_val += len(val_lines - gen_lines)
+                gen_counts = gen_feedback[gen].get(sid, Counter())
+                val_counts = val_feedback[gen][val].get(sid, Counter())
+                all_lines = set(gen_counts.keys()) | set(val_counts.keys())
+                for line in all_lines:
+                    g = gen_counts.get(line, 0)
+                    v = val_counts.get(line, 0)
+                    matched += min(g, v)
+                    extra_gen += max(g - v, 0)
+                    extra_val += max(v - g, 0)
             cell = f"({matched}, {color_val(extra_gen, 'red', extra_gen > 0)}, {color_val(extra_val, 'green', extra_val > 0)})"
             row.append(cell)
         rows.append(row)
