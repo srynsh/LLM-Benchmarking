@@ -30,12 +30,12 @@ GENS = ['gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo',
 ]
 
 MODELS = [
-    'gpt-3.5-turbo', 'gpt-4-turbo', 'gpt-4o-mini', 'gpt-4o',
+    'gpt-3.5-turbo', 'gpt-4-turbo', 'gpt-4o-mini-2024-07-18', 'gpt-4o',
     'claude_3_opus', 'claude_3.5_sonnet',
     'gemini-1.5-flash', 'gemini-1.5-pro',
     'qwen-coder-plus',
     'deepseek-chat', 
-    'claude_3.5_haiku', 'gemini-2.5-flash-preview-04-17', 'gemini-2.5-pro-preview-03-25', 'gpt-4.1-2025-04-14', 'gpt-4.1-mini-2025-04-14'
+    'claude_3.5_haiku', 'gemini-2.5-flash-preview-04-17', 'gemini-2.5-pro-preview-05-06', 'gpt-4.1-2025-04-14', 'gpt-4.1-mini-2025-04-14'
 ]
 
 MODEL_NAMES = [

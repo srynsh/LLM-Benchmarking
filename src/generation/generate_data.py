@@ -1,6 +1,8 @@
 import json
 from tqdm import tqdm
 from utils import get_claude_response, get_gemini_response, get_openai_response, parse_response, get_qwen_response, get_deepseek_response
+import os
+import traceback
 
 ####################
 # Init vars
@@ -19,8 +21,10 @@ with open('../../data/prompts/gaide_queries.json', 'r') as f:
 
 # model = "gpt-4o-2024-08-06"
 # model = "gpt-4o"
-model = "gpt-3.5-turbo"
+# model = "gpt-3.5-turbo"
 # model = "gpt-4o-mini-2024-07-18"
+# model = 'gpt-4.1-mini-2025-04-14'
+# model = 'gpt-4.1-2025-04-14'
 # model = "o1-mini"
 # model = "o1-preview"
 # model = "claude_3_opus"
@@ -28,11 +32,17 @@ model = "gpt-3.5-turbo"
 # model = "claude_3.5_haiku"
 # model = "gemini-1.5-pro"
 # model = "gemini-1.5-flash"
+# model = 'gemini-2.5-flash-preview-04-17'
+model = 'gemini-2.5-pro-preview-05-06'
 # model="qwen-plus"
 # model="qwen-coder-plus"
 # model="deepseek-chat"
 
-sids = [201]
+####################
+# Setup vars
+####################
+path_existing = f'../../data/generator/{model}_feedback.json'
+path_gold = f'../../data/generator/gpt-3.5-turbo_feedback.json'
 
 ####################
 # Read vars
@@ -41,12 +51,23 @@ sids = [201]
 if model is None:
     model = input("Enter model: ")
 
-g_feedback = []
-with open('../../data/generator/gpt-3.5-turbo_feedback.json', 'r') as f:
-    g_feedback = json.load(f)
+gold_feedback = []
+with open(path_gold, 'r') as f:
+    gold_feedback = json.load(f)
+
+sids = [] # By default, run on no sids
+if os.path.exists(path_existing): 
+    with open(path_existing, 'r') as f:
+        existing_feedback = json.load(f)
+        # Filter out feedbacks that are empty or None
+        sids = [fb['sid'] for fb in existing_feedback if "feedback" not in fb or len(fb['feedback']) == 0]
+else:
+    sids = None # Run on all sids if file doesn't exist
+
+print(f"Running on sids: {sids}")
 
 ####################
-# Run loop
+# Helpers
 ####################
 def invoke_model(model, query):
     if model[:3] == "gpt":
@@ -61,13 +82,13 @@ def invoke_model(model, query):
         return get_deepseek_response([{"role": "user", "content": query}], model)
 
 def get_pid(sid):
-    for fb in g_feedback:
+    for fb in gold_feedback:
         if fb['sid'] == sid:
             return fb['pid']
     return None
 
 def get_student_code(sid):
-    for fb in g_feedback:
+    for fb in gold_feedback:
         if fb['sid'] == sid:
             return fb['student_code']
     return None
@@ -99,11 +120,14 @@ def curate_result(sid, fb):
 
     return resp
 
+####################
+# Loop through data
+####################
 
 for s in tqdm(data):
     sid = s['sid']
     # Skip if sid is not in sids
-    if sids is not None and len(sids) != 0 and sid not in sids:
+    if sids is not None and sid not in sids:
         continue
 
     # Get the query
@@ -112,22 +136,19 @@ for s in tqdm(data):
     # Invoke the appropriate model
     try:
         resp_str = invoke_model(model, query)
+        # print(f"{sid}. {resp_str}")
         resp, retVal = parse_response(resp_str)
     except Exception as e:
-        print(f"Error: {e}")
+        traceback.print_exc()
+
+        print(f"{sid} Response:", resp_str)
         continue
     
     # JSONify the response
     result = curate_result(sid, resp)
     results.append(result)
 
-    # print(results)
-    # break
-
-####################
-# Write to file
-####################
-
+    # Save the results to a file
     with open(f'../../data/generator/raw/{model}_feedback.json', 'w') as f:
         json.dump(results, f, indent=4)
     
