@@ -1819,7 +1819,7 @@
             {
                 "line_number": "3",
                 "feedback": "The values of n and s should be assigned directly instead of using input() function",
-                "category": "TP\""
+                "category": "TP"
             },
             {
                 "line_number": "5",
