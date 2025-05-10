@@ -6,7 +6,7 @@ import seaborn as sns
 from tqdm import tqdm
 import pickle
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from utils import   get_GV, get_VALIDATOR_COUNTS, get_pViv_full, get_precision
+from precision import   get_pViv_full, get_precision
 from config import COLOR_GREEN_DELTA, COLOR_YELLOW_DELTA, COMPUTE_REFERENCE_VALUES, K_LIST, LOSS_PRED, NUM_RUNS, MAX_WORKERS, WEIGHTS
 from config import PV_START, PVIV_START, PG_START, ERR_EPSILON_PG, ERR_EPSILON_PIV, ERR_EPSILON_PV, GENS, MODELS, MODEL_NAMES, MODEL_ENUM
 from config import VALIDATOR_COUNTS_CONST, pGa_CONST, GV_CONST, PVVA_CONST, PVIVA_CONST
@@ -566,7 +566,7 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
 if __name__ == '__main__':
     GV, pGa, VALIDATOR_COUNTS, PVVA, PVIVA = read_data()
 
-    redo = False
+    redo = True
     if redo:
         all_errors = []
         all_avg_errors = []

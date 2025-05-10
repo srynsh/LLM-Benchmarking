@@ -268,6 +268,19 @@ def get_correct_code(sid):
     for _, row in GPT4_N_benchmark.iterrows():
         if (row['sid'] == sid):
             return row['repaired_code']
+        
+def get_row(sid, modelname):
+    with open(f'{DATA_PATH}/{modelname}_feedback.json', 'r') as f:
+        feedback = json.load(f)
+
+    for row in feedback:
+        if (row['sid'] == sid):
+            return row
+
+def get_row_4_1(sid):
+    for row in gpt_4_1_feedback:
+        if (row['sid'] == sid):
+            return row
 
 def get_row_4o(sid):
     with open(f'{DATA_PATH}/gpt-4o_feedback.json', 'r') as f:
@@ -297,7 +310,15 @@ def get_row_3_opus(sid):
     for row in claude_feedback:
         if (row['sid'] == sid):
             return row
-        
+
+def get_row_35(sid):
+    with open(f'{DATA_PATH}/gpt-3.5-turbo_feedback.json', 'r') as f:
+        feedback = json.load(f)
+
+    for row in feedback:
+        if (row['sid'] == sid):
+            return row
+
 def get_row_35(sid):
     with open(f'{DATA_PATH}/gpt-3.5-turbo_feedback.json', 'r') as f:
         feedback = json.load(f)

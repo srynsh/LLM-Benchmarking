@@ -1,6 +1,6 @@
 import json
 from tqdm import tqdm
-from utils import get_claude_response, get_gemini_response, get_openai_response, parse_response, get_qwen_response, get_deepseek_response
+from common.utils import get_claude_response, get_gemini_response, get_openai_response, parse_response, get_qwen_response, get_deepseek_response
 import os
 import traceback
 
