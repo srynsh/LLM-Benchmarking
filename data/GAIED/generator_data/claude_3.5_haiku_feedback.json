@@ -628,10 +628,16 @@
         "student_code": "\"\"\" store the final answer in a variable named result \"\"\"\nintegar = int(input(\"Enter an integar:\"))\nresult = integar%2\nprint(result == 0)"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 27,
         "pid": 17318,
+        "feedback": [
+            {
+                "line_number": 1,
+                "feedback": "Do not reassign x and y to new values before swapping. Use the original values given in the prefix code.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "x,y = y,x",
         "student_code": "x=1\ny=2\nx,y=y,x\n"
     },
     {
@@ -1139,10 +1145,16 @@
         "student_code": "def fibo(n):\n    a = 0\n    b = 1\n    m=n\n    for i in range(1,m+1):\n        n = a + b\n        a = b\n        b = n\n        i+=1\n    return n"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 51,
         "pid": 17330,
+        "feedback": [
+            {
+                "line_number": "3-4",
+                "feedback": "The recursive Fibonacci calculation is missing for n > 2. Add a recursive step to compute the nth Fibonacci number by summing the two previous Fibonacci numbers.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "def fibo(n):\n    if n == 1 or n == 2:\n        return 1\n    return fibo(n-1) + fibo(n-2)",
         "student_code": "def fibo(n):\n    if n == 1 or n == 2:\n        return 1"
     },
     {
@@ -1187,10 +1199,36 @@
         "student_code": "import math\ndef fibo(n):\n    return ((1+sqrt(5))**n-(1-sqrt(5))**n)/(2**n*sqrt(5))\n    \n    pass"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 54,
         "pid": 17330,
+        "feedback": [
+            {
+                "line_number": 2,
+                "feedback": "The initial base case should handle inputs <= 0 by returning 0",
+                "category": ""
+            },
+            {
+                "line_number": 4,
+                "feedback": "Combine the base cases for n=1 and n=2 to return 1",
+                "category": ""
+            },
+            {
+                "line_number": 6,
+                "feedback": "Replace the recursive implementation with an iterative approach to handle large input values efficiently",
+                "category": ""
+            },
+            {
+                "line_number": 7,
+                "feedback": "Use dynamic programming with two variables to track the previous two Fibonacci numbers",
+                "category": ""
+            },
+            {
+                "line_number": 8,
+                "feedback": "Return the final computed Fibonacci number",
+                "category": ""
+            }
+        ],
+        "repaired_code": "def fibo(n):\n    if n <= 0:\n        return 0\n    elif n == 1 or n == 2:\n        return 1\n    else:\n        a, b = 1, 1\n        for _ in range(3, n+1):\n            a, b = b, a + b\n        return b",
         "student_code": "def fibo(n):\n    if n == 0:\n        return 0\n    elif n == 1:\n        return 1\n    else:\n        return fibo(n-1) + fibo(n-2)\n"
     },
     {
@@ -1222,10 +1260,36 @@
         "student_code": "def fibo(n):\n    x = 1\n    for lol in range(1, n+1):\n        x += x\n    return x"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 56,
         "pid": 17330,
+        "feedback": [
+            {
+                "line_number": 2,
+                "feedback": "Initialize the base cases for first two terms of Fibonacci sequence. When n is 1 or 2, return 1.",
+                "category": ""
+            },
+            {
+                "line_number": 3,
+                "feedback": "Start initial values of a and b as 1 instead of 0 and 1 to correctly compute Fibonacci sequence.",
+                "category": ""
+            },
+            {
+                "line_number": 4,
+                "feedback": "Use a for loop that iterates from 3 to n (inclusive) to generate correct Fibonacci sequence.",
+                "category": ""
+            },
+            {
+                "line_number": 5,
+                "feedback": "Update a and b in each iteration by setting a to the previous b, and b to the sum of previous a and b.",
+                "category": ""
+            },
+            {
+                "line_number": 6,
+                "feedback": "Return the final value of b which represents the nth Fibonacci number.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "def fibo(n):\n    if n <= 2:\n        return 1\n    a, b = 1, 1\n    for _ in range(3, n+1):\n        a, b = b, a + b\n    return b",
         "student_code": "def fibo(n):\n    a = 0\n    b = 1\n    if n == 1:\n        ans = 1\n    else:\n        while n > 0:\n            ans = a + b\n            n -= 1\n            a = b\n            b = ans\n    return ans"
     },
     {
@@ -2005,10 +2069,21 @@
         "student_code": "result = \"NN3e5a\""
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 94,
         "pid": 17352,
+        "feedback": [
+            {
+                "line_number": "1-7",
+                "feedback": "Use single quotes and properly escape special characters. For backslash, use '\\\\', for single quotes use '\\'', for double quotes use '\"'",
+                "category": ""
+            },
+            {
+                "line_number": "8",
+                "feedback": "String concatenation looks correct. Just ensure proper escaping in individual strings.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "b = '\"He \"'\nc = 'said,'\nd = '\\'This '\ne = 'is '\nf = 'nested\\\\annoying\\''\nh = '\"Steve'\ni = 'recalled.'\ns = b + c + d + e + f + h + i\nprint(s)",
         "student_code": "b = \"\"He \"\nc = \"said,\"\nd = \"'This \"\ne = \"is \"\nf = \"nested\\annoying'\"\nh = \"\"Steve\"\ni = \"recalled.\"\ns = b + c + d + e + f + h + i\nprint(s)"
     },
     {
@@ -2117,10 +2192,21 @@
         "student_code": "print(\"\\\"He said, 'This is nested\\\\annoying'\\\", Steve recalled.\")\n"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 100,
         "pid": 17352,
+        "feedback": [
+            {
+                "line_number": 1,
+                "feedback": "The string requires the full message including 'Steve recalled.' and needs proper escaping of backslashes and quotes.",
+                "category": ""
+            },
+            {
+                "line_number": 1,
+                "feedback": "Use double backslashes to correctly represent a literal backslash in the string.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "s = \"He said, 'This is nested\\\\annoying'\", Steve recalled.",
         "student_code": "s = \"He said, \\'This is nested\\\\annoying\\'\""
     },
     {
@@ -2378,11 +2464,16 @@
         "student_code": "\ndef pig_latin(word):\n    # Your code here\n    last = word[-1]\n    remain = word[:-1]\n    ans = last + remain + \"ay\"\n    return ans\n"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 114,
         "pid": 17355,
-        "student_code": "def pig_latin(word):\n    hi = word[::-1]\n    add = \"ay\"\n    ans = hi + add\n    return ans"
+        "repaired_code": "def pig_latin(word):\n    hi = word[::-1]\n    add = \"ay\"\n    ans = hi + add\n    return ans",
+        "correct_code": "def pig_latin(word):\n    hi = word[1:] + word[0]\n    add = \"ay\"\n    ans = hi + add\n    return ans",
+        "feedback": [
+            {
+                "line_number": 2,
+                "feedback": "You incorrectly used word[::-1] which reverses the entire word. Instead, you should slice the word from the second character (index 1) to the end, and then add the first character to the front as per the problem description."
+            }
+        ]
     },
     {
         "feedback": [
@@ -2416,11 +2507,16 @@
         "student_code": "def pig_latin(word):\n    a = word[0]\n    word = word[1:-1]\n    ans = word + a + \"ay\"\n    # Your code here\n    return ans"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 117,
         "pid": 17355,
-        "student_code": "def pig_latin(word):\n    change = word[1, len(word)]\n    add = \"ay\"\n    ans = change+word[0]+add\n    return ans"
+        "student_code": "def pig_latin(word):\n    change = word[1, len(word)]\n    add = \"ay\"\n    ans = change+word[0]+add\n    return ans",
+        "repaired_code": "def pig_latin(word):\n    change = word[1:]\n    add = \"ay\"\n    ans = change+word[0]+add\n    return ans",
+        "feedback": [
+            {
+                "line_number": 2,
+                "feedback": "Use slice notation [1:] instead of [1, len(word)] to extract the substring from the second character onwards"
+            }
+        ]
     },
     {
         "feedback": [
@@ -2487,10 +2583,26 @@
         "student_code": "def pig_latin(word):\n    word[-1] = word[0]\n    word = word[1:]\n    word += \"ay\"\n    return word"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 121,
         "pid": 17355,
+        "feedback": [
+            {
+                "line_number": 2,
+                "feedback": "The method `remove[0]` is incorrect syntax. Lists use `.remove()` method with a value, not an index. Instead, simply slice the string to move the first letter.",
+                "category": ""
+            },
+            {
+                "line_number": 3,
+                "feedback": "This line is unnecessary. You can't use `.append()` on a string, and the goal is to move the first letter to the end.",
+                "category": ""
+            },
+            {
+                "line_number": 4,
+                "feedback": "Concatenating a list with a string is not valid. Instead, construct the pig latin word by slicing the string and appending 'ay'.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "def pig_latin(word):\n    return word[1:]+word[0]+'ay'",
         "student_code": "def pig_latin(word):\n    x = word[0]\n    word.remove[0]\n    word.append(x)\n    ans = word + \"ay\"\n    return ans"
     },
     {
@@ -2869,10 +2981,16 @@
         "student_code": "def remove_bars(string):\n    ans=string[0::2]\n    return ans"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 142,
         "pid": 17366,
+        "feedback": [
+            {
+                "line_number": 1,
+                "feedback": "Function name does not match the problem specification. Change 'remove_bar' to 'remove_bars' to match the expected function name.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "def remove_bars(x):\n    return x.replace('|','')",
         "student_code": "def remove_bar(x):\n    return x.replace(\"|\",\"\")"
     },
     {
@@ -5893,18 +6011,45 @@
         "student_code": "def perfect(n):\n    x = 0\n    fac_sum = 0\n    while x <= 1000000:\n        x+=1\n        if n%x == 0:\n            fac_sum += x\n        else:\n            continue\n    if n == 1 or n == 0:\n        ans = True\n    elif n < 0:\n        ans = False\n    elif fac_sum//2 != n:\n        ans = False\n    else:\n        ans = True\n    return ans"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 267,
         "pid": 17390,
+        "feedback": [
+            {
+                "line_number": "10",
+                "feedback": "Add a return statement to return the number of operations (a) needed to reach 1. Without a return statement, the function will not produce any output.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "def stop_time(n):\n    a = 0\n    while n != 1:\n        if n % 2 == 0:\n            n = n // 2\n        else:\n            n = (3 * n) + 1\n        a += 1\n    return a",
         "student_code": "def stop_time(n):\n    a = 0\n    while n != 1:\n        if n % 2 == 0:\n            n = n // 2\n        else:\n            n = (3 * n) + 1\n        a += 1"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 268,
         "pid": 17390,
-        "student_code": "def stop_time(n,hailstone):\n    count = 1\n    assert n > 0\n    print(n)\n    if n > 1:\n        if n % 2 == 0:\n            count += hailstone(n / 2)\n        else:\n            count += hailstone((n * 3) + 1)\n    return count\n\nresult = hailstone(10)\nprint(result)"
+        "student_code": "def stop_time(n,hailstone):\n    count = 1\n    assert n > 0\n    print(n)\n    if n > 1:\n        if n % 2 == 0:\n            count += hailstone(n / 2)\n        else:\n            count += hailstone((n * 3) + 1)\n    return count\n\nresult = hailstone(10)\nprint(result)",
+        "repaired_code": "def stop_time(n):\n\tcount = 0\n\twhile n != 1:\n\t\tif n % 2 == 0:\n\t\t\tn //= 2\n\t\telse:\n\t\t\tn = 3 * n + 1\n\t\tcount += 1\n\treturn count",
+        "feedback": [
+            {
+                "line_number": 1,
+                "feedback": "Remove the unnecessary 'hailstone' parameter and make the function self-contained"
+            },
+            {
+                "line_number": 2,
+                "feedback": "Initialize count to 0 instead of 1, as we want to count the number of steps to reach 1"
+            },
+            {
+                "line_number": 3,
+                "feedback": "Use a while loop to continue until n becomes 1, which allows tracking the total steps"
+            },
+            {
+                "line_number": 4,
+                "feedback": "Use integer division (//) instead of floating-point division (/) to maintain integer precision"
+            },
+            {
+                "line_number": 6,
+                "feedback": "Explicitly modify n and increment count in each iteration"
+            }
+        ]
     },
     {
         "feedback": [
@@ -6010,11 +6155,20 @@
         "student_code": "def consecutiveSum(a, b):\n    for x in range(a, b): \n        ans = a + x + b\n    \n    return ans"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 275,
         "pid": 17391,
-        "student_code": "def consecutiveSum(a,b):\n    ans=0\n    while a<b+1:\n        ans=ans+1\n        a+=1\n        \n    return ans\n"
+        "student_code": "def consecutiveSum(a,b):\n    ans=0\n    while a<b+1:\n        ans=ans+1\n        a+=1\n        \n    return ans\n",
+        "repaired_code": "def consecutiveSum(a,b):\n    ans=0\n    while a<=b:\n        ans+=a\n        a+=1\n        \n    return ans",
+        "feedback": [
+            {
+                "line_number": 2,
+                "feedback": "Instead of adding 1 to ans, you should add the current value of 'a' to accumulate the sum of consecutive integers."
+            },
+            {
+                "line_number": 3,
+                "feedback": "Change the while loop condition from a<b+1 to a<=b to correctly include the last number in the range."
+            }
+        ]
     },
     {
         "feedback": [
@@ -6316,10 +6470,16 @@
         "student_code": "def pattern(n):\n    for i in range(n+1):\n        for n in range(i):\n            print(i, end = '')\n\n    return"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 289,
         "pid": 17397,
+        "feedback": [
+            {
+                "line_number": 4,
+                "feedback": "Replace 'leagueoflegend' with 'lol', which represents the current number in the outer loop. The variable should match the range of the current iteration.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "def pattern(n):\n    s = \"\"\n    for lol in range(1, n + 1):\n        for ryan in range(lol):\n            s += str(lol)\n    return s",
         "student_code": "def pattern(n):\n    s = \"\"\n    #add your code here\n    for lol    in range ( 1 , n + 1):\n        for ryan in range (lol):\n            s += str(leagueoflegend)\n    return s"
     },
     {
@@ -7527,31 +7687,55 @@
         "student_code": "list1 = [5 * x for x in range(1,21)]"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 348,
         "pid": 17418,
+        "feedback": [
+            {
+                "line_number": 1,
+                "feedback": "In a list comprehension condition, use '==' for comparison, not '='.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "list1 = [x for x in range(0, 101) if x%5==0]",
         "student_code": "list1 = [x for x in range(0, 101) if x%5=0]"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 349,
         "pid": 17418,
+        "feedback": [
+            {
+                "line_number": 1,
+                "feedback": "The range should start from 0 instead of 1 to include 0 as a multiple of 5 and end at 21 to include 100",
+                "category": ""
+            }
+        ],
+        "repaired_code": "list1 = [x*5 for x in range(0,21)]",
         "student_code": "list1 = [x*5 for x in range(1,21)]#fill your code here. The code should only be 1 line"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 350,
         "pid": 17418,
+        "feedback": [
+            {
+                "line_number": "1",
+                "feedback": "Change the range to include 20 to generate up to 100. The original range(0, 20) only generates multiples up to 95. By using range(0, 21), you'll include 0 and generate the full list of multiples of 5 up to 100.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "list1 = [5 * x for x in range(0, 21)]",
         "student_code": "list1 = [5 * x for x in range(0,20) if x <= 100]"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 351,
         "pid": 17418,
+        "feedback": [
+            {
+                "line_number": 1,
+                "feedback": "The list comprehension should generate numbers up to and including 100. Change the range to 21 to include 100 as the last element (20 * 5 = 100).",
+                "category": ""
+            }
+        ],
+        "repaired_code": "list1 = [x*5 for x in range(21)]",
         "student_code": "list1 = [x*5 for x in range(20)]"
     },
     {

@@ -1904,10 +1904,15 @@
         "student_code": "b = \"\"He \"\nc = \"said,\"\nd = \"'This \"\ne = \"is \"\nf = \"nested\\annoying'\"\nh = \"\"Steve\"\ni = \"recalled.\"\ns = b + c + d + e + f + h + i\nprint(s)"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 95,
         "pid": 17352,
+        "feedback": [
+            {
+                "line_number": "1",
+                "feedback": "The string needs to be enclosed in single quotes, and the internal quotes and backslashes need to be properly escaped. Remember to escape the backslash itself with another backslash, and add a space before 'Steve'."
+            }
+        ],
+        "repaired_code": "",
         "student_code": "s = '\\\"He said,\\'This is nested\\\\annoying\\'\\\",Steve recalled.'"
     },
     {
@@ -4511,10 +4516,26 @@
         "student_code": "def snail(A,B,H):\n    if H==A:\n        ANS=1\n    elif (H-A)%(A-B)==0:\n        ANS=(H-A)//(A-B)+1\n    elif (H-A)%(A-B)!=0\n    else:\n        ANS=((H-A)//(A-B))+2\n    return ANS\n    "
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 222,
         "pid": 17387,
+        "feedback": [
+            {
+                "line_number": "2-7",
+                "feedback": "The original approach was overly complicated and didn't handle all cases correctly. The problem can be solved with a single formula. We can calculate the number of days needed by dividing the remaining height after the first day (H-A) by the net daily progress (A-B), rounding up, and adding 1 for the first day.",
+                "category": ""
+            },
+            {
+                "line_number": "3",
+                "feedback": "The calculation has been simplified to a single line using math.ceil((H-A) / (A-B)) + 1. This formula correctly handles all cases, including edge cases where the snail reaches the top exactly or overshoots slightly on the last day.",
+                "category": ""
+            },
+            {
+                "line_number": "4",
+                "feedback": "We've removed the conditional statements as they're not necessary. The single formula handles all cases correctly.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "import math\n\ndef snail(A,B,H):\n    ans = math.ceil((H-A) / (A-B)) + 1\n    return ans",
         "student_code": "import math\n\ndef snail(A,B,H):\n    x =(H-A)/ (A-B)\n    y =(H-A)// (A-B)\n    if x == y:\n        ans = math.ceil( x +1)\n    else:\n        ans = math.ceil(H / (A-B))\n    return ans\n    \n\n"
     },
     {

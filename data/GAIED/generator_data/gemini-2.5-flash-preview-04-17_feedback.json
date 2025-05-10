@@ -95,10 +95,26 @@
         "student_code": "n = str(input(\"Enter your name:\"))\na = str(input(\"Enter your age:\"))\nresult = \"My friend \" + str(n) \" is \" + str(a) \" years old.\"\nprint(result)        \n         \n"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 6,
         "pid": 17312,
+        "feedback": [
+            {
+                "line_number": "2",
+                "feedback": "The use of `eval()` with `input()` is unnecessary. `input()` already returns the user's input as a string. Using `eval()` can also be a security risk if the input is not trusted.",
+                "category": ""
+            },
+            {
+                "line_number": "3",
+                "feedback": "Similar to the name input, `eval()` is not needed for the age input. `input()` returns the age as a string. If you needed the age as a number, you would use `int()` or `float()`, but `eval()` is inappropriate here.",
+                "category": ""
+            },
+            {
+                "line_number": "4",
+                "feedback": "This line contains a syntax error (`age \"years old.\"`) and does not correctly combine the parts into a single string. Use string formatting (like f-strings) to easily create the required message string by embedding variables directly.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "''' store your answer in a variable named result '''\nname=input('enter your name')\nage=input('enter your age')\nresult=f\"My friend {name} is {age} years old.\"\nprint(result)",
         "student_code": "\"\"\" store your answer in a variable named result \"\"\"\nname=eval(input('enter your name'))\nage=eval(input('enter your age'))\nresult=(\"My friend\", name, \"is\", age \"years old.\")\nprint(result)\n          "
     },
     {
@@ -614,10 +630,16 @@
         "student_code": "\"\"\" store your answer in a variable named result \"\"\"\nans = result % 10\nresult = result /10\n\nans += result % 10\nresult = result /10\n\nans += result"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 26,
         "pid": 17317,
+        "feedback": [
+            {
+                "line_number": 3,
+                "feedback": "The variable 'result' should store the boolean outcome (True for even, False for odd) as specified, not just the remainder of the division. The expression 'integar % 2 == 0' evaluates directly to the required boolean value.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "\"\"\" store the final answer in a variable named result \"\"\"\nintegar = int(input(\"Enter an integar:\"))\nresult = integar % 2 == 0\nprint(result == 0)",
         "student_code": "\"\"\" store the final answer in a variable named result \"\"\"\nintegar = int(input(\"Enter an integar:\"))\nresult = integar%2\nprint(result == 0)"
     },
     {
@@ -2087,10 +2109,36 @@
         "student_code": "result = \"NN3e5a\""
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 94,
         "pid": 17352,
+        "feedback": [
+            {
+                "line_number": 1,
+                "feedback": "Fix the syntax error caused by incorrect quoting (empty string followed by an unclosed string). Include the starting double quote of the required string by using an escape character.",
+                "category": ""
+            },
+            {
+                "line_number": 2,
+                "feedback": "Add a space after the comma inside the string literal to match the required output format.",
+                "category": ""
+            },
+            {
+                "line_number": 5,
+                "feedback": "The sequence '\\a' is interpreted as an escape character (BEL). To display a literal backslash, escape it by using '\\\\'.",
+                "category": ""
+            },
+            {
+                "line_number": 6,
+                "feedback": "Fix the syntax error caused by incorrect quoting (empty string followed by an unclosed string). Include the closing double quote and the following comma and space of the required string by using escape characters.",
+                "category": ""
+            },
+            {
+                "line_number": 7,
+                "feedback": "Include the final double quote of the required string by using an escape character.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "b = \"\\\"He \"\nc = \"said, \"\nd = \"'This \"\ne = \"is \"\nf = \"nested\\\\annoying'\"\nh = \"\\\", Steve \"\ni = \"recalled.\\\"\"\ns = b + c + d + e + f + h + i\nprint(s)",
         "student_code": "b = \"\"He \"\nc = \"said,\"\nd = \"'This \"\ne = \"is \"\nf = \"nested\\annoying'\"\nh = \"\"Steve\"\ni = \"recalled.\"\ns = b + c + d + e + f + h + i\nprint(s)"
     },
     {
@@ -2117,18 +2165,41 @@
         "student_code": "s = '\\\"He said,\\'This is nested\\\\annoying\\'\\\",Steve recalled.'"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 96,
         "pid": 17352,
+        "feedback": [
+            {
+                "line_number": 1,
+                "feedback": "The string literal content is incorrect. It contains an extra space after 'is' and is missing the final part \", Steve recalled.\". To produce the required string value for the test case representation, the literal needs to use the correct escape sequences. For example, a literal backslash followed by a double quote (\\\" ) in the target string value must be represented as \\\\\\\" in the literal. A literal backslash followed by a single quote (\\' ) must be \\\\\\' . A literal backslash (\\\\ ) must be \\\\\\\\ . Finally, remove the comma at the end of the line, which incorrectly creates a tuple.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "s = \"\\\\\\\"He said, \\\\\\'This is nested\\\\\\\\annoying\\\\\\'\\\\\\\", Steve recalled.\"",
         "student_code": "s = \"\\\"He said, \\'This is  nested\\\\annoying\\'\","
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 97,
         "pid": 17352,
-        "student_code": "s1 = \"\"\" \\ \"\"\"\ns1 = s1.strip(\" \")\ns2 = \"\\\"He said,\\'\"\ns3 = \"\\\"This is nested\"+s1+\"annoying\\'\"\ns3 = s3.lstrip(\"\"\" \" \"\"\")\ns4 = \"\\\", Steve recalled.\\\"\"\ns4 = s4.rstrip(\"\"\" \" \"\"\")\ns = s2 + s3 + s4"
+        "student_code": "s1 = \"\"\" \\ \"\"\"\ns1 = s1.strip(\" \")\ns2 = \"\\\"He said,\\'\"\ns3 = \"\\\"This is nested\"+s1+\"annoying\\'\"\ns3 = s3.lstrip(\"\"\" \" \"\"\")\ns4 = \"\\\", Steve recalled.\\\"\"\ns4 = s4.rstrip(\"\"\" \" \"\"\")\ns = s2 + s3 + s4",
+        "repaired_code": "s1 = \"\"\" \\\\ \"\"\"\ns1 = s1.strip(\" \")\ns2 = \"\\\"He said, \\\\\\'\\\"\"\ns3 = \"\\\"This is nested\"+s1+\"annoying\\\"\"\ns3 = s3.lstrip(\"\"\" \\\" \"\"\"\ns4 = \"\\\\\\'\\\\\\\", Steve recalled.\\\"\"\ns4 = s4.rstrip(\"\"\" \\\" \"\"\"\ns = s2 + s3 + s4",
+        "feedback": [
+            {
+                "line_number": 1,
+                "feedback": "The triple-quoted string literal needs adjustment to produce the correct backslash character that is intended to be used in the next step after stripping spaces."
+            },
+            {
+                "line_number": 3,
+                "feedback": "The string literal assigned to 's2' is incorrect. It needs to produce the value \"He said, \\'\" to match the first part of the target string, ensuring correct escaping of the space, backslash, and single quote."
+            },
+            {
+                "line_number": 4,
+                "feedback": "The literal string being concatenated here (originally `\"annoying'\"`) needs to be corrected. It should produce the value \"annoying\" and correctly handle surrounding quotes/backslashes to form the required middle part of the target string after the stripping operation on the next line."
+            },
+            {
+                "line_number": 6,
+                "feedback": "The string literal assigned to 's4' is incorrect. It should produce the value '\\'\\\", Steve recalled.' to match the last part of the target string, ensuring correct escaping of the backslashes and quotes."
+            }
+        ]
     },
     {
         "feedback": [
@@ -2162,10 +2233,16 @@
         "student_code": "print(\"\\\"He said, 'This is nested\\\\annoying'\\\", Steve recalled.\")\n"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 100,
         "pid": 17352,
+        "feedback": [
+            {
+                "line_number": 1,
+                "feedback": "Your string definition is incomplete. The target string value, as specified by the test case, includes specific quotes, backslashes, commas, and the final phrase 'Steve recalled.' that were missing. You need to include all these characters in your string literal, using appropriate escape sequences (like \\\" for double quotes, \\' for single quotes, and \\\\ for backslashes) to represent them correctly within the double-quoted string.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "s = \"'\\\"He said, \\\\'This is nested\\\\\\\\annoying\\\\\\'\\\\\\\", Steve recalled.'\"",
         "student_code": "s = \"He said, \\'This is nested\\\\annoying\\'\""
     },
     {
@@ -2192,11 +2269,16 @@
         "student_code": "s = \"\\\"He said\\, \\'This is nested\\\\annoying'\\\", Steve recalled\\,\""
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 102,
         "pid": 17352,
-        "student_code": "s = \"\\\"He said, \\'This is nested\\annoying\\'\\\", Steve recalled.\" #\"Your Answer Here\""
+        "student_code": "s = \"\\\"He said, \\'This is nested\\annoying\\'\\\", Steve recalled.\" #\"Your Answer Here\"",
+        "correct_code": "",
+        "feedback": [
+            {
+                "line_number": 1,
+                "feedback": "Your current string literal produces a string value whose representation (`repr(s)`) does not match the expected output in the failing test case. The test case expects the string `s` to have a `repr()` equal to `'\\'\\\"He said, \\'This is nested\\\\annoying\\'\\\", Steve recalled.''`. The correct string literal assignment to achieve this exact string value is `s = '\\'\\\"He said, \\'This is nested\\\\annoying\\'\\\", Steve recalled.'`. Note the careful use of escapes within the literal to produce the specific required sequence of characters including literal backslashes (`\\`) and quotes (`'`, `\\\"`). Your original code incorrectly interpreted `\\annoying` as the `\\a` escape sequence followed by `nnoying` instead of a literal backslash followed by `annoying` (`\\\\annoying` in the required `repr`), among other differences."
+            }
+        ]
     },
     {
         "feedback": [

@@ -2152,10 +2152,21 @@
         "student_code": "def pig_latin(word):\n    hi = word[::-1]\n    add = \"ay\"\n    ans = hi + add\n    return ans"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 115,
         "pid": 17355,
+        "feedback": [
+            {
+                "line_number": 4,
+                "feedback": "Instead of concatenating the first letter and 'ay' to the end of the whole word and then slicing, directly take the substring from the second character, append the first character, and then 'ay'.",
+                "category": ""
+            },
+            {
+                "line_number": 5,
+                "feedback": "'new_word' is undefined. Also, this slicing logic is unnecessary if you construct the transformation in line 4 as suggested above. Remove this line.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "def pig_latin(word):\n    pyg = 'ay'\n    first = word[0]\n    ans = word[1:] + first + pyg\n    return ans\n",
         "student_code": "def pig_latin(word):\n    pyg = 'ay'\n    first = word[0]\n    ans = word + first + pyg\n    ans = ans[1:len(new_word)]\n    return ans"
     },
     {

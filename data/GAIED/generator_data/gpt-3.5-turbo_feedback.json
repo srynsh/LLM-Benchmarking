@@ -4454,10 +4454,21 @@
         "student_code": "def t(A, B, X):\n    if (X % (A + B) >= 0) and (X % (A + B) <= A):\n        ans = 1\n        return ans\n    else:\n        ans = 0 \n        return ans\ndef t(C, D, X):\n    if (X % (C + D) >= 0) and (X % (C + D) <= C):\n        ans = 1\n        return ans\n    else:\n        ans = 0\n        return ans\ndef turnstiles(A, B, C, D, X):\n    ans = t(A, B, X) + t(C, D, X)\n    return ans"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 201,
         "pid": 17386,
+        "feedback": [
+            {
+                "line_number": "1",
+                "feedback": "The student needs to define the 'turnstiles' function with the correct parameters.",
+                "category": ""
+            },
+            {
+                "line_number": "2",
+                "feedback": "The logic to determine the number of operational turnstiles is incorrect. Replace the logic with the one provided in the suffix code.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "import math\n\ndef turnstiles(A, B, C, D, X):\n    ans =  f(A,B,X)+f(C,D,X)\n    return ans\n\ndef f(A, B, X):\n    return ((X-1) % (A +B)) < A",
         "student_code": "import math\ndef turnstiles(A,B,C,D,X):\n    if X < (A+B) or X <(C+D):\n        if X < A and X < C:\n            ans = 2\n        elif X < A and X > C:\n            ans = 1\n        elif X > A and X < C:\n            ans = 1\n        elif X > A and X > C:\n            ans = 0\n    elif X > (A+B) or X > (C+D):\n        rem1 = X%(A+B)\n        rem2 = X%(C+D)\n        if rem1 == 0 and rem2 == 0:\n            ans = 0\n        elif rem1 <=A and rem1 > 0 and rem2 == 0:\n            ans = 1\n        elif rem1 == 0 and rem2 <= C and rem2 > 0:\n            ans = 1\n        elif rem1 > 0 and rem1 <= A and rem2 > 0 and rem2 > C:\n            ans = 1\n        elif rem1>0 and rem1 > A and rem2 > 0 and rem2 <= C:\n            ans = 0\n        elif rem1>0 and rem1>A and rem2>0 and rem2>C:\n            ans = 0\n    return \n"
     },
     {

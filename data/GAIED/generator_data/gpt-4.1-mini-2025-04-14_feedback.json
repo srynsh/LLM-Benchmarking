@@ -2043,10 +2043,41 @@
         "student_code": "s = \"\\\"He said, \\'This is  nested\\\\annoying\\'\","
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 97,
         "pid": 17352,
+        "feedback": [
+            {
+                "line_number": "1",
+                "feedback": "The variable s1 should be a string containing a single backslash character. Use double backslashes \"\\\\\" inside quotes to represent a single backslash.",
+                "category": ""
+            },
+            {
+                "line_number": "3",
+                "feedback": "Remove the extra double quotes at the start and the extra escaping on the outer string for s2. Just use \"He said, '\" instead of \"\\\"He said,\\'\".",
+                "category": ""
+            },
+            {
+                "line_number": "4",
+                "feedback": "Similarly, remove the extra double quotes and escaped single quote on s3. The string should be \"This is nested\" + s1 + \"annoying'\".",
+                "category": ""
+            },
+            {
+                "line_number": "5",
+                "feedback": "The lstrip argument should be just a space character \" \", not triple quotes with escaped spaces.",
+                "category": ""
+            },
+            {
+                "line_number": "6",
+                "feedback": "For s4, remove extra double quotes and backslashes. It should simply be \", Steve recalled.\".",
+                "category": ""
+            },
+            {
+                "line_number": "7",
+                "feedback": "The rstrip argument should be a space character \" \", not triple quotes with spaces.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "s1 = \"\\\\\"\ns1 = s1.strip(\" \")\ns2 = \"He said, '\"\ns3 = \"This is nested\" + s1 + \"annoying'\"\ns3 = s3.lstrip(\" \")\ns4 = \", Steve recalled.\"\ns4 = s4.rstrip(\" \")\ns = s2 + s3 + s4",
         "student_code": "s1 = \"\"\" \\ \"\"\"\ns1 = s1.strip(\" \")\ns2 = \"\\\"He said,\\'\"\ns3 = \"\\\"This is nested\"+s1+\"annoying\\'\"\ns3 = s3.lstrip(\"\"\" \" \"\"\")\ns4 = \"\\\", Steve recalled.\\\"\"\ns4 = s4.rstrip(\"\"\" \" \"\"\")\ns = s2 + s3 + s4"
     },
     {
@@ -2141,10 +2172,16 @@
         "student_code": "s = \"a\"*1000+\"b\"*1000a"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 105,
         "pid": 17353,
+        "feedback": [
+            {
+                "line_number": "4",
+                "feedback": "You assigned the string \"x,y\" to s instead of concatenating the variables x and y. Remove the quotes and use s = x + y to combine the strings correctly.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "s = \"\" # Your answer here\nx = str(\"a\"*1000)\ny = str(\"b\"*1000)\ns = x + y",
         "student_code": "s = \"\" # Your answer here\nx = str(\"a\"*1000)\ny = str(\"b\"*1000)\ns = \"x,y\""
     },
     {
@@ -3940,10 +3977,31 @@
         "student_code": "def rectangles(x1, y1, w1, h1, x2, y2, w2, h2):\n    # WRITE YOUR CODE HERE\n    if x1==x2 and y1==y2 and w1==w2 and h1==h2:\n        message = \"r2 intersect r1 exactly\"\n    elif ((x2 + w2/2)<=(x1 + w1/2)) and ((x2 - w2/2)>=(x1 - w1/2)) and ((y2 + h2/2)<=(y1 + h1/2)) and ((y2 - h2/2)>=(y1 - h1/2)):\n        message = \"r2 is inside r1\"\n    elif ((((x1 - w1/2) <= (x2 + w2/2)) and ((y1 - h1/2) <= (y2 + h2/2))) or (((x1 + w1/2) >= (x2 - w2/2)) and ((y1 + h1/2) >= (y2 - h2/2)))):\n        message = \"r2 overlaps r1\"\n    elif ((((x1 - w1/2) >= (x2 + w2/2)) and ((y1 - h1/2) >= (y2 + h2/2))) or (((x1 + w1/2) <= (x2 - w2/2)) and ((y1 + h1/2) <= (y2 - h2/2)))):\n        message = \"r2 does not overlap r1\"\n    \n    return message"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 185,
         "pid": 17385,
+        "feedback": [
+            {
+                "line_number": "2",
+                "feedback": "Remove the conditions checking x1, y1, x2, y2 > 0; rectangle centers can be zero or negative.",
+                "category": ""
+            },
+            {
+                "line_number": "7",
+                "feedback": "Calculate areas correctly as width * height, not x * height.",
+                "category": ""
+            },
+            {
+                "line_number": "8",
+                "feedback": "Change area comparison to 'area1 >= area2' to correctly handle equal areas when checking if r2 is inside r1.",
+                "category": ""
+            },
+            {
+                "line_number": "12",
+                "feedback": "Fix the overlap condition: use the negation of no-overlap conditions instead of incorrect coordinate checks.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "def rectangles(x1, y1, w1, h1, x2, y2, w2, h2):\n    if h1 > 0 and h2 > 0 and w1 > 0 and w2 > 0:\n        posx2 =  x2 + (.5*w2)\n        negx2 = x2 - (.5*w2)\n        posy2 = y2 + (.5*h2)\n        negy2 = y2 - (.5*h2)\n        area1 = w1 * h1\n        area2 = w2 * h2\n        if posx2 <= x1 + (.5*w1) and negx2 >= x1 - (.5*w1) and posy2 <= y1 + (.5*h1) and negy2 >= y1 - (.5*h1) and area1 >= area2:\n            return \"r2 is inside r1\"\n        elif posx2 == x1 + (.5*w1) and negx2 == x1 - (.5*w1) and posy2 == y1 + (.5*h1) and negy2 == y1 - (.5*h1):\n            return \"r2 intersect r1 exactly\"\n        elif not (posx2 <= x1 - (.5*w1) or negx2 >= x1 + (.5*w1) or posy2 <= y1 - (.5*h1) or negy2 >= y1 + (.5*h1)):\n            return \"r2 overlaps r1\"\n        else:\n            return \"r2 does not overlap r1\"\n    else:\n        return 'Not a valid rectangle'\n",
         "student_code": "def rectangles(x1, y1, w1, h1, x2, y2, w2, h2):\n    if h1 > 0 and h2 > 0 and w1 > 0 and w2 > 0 and x1 > 0 and y1 > 0 and x2 > 0 and y2 > 0:\n        posx2 =  x2 + (.5*w2)\n        negx2 = x2 - (.5*w2)\n        posy2 = y2 + (.5*h2)\n        negy2 = y2 - (.5*h2)\n        area1 = x1 * h1\n        area2 = x2 * h2\n        if posx2 <= x1 + (.5*w1) and negx2 >= x1 - (.5*w1) and posy2 <= y1 + (.5*h1) and negy2 >= y1 - (.5*h1) and area1 > area2:\n            return \"r2 is inside r1\"\n        elif posx2 == x1 + (.5*w1) and negx2 == x1 - (.5*w1) and posy2 ==y1 + (.5*h1) and negy2 == y1 - (.5*h1):\n            return \"r2 intersect r1 exactly\"\n        elif negx2 <= x1 + (.5*w1)or negy2 <= y1 + (.5*h1):\n            return \"r2 overlaps r1\"\n        else:\n            return \"r2 does not overlap r1\"\n    else:\n        return 'Not a valid rectangle'"
     },
     {
@@ -5175,10 +5233,31 @@
         "student_code": "def snail(A, B, H):\n    a = A - B\n    ans = H - A\n    ans = ans / a\n    ans = ans + 1   \n    ans = round(ans)\n    # WRITE YOUR CODE HERE\n    return ans"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 237,
         "pid": 17387,
+        "feedback": [
+            {
+                "line_number": "3",
+                "feedback": "The condition if B > A is not correct according to constraints; it should be if B >= A to avoid invalid input.",
+                "category": ""
+            },
+            {
+                "line_number": "7-11",
+                "feedback": "Remove unnecessary and incorrect checks (like H == 0 and B == 0) because constraints guarantee 1 \u2264 B < A \u2264 H, making these redundant.",
+                "category": ""
+            },
+            {
+                "line_number": "13",
+                "feedback": "The calculation for the result using ceil and floor is incorrect. Use the formula (H - B - 1) // (A - B) + 1 to correctly calculate days.",
+                "category": ""
+            },
+            {
+                "line_number": "12",
+                "feedback": "Check if H <= A to immediately return 1 day, since snail reaches top in one day if climbing distance equals or exceeds pole height.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "import math\n\ndef snail(A, B, H):\n    if B >= A:\n        result = 0\n    else:\n        if H <= A:\n            result = 1\n        else:\n            result = (H - B - 1) // (A - B) + 1\n    return result\n",
         "student_code": "import math\ndef snail(A, B, H):\n    if B>A:\n        result = 0\n    else:\n        if H == 0:\n            result= 0\n        else:\n            if B==0 and A>0:\n                result= math.ceil(H/A)\n            else:\n                if H <= A:\n                    result= 1\n                else:\n                    result= math.ceil(H/(A-B)) - math.floor(A/(A-B)) + 1\n    return result\n"
     },
     {
@@ -5366,17 +5445,39 @@
         "student_code": "def is_prime(n):\n    if n == 1:\n        return False\n    x = n**0.5//1\n    for i in range(2,int(x)):\n        if n % i == 0:\n            return False\n    else:\n        return True\n"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 246,
         "pid": 17388,
+        "feedback": [
+            {
+                "line_number": "2",
+                "feedback": "Add a check to return False if n is less than or equal to 1 because 1 is not a prime number.",
+                "category": ""
+            },
+            {
+                "line_number": "4",
+                "feedback": "Change the while loop condition from 'i < int(math.sqrt(n))' to 'i <= int(math.sqrt(n))' to include the square root in the factors check, which is necessary to correctly identify perfect squares as non-prime.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "import math\ndef is_prime(n):\n    if n <= 1:\n        return False\n    i = 2\n    while i <= int(math.sqrt(n)):\n        if n % i == 0:\n            return False\n        i += 1\n    return True\n",
         "student_code": "import math\ndef is_prime(n):\n    i = 2\n    while i < int(math.sqrt(n)):\n        if n%i == 0:\n            return False\n        i += 1\n    return True\n        "
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 247,
         "pid": 17388,
+        "feedback": [
+            {
+                "line_number": "4",
+                "feedback": "Using math.ceil on n**0.5 can cause the loop to run one extra unnecessary iteration. Using math.isqrt(n) gives the exact integer square root which is both clearer and more efficient.",
+                "category": ""
+            },
+            {
+                "line_number": "12",
+                "feedback": "The return statement is incorrectly indented causing a syntax error or wrong logic flow. It should be aligned with the else block to be outside the for loop.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "import math\n def is_prime(n):\n    ans=True\n    num=0\n    x = math.isqrt(n)  # use math.isqrt for exact integer sqrt\n    if n < 2:\n        return False\n    elif n == 2:\n        return True\n    else:\n        for a in range(2, x + 1):\n            if n % a == 0 :\n                ans=False\n                break\n    return ans",
         "student_code": "import math\ndef is_prime(n):\n    ans=True\n    num=0\n    x = math.ceil(n**0.5)\n    if n < 2:\n        return False\n    elif n == 2:\n        return True\n    else:\n        for a in range(2, x + 1):\n            if n%a == 0 :\n                ans=False\n                break\n     return ans"
     },
     {
@@ -6677,10 +6778,36 @@
         "student_code": "def triangle2(dimension):\n    s = \"\"\n    i = 0\n    for count in range(1,dimension+1):\n        for x in range(1,count+1):\n            s = s + str(x)\n        i = i + 1\n        if i < dimension:\n            s = s + \"/n\"\n    \n    return s"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 307,
         "pid": 17399,
+        "feedback": [
+            {
+                "line_number": 2,
+                "feedback": "Add a colon ':' at the end of the for loop definition to fix syntax error.",
+                "category": ""
+            },
+            {
+                "line_number": 3,
+                "feedback": "Add a colon ':' at the end of the nested for loop definition to fix syntax error.",
+                "category": ""
+            },
+            {
+                "line_number": 4,
+                "feedback": "Replace 'c+1' with 'x' and adjust the inner loop to start from 1 to n+1 to generate correct sequence of numbers.",
+                "category": ""
+            },
+            {
+                "line_number": 5,
+                "feedback": "Change 'if n == dimension: continue' to 'if n != dimension: s += \"\\n\"' to correctly add newlines except after last line.",
+                "category": ""
+            },
+            {
+                "line_number": 6,
+                "feedback": "Replace 's+'/n'' with 's += \"\\n\"' to properly append a newline character.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "def triangle2(dimension):\n    s = \"\"\n    for n in range(1, dimension + 1):\n        for x in range(1, n + 1):\n            s += str(x)\n        if n != dimension:\n            s += \"\\n\"\n    return s",
         "student_code": "def triangle2(dimension):\n    s = \"\"\n    for n in range(1,dimension+1)\n      for x in range(n)\n        s+=str(c+1)\n      if n ==dimension\n         continue\n      s+'/n'\n    \n    return s"
     },
     {
@@ -6853,10 +6980,26 @@
         "student_code": "def check_validity(lst):\n    if len(lst) != 13:\n        return False\n    oddnum = evennum = 0\n    check = lst.pop()\n    for i in range(len(lst)):\n        if i % 2:\n            oddnum += lst[i]\n        else:\n            evennum += lst[i]\n    something = evennum * 3 + oddnum + check\n    if something % 10 == 0:\n        return True\n    else:\n        return False"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 316,
         "pid": 17405,
+        "feedback": [
+            {
+                "line_number": 6,
+                "feedback": "The range in the first for loop should be range(1,12,2) to exclude the check digit (index 12). Currently it includes it.",
+                "category": ""
+            },
+            {
+                "line_number": 11,
+                "feedback": "Remove converting lel to string and summing digits. Instead, calculate gg as 10 minus (lel % 10), which correctly computes the needed check digit.",
+                "category": ""
+            },
+            {
+                "line_number": 12,
+                "feedback": "If gg equals 10, it should be reset to 0 because the check digit can only be a single digit from 0 to 9.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "def check_validity(lst):\n    if len(lst) != 13:\n        return False\n    else:\n        lel = 0\n        for x in range(1,12,2):  # changed 13 to 12\n            lel += lst[x]\n        lel = (lel * 3)\n        for y in range(0,12,2):\n            lel += lst[y]\n        gg = 10 - (lel % 10)  # changed computation of gg\n        if gg == 10:  # handle case if gg == 10\n            gg = 0\n        if gg == lst[12]:\n            return True\n        else:\n            return False",
         "student_code": "def check_validity(lst):\n    if len(lst) != 13:\n        return False\n    else:\n        lel = 0\n        for x in range(1,13,2):\n            lel += lst[x]\n        lel = (lel * 3)\n        for y in range(0,12,2):\n            lel += lst[y]\n        lel = list(str(lel))\n        gg = 0\n        for j in lel:\n            gg += int(j)\n        gg = 10 - (gg % 10)\n        if gg == lst[12]:\n            return True\n        else:\n            return False\n\n"
     },
     {
@@ -6911,10 +7054,41 @@
         "student_code": "def check_validity(lst):\n    result = 0\n    if len(lst) < 13:\n    return False\n    for i in range(1,len(lst)-1,2):\n        result = result + lst[i]*3 + lst[i-1]\n    if (result + lst[-1]) % 10 == 0:\n        return True\n    else:\n        return False\n        \n        "
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 319,
         "pid": 17406,
+        "feedback": [
+            {
+                "line_number": "2",
+                "feedback": "Variable names should follow consistent casing (suggest A_score and B_score to match the prefix).",
+                "category": ""
+            },
+            {
+                "line_number": "4",
+                "feedback": "Changed loop to iterate directly over lst elements instead of indexing; original is complicating logic.",
+                "category": ""
+            },
+            {
+                "line_number": "5-23",
+                "feedback": "The original code incorrectly resets and slices lst inside the loop causing index errors and wrong logic. Instead, process rounds sequentially and track the last winner to identify streaks.",
+                "category": ""
+            },
+            {
+                "line_number": "introduced variable after line 3 (last_winner = None)",
+                "feedback": "Add last_winner variable to track if current round winner matches the previous to correctly apply streak scoring.",
+                "category": ""
+            },
+            {
+                "line_number": "6-20",
+                "feedback": "Refactor scoring logic: increment 2 points if player won previous round too, else 1. Handle ties by resetting last_winner to None.",
+                "category": ""
+            },
+            {
+                "line_number": "last return statement",
+                "feedback": "Return None explicitly if no player reached the threshold after all rounds.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "def calculate_winner(lst, n):\n    A_score = 0\n    B_score = 0\n    last_winner = None\n    for i in lst:\n        if i == 'A':\n            if last_winner == 'A':\n                A_score += 2\n            else:\n                A_score += 1\n            last_winner = 'A'\n            if A_score >= n:\n                return 'A'\n        elif i == 'B':\n            if last_winner == 'B':\n                B_score += 2\n            else:\n                B_score += 1\n            last_winner = 'B'\n            if B_score >= n:\n                return 'B'\n        else:\n            last_winner = None\n    return None",
         "student_code": "def calculate_winner(lst, n):\n    A_score=0\n    B_score=0\n    for count in range(len(lst)):\n        if lst[0]=='A':\n            A_score+=1\n            if A_score>=n:\n                return str('A')\n            lst=lst[1:]\n            while lst[0]=='A':\n                if lst[0]=='A':\n                    A_score+=2\n                    if A_score>=n:\n                        return str('A')\n                    lst=lst[1:]\n                    \n        elif lst[0]=='B':\n            B_score+=1\n            if B_score>=n:\n                return str('B')\n            lst=lst[1:]\n            while lst[0]=='B':\n                if lst[0]=='B':\n                    B_score+=2\n                    if B_score>=n:\n                        return str('B')\n                    lst=lst[1:]\n                    \n        else:\n            lst=lst[1:]\n        return\n"
     },
     {
@@ -6964,10 +7138,26 @@
         "student_code": "def calculate_winner(lst, n):\n    scoreA = 0\n    scoreB = 0\n    z = -1\n    while scoreA < n and scoreB < n:\n        z += 1\n        if z == len(lst):\n            break\n        elif ord(lst[z]) == 65:\n            scoreA += 1\n        elif ord(lst[z]) == 66:\n            scoreB += 1\n        else:\n            continue\n    if scoreA >= n:\n        ANS = \"A\"\n    elif scoreB >= n:\n        ANS = \"B\"\n    else:\n        ANS = \"None\"\n    return ANS"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 322,
         "pid": 17406,
+        "feedback": [
+            {
+                "line_number": 2,
+                "feedback": "Initialize last_char to None instead of lst[0] to avoid incorrect streak calculation starting from the first element.",
+                "category": ""
+            },
+            {
+                "line_number": 4,
+                "feedback": "Iterate over all elements in lst including the first to ensure correct scoring and streak detection.",
+                "category": ""
+            },
+            {
+                "line_number": 5,
+                "feedback": "Remove the initial handling of the first element separately to simplify and avoid missed streak increments.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "def calculate_winner(lst, n):\n    a_count = 0\n    b_count = 0\n    last_char = None\n    for i in lst:\n        if i == 'A':\n            a_count += 1\n            if last_char == i:\n                a_count += 1\n        elif i == 'B':\n            b_count += 1\n            if last_char == i:\n                b_count += 1\n        last_char = i\n        if a_count >= n:\n            return 'A'\n        elif b_count >= n:\n            return 'B'\n    return None",
         "student_code": "def calculate_winner(lst, n):\n    pass"
     },
     {

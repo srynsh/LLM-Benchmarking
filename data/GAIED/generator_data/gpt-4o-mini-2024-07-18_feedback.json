@@ -1300,10 +1300,21 @@
         "student_code": "def palindrome_count(a, b):\n    ans = 0\n    for i in range(a,b+1):\n        forwards = i\n        backwards = reverse_number(i)\n    if (forwards == backwards):\n        ans += 1\n    return ans"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 70,
         "pid": 17332,
+        "feedback": [
+            {
+                "line_number": "5",
+                "feedback": "The inner loop checking for each character is unnecessary. You can directly compare the number with its reverse.",
+                "category": ""
+            },
+            {
+                "line_number": "6",
+                "feedback": "Instead of counting matching digits, directly check if the number is a palindrome using reverse_number.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "def palindrome_count(a, b):\n    ans = 0\n    for A in range(a, b + 1):\n        if A == reverse_number(A):\n            ans += 1\n    return ans\n    pass\n",
         "student_code": "def palindrome_count(a, b):\n    ans = 0\n    for A in range(a, b+1):\n        i = 0\n        x = str(A) \n        y = str(reverse_number(A))\n        for B in range(len(x)):\n            if x[B] == y[B]:\n                i += 1\n            else:\n                break\n            if i == len(x):\n                ans += 1\n    return ans\n    pass"
     },
     {
@@ -5607,10 +5618,26 @@
         "student_code": "def triangle1(dimension):\n    s = \"\"\n    #add your code here\n    \n    return s"
     },
     {
-        "feedback": [],
-        "repaired_code": "",
         "sid": 298,
         "pid": 17398,
+        "feedback": [
+            {
+                "line_number": "5",
+                "feedback": "You need to append the correct number of asterisks to 's' for each line. Instead of just adding a single '*', use 's += \"*\" * k' where 'k' is the current line number.",
+                "category": ""
+            },
+            {
+                "line_number": "6",
+                "feedback": "Change '/n' to '\\n' to correctly represent a newline character in the string.",
+                "category": ""
+            },
+            {
+                "line_number": "6",
+                "feedback": "You only need to append the newline character if you're not on the last line. Ensure that it's added after building the current line in variable 's'.",
+                "category": ""
+            }
+        ],
+        "repaired_code": "def triangle1(n):\n    s = \"\"\n    for k in range(1,n+1):\n        s += \"*\" * k\n        if k < n:\n            s += \"\\n\"\n    return s",
         "student_code": "def triangle1(n):\n    s = \"\"\n    A = ''\n    for k in range(1,n+1):\n        s = s+\"*\"\n        if k < n:\n            A = A + s + \"/n\"\n    return s"
     },
     {
