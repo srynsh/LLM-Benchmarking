@@ -9308,25 +9308,8 @@
     },
     {
         "sid": 201,
-        "raw_response": "Here's my analysis in the requested JSON format:\n\n```json\n{\n    \"mistakes\": [\n        \"The function does not return a value\",\n        \"The logic for determining turnstile operation is overly complex and incorrect\",\n        \"The function does not handle all possible scenarios correctly\"\n    ],\n    \"fixes\": [\n        \"Use modulo operation to determine if a turnstile is operational\",\n        \"Simplify the logic by checking each turnstile independently\",\n        \"Return the count of operational turnstiles\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 3,\n            \"feedback\": \"Your initial condition checks are not correct. You should be checking if the remainder of X divided by the sum of the working and breakdown times is less than the working time. This would mean that the turnstile is still working when Sean arrives.\",\n            \"analysis\": \"This feedback is correct. The student's approach of using complex if-else statements is incorrect. The modulo operation is the right way to check if a turnstile is operational at a given time.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 4,\n            \"feedback\": \"You do not need to check for all these conditions. You just need to check if the turnstile is working when Sean arrives, which can be done using the modulus operator and comparing the result with the working time of the turnstile.\",\n            \"analysis\": \"This feedback is accurate. The student's code uses unnecessary nested conditions, while the problem can be solved more simply by checking each turnstile independently using the modulus operator.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 20,\n            \"feedback\": \"You are not returning any value from your function. You should return the variable \"ans\" which stores the number of turnstiles that are operational when Sean arrives.\",\n            \"analysis\": \"This feedback is correct. The student's function doesn't return any value, which is a critical error. The function should return the count of operational turnstiles.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": "3",
-                "feedback": "Your initial condition checks are not correct. You should be checking if the remainder of X divided by the sum of the working and breakdown times is less than the working time. This would mean that the turnstile is still working when Sean arrives.",
-                "category": "TP"
-            },
-            {
-                "line_number": "4",
-                "feedback": "You do not need to check for all these conditions. You just need to check if the turnstile is working when Sean arrives, which can be done using the modulus operator and comparing the result with the working time of the turnstile.",
-                "category": "TP"
-            },
-            {
-                "line_number": "20",
-                "feedback": "You are not returning any value from your function. You should return the variable \"ans\" which stores the number of turnstiles that are operational when Sean arrives.",
-                "category": "TP"
-            }
-        ]
+        "raw_response": "Here's my analysis in the requested JSON format:\n\n```json\n{\n    \"mistakes\": [\n        \"The student's code uses complex conditional statements that don't accurately model the turnstile behavior\",\n        \"The function doesn't return any value\",\n        \"The logic for determining the state of each turnstile is incorrect\"\n    ],\n    \"fixes\": [\n        \"Use modulo operation to determine the state of each turnstile\",\n        \"Return the count of operational turnstiles\",\n        \"Simplify the logic by checking each turnstile independently\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 3,\n            \"feedback\": \"Your initial condition checks are not correct. You should be checking if the remainder of X divided by the sum of the working and breakdown times is less than the working time. This would mean that the turnstile is still working when Sean arrives.\",\n            \"analysis\": \"This feedback correctly identifies the problem with the student's logic and suggests the correct approach using modulo operation.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 4,\n            \"feedback\": \"You do not need to check for all these conditions. You just need to check if the turnstile is working when Sean arrives, which can be done using the modulus operator and comparing the result with the working time of the turnstile.\",\n            \"analysis\": \"This feedback accurately points out that the student's approach is overly complex and suggests a simpler, correct solution.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 20,\n            \"feedback\": \"You are not returning any value from your function. You should return the variable \"ans\" which stores the number of turnstiles that are operational when Sean arrives.\",\n            \"analysis\": \"This feedback correctly identifies that the function doesn't return a value, which is a critical error in the student's code.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
+        "output": []
     },
     {
         "sid": 202,
@@ -16671,20 +16654,32 @@
     },
     {
         "sid": 360,
-        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student is creating a new list instead of modifying the original list\",\n        \"The student is appending the popped element to the end instead of inserting it at the beginning\"\n    ],\n    \"fixes\": [\n        \"Use the insert() method to add the popped element at the beginning of the list\",\n        \"Remove the line that creates a new list\",\n        \"Add a check for empty list to avoid errors\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"Your logic of popping the last element is correct but you should insert it at the beginning of the list. You can use the insert() function for this.\",\n            \"analysis\": \"This feedback correctly identifies the main issue in the student's code and suggests the appropriate fix.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"The \"+\" operator concatenates two lists but it does not modify the original list. S\",\n            \"analysis\": \"This feedback is partially correct as it points out that the '+' operator doesn't modify the original list. However, it's incomplete and doesn't provide a full explanation or solution.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": "2",
-                "feedback": "Your logic of popping the last element is correct but you should insert it at the beginning of the list. You can use the insert() function for this.",
-                "category": "TP"
-            },
-            {
-                "line_number": "3",
-                "feedback": "The \"+\" operator concatenates two lists but it does not modify the original list. S",
-                "category": "FP-I"
-            }
-        ]
+        "raw_response": "Here's my analysis in the requested JSON format:\n\n```json\n{\n    \"mistakes\": [\n        \"The student's code creates a new list instead of modifying the original list\",\n        \"The student's code appends the popped element to the end instead of inserting it at the beginning\"\n    ],\n    \"fixes\": [\n        \"Use insert(0, x) to add the popped element at the beginning of the list\",\n        \"Modify the original list instead of creating a new one\",\n        \"Add a check for empty list to avoid errors\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"Your logic of popping the last element is correct but you should insert it at the beginning of the list. You can use the insert() function for this.\",\n            \"analysis\": \"This feedback correctly identifies the main issue and suggests the proper solution.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"The \\\"+\\\" operator concatenates two lists but it does not modify the original list. S\",\n            \"analysis\": \"This feedback correctly points out that the '+' operator doesn't modify the original list, which is part of the problem. However, the feedback is incomplete (cut off at 'S').\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
+        "output": {
+            "mistakes": [
+                "The student's code creates a new list instead of modifying the original list",
+                "The student's code appends the popped element to the end instead of inserting it at the beginning"
+            ],
+            "fixes": [
+                "Use insert(0, x) to add the popped element at the beginning of the list",
+                "Modify the original list instead of creating a new one",
+                "Add a check for empty list to avoid errors"
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 2,
+                    "feedback": "Your logic of popping the last element is correct but you should insert it at the beginning of the list. You can use the insert() function for this.",
+                    "analysis": "This feedback correctly identifies the main issue and suggests the proper solution.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 3,
+                    "feedback": "The \"+\" operator concatenates two lists but it does not modify the original list. S",
+                    "analysis": "This feedback correctly points out that the '+' operator doesn't modify the original list, which is part of the problem. However, the feedback is incomplete (cut off at 'S').",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 361,

@@ -1233,8 +1233,31 @@
     },
     {
         "sid": 46,
-        "raw_response": "```json\n{\n  \"mistakes\": [\n    \"The student's code uses '{0:b}'.format(b) which formats the integer b into its binary representation, but the task is to convert a given binary string to its decimal equivalent, not the other way around.\",\n    \"The student's code doesn't perform any conversion from binary to decimal.\"\n  ],\n  \"fixes\": [\n    \"The TA's code iterates through the reversed binary string, multiplying each digit by the appropriate power of 2 and accumulating the result in 'ans'.\",\n    \"The TA's code correctly converts the binary string to its decimal equivalent without using the built-in 'int' function.\"\n  ],\n  \"feedback_lines\": [\n    {\n      \"line_number\": 2,\n      \"feedback\": \"The variable \\\"ans\\\" should be initialized to 0 before the loop.\",\n      \"analysis\": \"This feedback is valid.  The variable 'ans' needs to be initialized to 0 to correctly accumulate the sum of the decimal values.\",\n      \"classification\": \"valid\"\n    },\n    {\n      \"line_number\": 3,\n      \"feedback\": \"The format specifier \\\"{\\'\",\n      \"analysis\": \"This feedback is incomplete and seems truncated. It doesn't explain what's wrong or how to fix the format specifier issue, and it doesn't address the core problem of the code not converting binary to decimal.  Therefore, it's invalid.\",\n      \"classification\": \"invalid\"\n    }\n  ]\n}\n```\n",
-        "output": []
+        "raw_response": "```json\n{\n  \"mistakes\": [\n    \"The student's function `decimal(b)` converts the input integer `b` to its binary representation using the format specifier '{0:b}' but does not perform the actual conversion to decimal.\",\n    \"The function returns the binary string representation instead of the decimal equivalent.\"\n  ],\n  \"fixes\": [\n    \"The TA's corrected code initializes `ans` to 0. It then iterates through the reversed binary string representation of the input.  In each iteration, it adds the integer value of the current digit multiplied by the corresponding power of 2 to `ans`.\",\n    \"The corrected code correctly returns the calculated decimal value.\"\n  ],\n  \"feedback_lines\": [\n    {\n      \"line_number\": 2,\n      \"feedback\": \"The variable \\\"ans\\\" should be initialized to 0 before the loop.\",\n      \"analysis\": \"This feedback is valid.  The variable `ans` needs to start at 0 to correctly accumulate the decimal value.\",\n      \"classification\": \"valid\"\n    },\n    {\n      \"line_number\": 3,\n      \"feedback\": \"The format specifier '{\",\n      \"analysis\": \"This feedback is invalid and incomplete. It's a truncated feedback line and doesn't provide useful information about the student's code.\",\n      \"classification\": \"invalid\"\n    }\n  ]\n}\n```\n",
+        "output": {
+            "mistakes": [
+                "The student's function `decimal(b)` converts the input integer `b` to its binary representation using the format specifier '{0:b}' but does not perform the actual conversion to decimal.",
+                "The function returns the binary string representation instead of the decimal equivalent."
+            ],
+            "fixes": [
+                "The TA's corrected code initializes `ans` to 0. It then iterates through the reversed binary string representation of the input.  In each iteration, it adds the integer value of the current digit multiplied by the corresponding power of 2 to `ans`.",
+                "The corrected code correctly returns the calculated decimal value."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 2,
+                    "feedback": "The variable \"ans\" should be initialized to 0 before the loop.",
+                    "analysis": "This feedback is valid.  The variable `ans` needs to start at 0 to correctly accumulate the decimal value.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 3,
+                    "feedback": "The format specifier '{",
+                    "analysis": "This feedback is invalid and incomplete. It's a truncated feedback line and doesn't provide useful information about the student's code.",
+                    "classification": "invalid"
+                }
+            ]
+        }
     },
     {
         "sid": 47,
@@ -3000,7 +3023,7 @@
     },
     {
         "sid": 129,
-        "raw_response": "```json\n{\n  \"mistakes\": [\n    \"The student's code attempts to directly apply the `shiftRight` function to the string returned by `sentence.split(\" \")`, which is a list of strings.  The `shiftRight` function expects a list, but the '+' operator concatenates strings, resulting in incorrect output.\",\n    \"The student adds 'ay' to the result of the `shiftRight` function, which is incorrect.  The 'ay' should be appended to each word individually.\"\n  ],\n  \"fixes\": [\n    \"The TA's code correctly splits the sentence into words, applies `shiftRight` to the list of words and then joins the shifted words back into a string with spaces.\",\n    \"The 'ay' is added after the shifted words are joined together.\"\n  ],\n  \"feedback_lines\": []\n}\n```\n",
+        "raw_response": "```json\n{\n  \"mistakes\": [\n    \"The student's code attempts to directly apply the `shiftRight` function to the string returned by `sentence.split(\" \")`, which is incorrect. The `shiftRight` function expects a list, but the `+` operator concatenates strings, not lists.  The result is a string, and strings don't have an `insert()` method.  Furthermore, the student incorrectly adds 'ay' to the end of a string rather than to each word individually.\",\n    \"The student's code doesn't handle multiple words correctly. It only shifts the last word to the beginning of the entire sentence.\"\n  ],\n  \"fixes\": [\n    \"The TA's code correctly splits the sentence into words, applies `shiftRight` to the list of words, and then joins the shifted words back into a sentence before appending 'ay'.\"\n  ],\n  \"feedback_lines\": [\n    {\n      \"line_number\": 5,\n      \"feedback\": \"The shiftRight function is unnecessary and can be removed. Instea\",\n      \"analysis\": \"This feedback is partially valid. While `shiftRight` is a flawed approach (and the solution involves multiple words requiring multiple shifts), removing it isn't directly the solution. The core issue is the incorrect application of it and the incomplete transformation to Pig Latin. A better feedback would address the logic flaw rather than just suggesting removal.\",\n      \"classification\": \"invalid\"\n    },\n    {\n      \"line_number\": 7,\n      \"feedback\": \"The shifted_words list needs to be joined with spaces using the join() method before adding \\\"ay\\\" to the end.\",\n      \"analysis\": \"This feedback is valid. It correctly points out the need to join the list of words back into a string using the `join()` method before concatenating \\\"ay\\\".  However, it doesn't fully address the fundamental flaw in the `shiftRight` function's application to multiple words.\",\n      \"classification\": \"valid\"\n    }\n  ]\n}\n```\n",
         "output": []
     },
     {

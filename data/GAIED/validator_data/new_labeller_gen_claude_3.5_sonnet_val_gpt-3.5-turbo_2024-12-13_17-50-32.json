@@ -650,7 +650,7 @@
     },
     {
         "sid": 20,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student did not initialize the variable 'ans' to 1 for non-negative inputs.\"],\n    \"fixes\": [\"Initialize 'ans' to 1 for all non-negative inputs.\", \"Place the loop outside any conditional blocks.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 1-7,\n            \"feedback\": \"The main issues in your code were: 1) You didn't initialize 'ans' for positive numbers. 2) The loop was inside the 'else' block, which is unnecessary. 3) You were returning 'ans' outside of all conditions, which could lead to errors. Here's a breakdown of the changes:\\n1. Remove the 'elif' and 'else' conditions, as we can handle all cases in a simpler way.\\n2. Initialize 'ans' to 1 for all non-negative inputs.\\n3. Use 'return' instead of assigning to 'ans' for the negative input case.\\n4. Move the loop outside of any conditional blocks.\\n5. Return 'ans' at the end of the function.\\nThese changes make the function work correctly for all inputs, including edge cases like 0 and 1.\",\n            \"analysis\": \"The TA has accurately identified the mistakes in the student's code and provided detailed steps to correct them.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student did not correctly initialize the 'ans' variable for positive numbers in the factorial function.\"],\n    \"fixes\": [\"Initialize 'ans' to 1 for all non-negative inputs, move the loop outside of any conditional blocks, and return 'ans' at the end of the function.\"],\n    \"feedback_lines\": [ \n        { \n            \"line_number\": 1-7, \n            \"feedback\": \"The main issues in your code were: 1) You didn't initialize 'ans' for positive numbers. 2) The loop was inside the 'else' block, which is unnecessary. 3) You were returning 'ans' outside of all conditions, which could lead to errors. Here's a breakdown of the changes:\\n1. Remove the 'elif' and 'else' conditions, as we can handle all cases in a simpler way.\\n2. Initialize 'ans' to 1 for all non-negative inputs.\\n3. Use 'return' instead of assigning to 'ans' for the negative input case.\\n4. Move the loop outside of any conditional blocks.\\n5. Return 'ans' at the end of the function.\\nThese changes make the function work correctly for all inputs, including edge cases like 0 and 1.\",\n            \"analysis\": \"The TA accurately identified the mistakes made by the student in the factorial function and provided clear guidance on how to fix them.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
         "output": []
     },
     {
@@ -3055,8 +3055,16 @@
     },
     {
         "sid": 95,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student incorrectly used escape characters in the string assignment\"],\n    \"fixes\": [\"Use correct escape characters to handle quotes and backslashes within the string.\"],\n    \"feedback_lines\": [],\n}\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student did not correctly use escape characters within the string to handle quotes and backslashes.\"],\n    \"fixes\": [\"Use escape characters to correctly handle quotes and backslashes within the string.\"],\n    \"feedback_lines\": []\n}\n```",
+        "output": {
+            "mistakes": [
+                "The student did not correctly use escape characters within the string to handle quotes and backslashes."
+            ],
+            "fixes": [
+                "Use escape characters to correctly handle quotes and backslashes within the string."
+            ],
+            "feedback_lines": []
+        }
     },
     {
         "sid": 96,
@@ -3212,22 +3220,22 @@
     },
     {
         "sid": 103,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 104,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 105,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 106,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
@@ -3903,7 +3911,7 @@
     },
     {
         "sid": 131,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student's code has a mistake in iterating through the words in reverse order and skipping the first word.\"], \n    \"fixes\": [\"Iterate through all words in the list directly without reversing the order.\"],\n    \"feedback_lines\": [ \n        { \n            \"line_number\": 2, \n            \"feedback\": 'The split() method without arguments already splits by whitespace, so you don\\'t need to specify \" \".', \n            \"analysis\": \"The TA has correctly pointed out the unnecessary argument in the split() method call.\", \n            \"classification\": \"valid\" \n        }, \n        { \n            \"line_number\": 4-6,\n            \"feedback\": 'The loop was iterating in reverse order and skipping the first word. Instead, iterate through all words in the list directly.', \n            \"analysis\": \"The TA correctly identified the mistake and provided the appropriate fix.\", \n            \"classification\": \"valid\" \n        },\n        { \n            \"line_number\": 7,\n            \"feedback\": \"There's no need for a separate treatment of the last word. All words can be processed in the same loop.\", \n            \"analysis\": \"The feedback addresses the unnecessary complexity in the code and is valid.\", \n            \"classification\": \"valid\" \n        },\n        { \n            \"line_number\": 8,\n            \"feedback\": 'Use the strip() method to remove the trailing space at the end of the result string, instead of manually omitting it.', \n            \"analysis\": \"The TA has provided a valid suggestion for improving the code's readability and functionality.\", \n            \"classification\": \"valid\" \n        }\n    ]\n}\n```",
+        "raw_response": "```json\n{\n    \"mistakes\": [\"Incorrect logic in iterating through the words of the sentence in the reverse order\"],\n    \"fixes\": [\"Iterate through all words in the list directly without skipping the first word\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"The split() method without arguments already splits by whitespace, so you don't need to specify \" \".\",\n            \"analysis\": \"The TA has correctly identified the redundant usage of parameter in the split method.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": \"4-6\",\n            \"feedback\": \"The loop was iterating in reverse order and skipping the first word. Instead, iterate through all words in the list directly.\",\n            \"analysis\": \"The TA has correctly identified the mistake in the iteration logic and its fix.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 7,\n            \"feedback\": \"There's no need for a separate treatment of the last word. All words can be processed in the same loop.\",\n            \"analysis\": \"The feedback is not entirely valid as it does not address an actual issue in the code.\",\n            \"classification\": \"invalid\"\n        },\n        {\n            \"line_number\": 8,\n            \"feedback\": \"Use the strip() method to remove the trailing space at the end of the result string, instead of manually omitting it.\",\n            \"analysis\": \"The feedback correctly suggests a more efficient method to remove the trailing space at the end.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
         "output": []
     },
     {
@@ -6534,8 +6542,47 @@
     },
     {
         "sid": 204,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"Improper logic for determining the operational turnstiles\"],\n    \"fixes\": [\"Update the logic for checking operational turnstiles\"],\n    \"feedback_lines\": [ \n        {\n            \"line_number\": 5, \n            \"feedback\": \"Use (X - 1) % E instead of X % E to correctly handle the case when X is a multiple of E.\", \n            \"analysis\": \"The TA has correctly pointed out the error and provided the appropriate fix\",\n            \"classification\": \"valid\" \n        }, \n        {\n            \"line_number\": 6, \n            \"feedback\": \"Use (X - 1) % F instead of X % F to correctly handle the case when X is a multiple of F.\", \n            \"analysis\": \"The TA has correctly identified the mistake and suggested a valid solution\", \n            \"classification\": \"valid\" \n        },\n        {\n            \"line_number\": 7-12, \n            \"feedback\": \"The logic for checking if turnstiles are operational needs to be revised. Initialize ans to 0 and increment it for each operational turnstile.\", \n            \"analysis\": \"The TA has correctly identified the issue and proposed a valid solution\", \n            \"classification\": \"valid\" \n        },\n        {\n            \"line_number\": 8, \n            \"feedback\": \"Use G < A instead of G > A or G = 0 to check if the first turnstile is operational.\", \n            \"analysis\": \"The TA has correctly identified the mistake and provided the appropriate fix\", \n            \"classification\": \"valid\" \n        },\n        {\n            \"line_number\": 11, \n            \"feedback\": \"Use H < C instead of H > C or H = 0 to check if the second turnstile is operational.\", \n            \"analysis\": \"The TA has correctly pinpointed the issue and given a suitable correction\", \n            \"classification\": \"valid\" \n        }\n    ]\n}\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student incorrectly calculates the modulus of X without considering the case when X is a multiple of A + B or C + D.\"], \n    \"fixes\": [\"Adjust the modulus calculation by subtracting 1 from X to correctly handle the case when X is a multiple of A + B or C + D.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 5,\n            \"feedback\": \"Use (X - 1) % E instead of X % E to correctly handle the case when X is a multiple of E.\",\n            \"analysis\": \"The TA accurately identifies the mistake and provides a valid fix by adjusting the calculation of the modulus.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 6,\n            \"feedback\": \"Use (X - 1) % F instead of X % F to correctly handle the case when X is a multiple of F.\",\n            \"analysis\": \"The TA accurately identifies the mistake and provides a valid fix by adjusting the calculation of the modulus.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": \"7-12\",\n            \"feedback\": \"The logic for checking if turnstiles are operational needs to be revised. Initialize ans to 0 and increment it for each operational turnstile.\",\n            \"analysis\": \"The TA correctly highlights the need for a revised logic to correctly count the number of operational turnstiles.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 8,\n            \"feedback\": \"Use G < A instead of G > A or G = 0 to check if the first turnstile is operational.\",\n            \"analysis\": \"The TA correctly suggests the comparison operator change to accurately determine if the first turnstile is operational.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 11,\n            \"feedback\": \"Use H < C instead of H > C or H = 0 to check if the second turnstile is operational.\",\n            \"analysis\": \"The TA accurately identifies the comparison operator change needed to determine if the second turnstile is operational.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
+        "output": {
+            "mistakes": [
+                "The student incorrectly calculates the modulus of X without considering the case when X is a multiple of A + B or C + D."
+            ],
+            "fixes": [
+                "Adjust the modulus calculation by subtracting 1 from X to correctly handle the case when X is a multiple of A + B or C + D."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 5,
+                    "feedback": "Use (X - 1) % E instead of X % E to correctly handle the case when X is a multiple of E.",
+                    "analysis": "The TA accurately identifies the mistake and provides a valid fix by adjusting the calculation of the modulus.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 6,
+                    "feedback": "Use (X - 1) % F instead of X % F to correctly handle the case when X is a multiple of F.",
+                    "analysis": "The TA accurately identifies the mistake and provides a valid fix by adjusting the calculation of the modulus.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": "7-12",
+                    "feedback": "The logic for checking if turnstiles are operational needs to be revised. Initialize ans to 0 and increment it for each operational turnstile.",
+                    "analysis": "The TA correctly highlights the need for a revised logic to correctly count the number of operational turnstiles.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 8,
+                    "feedback": "Use G < A instead of G > A or G = 0 to check if the first turnstile is operational.",
+                    "analysis": "The TA correctly suggests the comparison operator change to accurately determine if the first turnstile is operational.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 11,
+                    "feedback": "Use H < C instead of H > C or H = 0 to check if the second turnstile is operational.",
+                    "analysis": "The TA accurately identifies the comparison operator change needed to determine if the second turnstile is operational.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 205,
@@ -9520,7 +9567,7 @@
     },
     {
         "sid": 295,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student has made mistakes in the for loops and handling newlines in the triangle1 function.\"],\n    \"fixes\": [\"Remove unnecessary variables and fix the logic to handle newlines correctly in the triangle pattern.\"],\n    \"feedback_lines\": [ \n        { \n            \"line_number\": 3, \n            \"feedback\": \"The variable 'i' is unnecessary. We can use 'count' directly in the loop.\", \n            \"analysis\": \"The TA correctly identifies that 'i' variable is not needed and suggests removing it, which is true.\", \n            \"classification\": \"valid\" \n        }, \n        { \n            \"line_number\": 5, \n            \"feedback\": \"The inner loop variable 'count' shadows the outer loop variable. Use a different name, like '_', if you don't need the variable.\", \n            \"analysis\": \"The TA correctly points out the variable shadowing and suggests using a different name or an underscore, which is valid advice.\", \n            \"classification\": \"valid\" \n        },\n        {\n            \"line_number\": 7-8, \n            \"feedback\": \"These lines with 'i' can be removed as we don't need this variable.\", \n            \"analysis\": \"The TA correctly suggests removing the unnecessary 'i' variable, which is a valid point.\", \n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 8, \n            \"feedback\": \"There's a typo in 'dimention'. It should be 'dimension'. However, we can simplify this condition.\", \n            \"analysis\": \"The TA correctly identifies the typo in the variable name and suggests simplifying the condition, which is helpful.\", \n            \"classification\": \"valid\"\n        },\n        { \n            \"line_number\": 8, \n            \"feedback\": \"We should add a newline character after each row except the last one. Use 'count < dimension' as the condition.\", \n            \"analysis\": \"The TA correctly identifies the issue with handling newlines and provides a valid suggestion to fix it.\", \n            \"classification\": \"valid\" \n        }\n    ]\n}\n```",
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student has made mistakes in using unnecessary variables and a typo in the condition statement.\"], \n    \"fixes\": [\"Remove the unnecessary 'i' variable and use 'count' directly in the loop.\", \n              \"Change the inner loop variable 'count' to a different name like '_' if not needed.\", \n              \"Remove the lines with 'i' as it is unnecessary.\", \n              \"Fix the typo 'dimention' to 'dimension' and simplify the condition statement.\"],\n    \"feedback_lines\": [ \n        { \n            \"line_number\": 3, \n            \"feedback\": \"The variable 'i' is unnecessary. We can use 'count' directly in the loop.\", \n            \"analysis\": \"The TA correctly identified the unnecessary 'i' variable and provided a valid fix.\", \n            \"classification\": \"valid\"\n        },\n        { \n            \"line_number\": 5, \n            \"feedback\": \"The inner loop variable 'count' shadows the outer loop variable. Use a different name, like '_', if you don't need the variable.\", \n            \"analysis\": \"The TA correctly identified the issue of variable shadowing and provided a valid fix.\", \n            \"classification\": \"valid\"\n        },\n        { \n            \"line_number\": 7-8, \n            \"feedback\": \"These lines with 'i' can be removed as we don't need this variable.\", \n            \"analysis\": \"The feedback correctly points out the unnecessary 'i' variable and provides a valid fix.\", \n            \"classification\": \"valid\"\n        },\n        { \n            \"line_number\": 8, \n            \"feedback\": \"There's a typo in 'dimention'. It should be 'dimension'. However, we can simplify this condition.\", \n            \"analysis\": \"The TA correctly identifies the typo error and provides a recommendation for simplification. However, the feedback is still valid.\",\n            \"classification\": \"valid\"\n        },\n        { \n            \"line_number\": 8, \n            \"feedback\": \"We should add a newline character after each row except the last one. Use 'count < dimension' as the condition.\", \n            \"analysis\": \"The TA correctly identifies the need to add a newline character and suggests a valid fix.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
         "output": []
     },
     {

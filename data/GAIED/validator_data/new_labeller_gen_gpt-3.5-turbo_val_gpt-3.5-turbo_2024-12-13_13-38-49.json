@@ -2228,8 +2228,23 @@
     },
     {
         "sid": 95,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student incorrectly used escape characters in the string assignment.\"],\n    \"fixes\": [\"Use escape characters correctly to handle quotes and backslashes within the string.\"],\n    \"feedback_lines\": [],\n}\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student incorrectly used escape characters within the string.\"],\n    \"fixes\": [\"Use the correct escape characters and string formatting to represent the desired output.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 1,\n            \"feedback\": \"The string should start and end with double quotes.\",\n            \"analysis\": \"The feedback addresses the issue of incorrect string formatting by pointing out that the string should be enclosed in double quotes.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
+        "output": {
+            "mistakes": [
+                "The student incorrectly used escape characters within the string."
+            ],
+            "fixes": [
+                "Use the correct escape characters and string formatting to represent the desired output."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 1,
+                    "feedback": "The string should start and end with double quotes.",
+                    "analysis": "The feedback addresses the issue of incorrect string formatting by pointing out that the string should be enclosed in double quotes.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 96,
@@ -2339,27 +2354,42 @@
     },
     {
         "sid": 102,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student did not correctly use escape characters to handle quotes and backslashes within the string.\"], \n    \"fixes\": [\"Use escape characters properly to handle quotes and backslashes within the string.\"],\n    \"feedback_lines\": [],\n}\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student incorrectly handled escape characters and quotes in the string assignment.\"],\n    \"fixes\": [\"Use escape characters to correctly handle quotes and backslashes within the string.\"],\n    \"feedback_lines\": [ \n        { \n            \"line_number\": 1, \n            \"feedback\": \"You don't need to escape the single quotes within the string. You only need to escape the backslash character. Also, make sure to remove the double quotes at the beginning and end of the string.\", \n            \"analysis\": \"The TA correctly identified the mistake in handling escape characters and quotes, but suggesting to remove all double quotes is incorrect.\",\n            \"classification\": \"invalid\" \n        }\n    ]\n}\n```\n",
+        "output": {
+            "mistakes": [
+                "The student incorrectly handled escape characters and quotes in the string assignment."
+            ],
+            "fixes": [
+                "Use escape characters to correctly handle quotes and backslashes within the string."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 1,
+                    "feedback": "You don't need to escape the single quotes within the string. You only need to escape the backslash character. Also, make sure to remove the double quotes at the beginning and end of the string.",
+                    "analysis": "The TA correctly identified the mistake in handling escape characters and quotes, but suggesting to remove all double quotes is incorrect.",
+                    "classification": "invalid"
+                }
+            ]
+        }
     },
     {
         "sid": 103,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 104,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 105,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 106,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
@@ -3881,8 +3911,41 @@
     },
     {
         "sid": 168,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"Incorrect logic for checking palindrome numbers\"],\n    \"fixes\": [\"Update the logic for checking palindromes\"],\n    \"feedback_lines\": [],\n}\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [\"Incorrect calculation of the hundreds place in the palindrome number check.\"],\n    \"fixes\": [\"Correct the calculation of hundreds place to ensure the number is checked correctly for being a palindrome.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 7,\n            \"feedback\": \"The 'continue' statement is unnecessary and can be removed.\",\n            \"analysis\": \"The TA correctly identified the redundant 'continue' statement.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 9,\n            \"feedback\": \"The variable 'x' should be assigned the value of 'int(number) % 100'.\",\n            \"analysis\": \"The feedback is invalid as 'x' assignment is correct and matches the fixed code.\",\n            \"classification\": \"invalid\"\n        },\n        {\n            \"line_number\": 14,\n            \"feedback\": \"The variable 'y' should be assigned the value of 'str(hundreds) + str(tens) + str(ones)' instead of 'str(ones) + str(tens) + str(hundreds)'.\",\n            \"analysis\": \"The feedback correctly points out the incorrect order in creating the palindrome number, hence it is valid.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 17,\n            \"feedback\": \"The condition should be 'int(number) == int(y)' instead of 'number == int(y)'.\",\n            \"analysis\": \"The TA accurately identified the need to convert 'number' to int for comparison, hence it is a valid feedback.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": {
+            "mistakes": [
+                "Incorrect calculation of the hundreds place in the palindrome number check."
+            ],
+            "fixes": [
+                "Correct the calculation of hundreds place to ensure the number is checked correctly for being a palindrome."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 7,
+                    "feedback": "The 'continue' statement is unnecessary and can be removed.",
+                    "analysis": "The TA correctly identified the redundant 'continue' statement.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 9,
+                    "feedback": "The variable 'x' should be assigned the value of 'int(number) % 100'.",
+                    "analysis": "The feedback is invalid as 'x' assignment is correct and matches the fixed code.",
+                    "classification": "invalid"
+                },
+                {
+                    "line_number": 14,
+                    "feedback": "The variable 'y' should be assigned the value of 'str(hundreds) + str(tens) + str(ones)' instead of 'str(ones) + str(tens) + str(hundreds)'.",
+                    "analysis": "The feedback correctly points out the incorrect order in creating the palindrome number, hence it is valid.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 17,
+                    "feedback": "The condition should be 'int(number) == int(y)' instead of 'number == int(y)'.",
+                    "analysis": "The TA accurately identified the need to convert 'number' to int for comparison, hence it is a valid feedback.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 169,
@@ -5707,8 +5770,29 @@
     },
     {
         "sid": 248,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student is not handling the prime number identification logic correctly.\"],\n    \"fixes\": [\"Fix the prime number identification logic inside the function.\"],\n    \"feedback_lines\": [],\n}\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student isn't correctly identifying whether a number is prime or not.\"], \n    \"fixes\": [\"Initialize the variable 'ans' as False to start with within the function, and adjust the range in the for loop accordingly.\"],\n    \"feedback_lines\": [ \n        { \n            \"line_number\": 3, \n            \"feedback\": \"The variable 'ans' should be initialized as False\", \n            \"analysis\": \"The TA correctly identified that the variable should be initialized as False, but did not mention the initial assignment of 0 by the student, which is not correct.\",\n            \"classification\": \"invalid\" \n        }, \n        {\n            \"line_number\": 5, \n            \"feedback\": \"The range in the for loop should be from 2 to n\", \n            \"analysis\": \"The TA correctly identified that the range should be from 2 to n in the for loop, addressing a mistake made by the student.\",\n            \"classification\": \"valid\" \n        }\n    ]\n}\n```",
+        "output": {
+            "mistakes": [
+                "The student isn't correctly identifying whether a number is prime or not."
+            ],
+            "fixes": [
+                "Initialize the variable 'ans' as False to start with within the function, and adjust the range in the for loop accordingly."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 3,
+                    "feedback": "The variable 'ans' should be initialized as False",
+                    "analysis": "The TA correctly identified that the variable should be initialized as False, but did not mention the initial assignment of 0 by the student, which is not correct.",
+                    "classification": "invalid"
+                },
+                {
+                    "line_number": 5,
+                    "feedback": "The range in the for loop should be from 2 to n",
+                    "analysis": "The TA correctly identified that the range should be from 2 to n in the for loop, addressing a mistake made by the student.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 249,
@@ -6260,8 +6344,29 @@
     },
     {
         "sid": 271,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The initial condition in the while loop should be n != 1 instead of n != 0\", \"The division operator should be '//' when calculating n/2\"],\n    \"fixes\": [\"Change the while loop condition to n != 1\", \"Use the '//' operator for integer division when calculating n/2\"],\n    \"feedback_lines\": [],\n}\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student did not correctly handle the stopping condition in the while loop.\"], \n    \"fixes\": [\"Change the while loop condition to n != 1 and use floor division operator // instead of regular division operator /.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 4, \n            \"feedback\": \"The condition in the while loop should be n != 1 instead of n != 0.\", \n            \"analysis\": \"The TA has correctly identified the mistake in the stopping condition.\",\n            \"classification\": \"valid\" \n        }, \n        {\n            \"line_number\": 6,\n            \"feedback\": \"Use the floor division operator (//) instead of the regular division operator (/) to ensure the result is an integer.\", \n            \"analysis\": \"The feedback incorrectly suggests the division operator needs to be changed when the issue is actually with the stopping condition. Thus, this feedback is invalid.\",\n            \"classification\": \"invalid\" \n        }\n    ]\n}\n```\n",
+        "output": {
+            "mistakes": [
+                "The student did not correctly handle the stopping condition in the while loop."
+            ],
+            "fixes": [
+                "Change the while loop condition to n != 1 and use floor division operator // instead of regular division operator /."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 4,
+                    "feedback": "The condition in the while loop should be n != 1 instead of n != 0.",
+                    "analysis": "The TA has correctly identified the mistake in the stopping condition.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 6,
+                    "feedback": "Use the floor division operator (//) instead of the regular division operator (/) to ensure the result is an integer.",
+                    "analysis": "The feedback incorrectly suggests the division operator needs to be changed when the issue is actually with the stopping condition. Thus, this feedback is invalid.",
+                    "classification": "invalid"
+                }
+            ]
+        }
     },
     {
         "sid": 272,
@@ -7347,8 +7452,16 @@
     },
     {
         "sid": 319,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student has made multiple mistakes in the logic of calculating scores and determining the winner.\"],\n    \"fixes\": [\"Fixed the logic to properly calculate scores and determine the winner.\"],\n    \"feedback_lines\": [],\n}\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student's code does not correctly handle the condition for continuous win streaks by the same player.\"], \n    \"fixes\": [\"Ensure that the code properly iterates over the input list to handle win streaks.\"],\n    \"feedback_lines\": []\n}\n```",
+        "output": {
+            "mistakes": [
+                "The student's code does not correctly handle the condition for continuous win streaks by the same player."
+            ],
+            "fixes": [
+                "Ensure that the code properly iterates over the input list to handle win streaks."
+            ],
+            "feedback_lines": []
+        }
     },
     {
         "sid": 320,
@@ -7852,8 +7965,29 @@
     },
     {
         "sid": 342,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student incorrectly assigned 'ans' without tracing the code properly, leading to an incorrect output.\"],\n    \"fixes\": [\"The TA corrected the code by initializing 'ans' to 0 and tracing the list elements based on the given logic.\"],\n    \"feedback_lines\": [],\n}\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student incorrectly assigned the initial value to 'ans'.\"], \n    \"fixes\": [\"Set the initial value of 'ans' to 0 instead of 6.\"],\n    \"feedback_lines\": [ \n        { \n            \"line_number\": 1, \n            \"feedback\": \"The initial value of 'ans' should be 0, not 6.\", \n            \"analysis\": \"The TA has accurately identified the mistake in the student's code and provided the correct initial value.\",\n            \"classification\": \"valid\" \n        }, \n        { \n            \"line_number\": 4,\n            \"feedback\": \"The indexing of the 'list' should be done using 'ans' instead of 'var'.\", \n            \"analysis\": \"The TA has correctly pointed out the mistake in the student's code related to indexing.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": {
+            "mistakes": [
+                "The student incorrectly assigned the initial value to 'ans'."
+            ],
+            "fixes": [
+                "Set the initial value of 'ans' to 0 instead of 6."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 1,
+                    "feedback": "The initial value of 'ans' should be 0, not 6.",
+                    "analysis": "The TA has accurately identified the mistake in the student's code and provided the correct initial value.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 4,
+                    "feedback": "The indexing of the 'list' should be done using 'ans' instead of 'var'.",
+                    "analysis": "The TA has correctly pointed out the mistake in the student's code related to indexing.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 343,

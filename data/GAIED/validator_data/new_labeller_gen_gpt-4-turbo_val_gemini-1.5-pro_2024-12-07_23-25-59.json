@@ -1629,15 +1629,23 @@
     },
     {
         "sid": 35,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student's code always returns num1, regardless of whether it's smaller than num2.\"],\n    \"fixes\": [\"The TA added an if-else statement to correctly assign the smaller value to the result variable.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 3,\n            \"feedback\": \"You\\'re on the right track\",\n            \"analysis\": \"This feedback is invalid. While the student correctly declared the result variable, the logic to assign the smaller value is missing.  \\\"You're on the right track\\\" is too vague and doesn't guide the student towards the correct solution.\",\n            \"classification\": \"invalid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": "3",
-                "feedback": "You're on the right trac",
-                "category": "TP"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student's code always returns num1, regardless of whether num2 is smaller.\"],\n    \"fixes\": [\"The TA added an if-else statement to correctly assign the smaller value to the result variable.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 3,\n            \"feedback\": \"You're on the right track\",\n            \"analysis\": \"This feedback is invalid. While the student did declare the 'result' variable, the logic to assign the smaller value was missing.  \\\"You're on the right track\\\" is too vague and doesn't guide the student towards the correct solution.  It doesn't point out the missing conditional logic.\",\n            \"classification\": \"invalid\"\n        }\n    ]\n}\n```\n",
+        "output": {
+            "mistakes": [
+                "The student's code always returns num1, regardless of whether num2 is smaller."
+            ],
+            "fixes": [
+                "The TA added an if-else statement to correctly assign the smaller value to the result variable."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 3,
+                    "feedback": "You're on the right track",
+                    "analysis": "This feedback is invalid. While the student did declare the 'result' variable, the logic to assign the smaller value was missing.  \"You're on the right track\" is too vague and doesn't guide the student towards the correct solution.  It doesn't point out the missing conditional logic.",
+                    "classification": "invalid"
+                }
+            ]
+        }
     },
     {
         "sid": 36,
@@ -3078,30 +3086,43 @@
     },
     {
         "sid": 70,
-        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student's code inefficiently compares the digits of the number and its reverse individually instead of directly comparing the string representations.\"\n    ],\n    \"fixes\": [\n        \"Directly compare the string representation of the number (x) and its reverse (y) using 'x == y'.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 7,\n            \"feedback\": \"You don't need to compare each digit of the number and its reverse individually. You can directly compare the strings. If they are equa\",\n            \"analysis\": \"This feedback is valid. The student's code does iterate through each digit, which is unnecessary.  Direct string comparison is the correct approach.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 8,\n            \"feedback\": \"The \\'els\",\n            \"analysis\": \"This feedback is incomplete and thus invalid. It seems to be referring to the 'else' block, but doesn't clearly explain why it's unnecessary when comparing the entire strings.\",\n            \"classification\": \"invalid\"\n        },\n        {\n            \"line_number\": 10,\n            \"feedback\": \"The check \\'if i == len(x\\'\",\n            \"analysis\": \"This is valid.  The check `if i == len(x)` becomes redundant when direct string comparison is used.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 12,\n            \"feedback\": \"The \\'pass\\' statement is not needed. It is used when a statement is required syntacticall\",\n            \"analysis\": \"This is valid. The `pass` statement at the end of the function serves no purpose and can be removed.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": "7",
-                "feedback": "You don't need to compare each digit of the number and its reverse individually. You can directly compare the strings. If they are equa",
-                "category": "TP"
-            },
-            {
-                "line_number": "8",
-                "feedback": "The 'els",
-                "category": "FP-I"
-            },
-            {
-                "line_number": "10",
-                "feedback": "The check 'if i == len(x",
-                "category": "FP-I"
-            },
-            {
-                "line_number": "12",
-                "feedback": "The 'pass' statement is not needed. It is used when a statement is required syntacticall",
-                "category": "FP-E"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student's code inefficiently compares the digits of the number and its reverse individually instead of directly comparing the string representations.\",\n        \"The student's code has unnecessary nested loop and conditional statements which make the code more complex than it needs to be.\"\n    ],\n    \"fixes\": [\n        \"Directly compare the string representations of the number and its reverse using 'x == y'.\",\n        \"Remove the nested loop and simplify the conditional statement.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 7,\n            \"feedback\": \"You don't need to compare each digit of the number and its reverse individually. You can directly compare the strings. If they are equa\",\n            \"analysis\": \"This feedback correctly points out the inefficiency of comparing individual digits and suggests the correct approach of comparing strings directly. Although incomplete, the core message is valid.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 8,\n            \"feedback\": \"The 'els\",\n            \"analysis\": \"This feedback is incomplete and doesn't provide meaningful information about the error. It seems to be a fragment related to the 'else' block, but doesn't explain why it's incorrect.\",\n            \"classification\": \"invalid\"\n        },\n        {\n            \"line_number\": 10,\n            \"feedback\": \"The check 'if i == len(x'\",\n            \"analysis\": \"This feedback is also incomplete and doesn't clearly explain why the check is problematic. While the check is unnecessary in the corrected version, the feedback doesn't provide sufficient context or guidance.\",\n            \"classification\": \"invalid\"\n        },\n        {\n            \"line_number\": 12,\n            \"feedback\": \"The 'pass' statement is not needed. It is used when a statement is required syntacticall\",\n            \"analysis\": \"This feedback is valid. The 'pass' statement at the end of the function is redundant and serves no purpose.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": {
+            "mistakes": [
+                "The student's code inefficiently compares the digits of the number and its reverse individually instead of directly comparing the string representations.",
+                "The student's code has unnecessary nested loop and conditional statements which make the code more complex than it needs to be."
+            ],
+            "fixes": [
+                "Directly compare the string representations of the number and its reverse using 'x == y'.",
+                "Remove the nested loop and simplify the conditional statement."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 7,
+                    "feedback": "You don't need to compare each digit of the number and its reverse individually. You can directly compare the strings. If they are equa",
+                    "analysis": "This feedback correctly points out the inefficiency of comparing individual digits and suggests the correct approach of comparing strings directly. Although incomplete, the core message is valid.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 8,
+                    "feedback": "The 'els",
+                    "analysis": "This feedback is incomplete and doesn't provide meaningful information about the error. It seems to be a fragment related to the 'else' block, but doesn't explain why it's incorrect.",
+                    "classification": "invalid"
+                },
+                {
+                    "line_number": 10,
+                    "feedback": "The check 'if i == len(x'",
+                    "analysis": "This feedback is also incomplete and doesn't clearly explain why the check is problematic. While the check is unnecessary in the corrected version, the feedback doesn't provide sufficient context or guidance.",
+                    "classification": "invalid"
+                },
+                {
+                    "line_number": 12,
+                    "feedback": "The 'pass' statement is not needed. It is used when a statement is required syntacticall",
+                    "analysis": "This feedback is valid. The 'pass' statement at the end of the function is redundant and serves no purpose.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 71,
@@ -3756,40 +3777,8 @@
     },
     {
         "sid": 86,
-        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"Unnecessary use of eval() function for assigning values to n and s.\",\n        \"Incorrect usage of tan() and pi. The math module needs to be imported and used correctly (math.tan and math.pi).\",\n        \"The area function is not called with arguments n and s when formatting the result.\"\n    ],\n    \"fixes\": [\n        \"Removed eval() calls and directly assigned values to n and s.\",\n        \"Imported the math module and used math.tan() and math.pi\",\n        \"Called the area function with n and s as arguments: area(n, s)\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"The eval function is not needed here, you can directly assign the values to n and s.\",\n            \"analysis\": \"This is a valid feedback. The student used eval() unnecessarily.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"The eval function is not needed here, you can directly assign the values to n and s.\",\n            \"analysis\": \"This is a valid feedback. The student used eval() unnecessarily.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 4,\n            \"feedback\": \"The eval function is not needed here, you can directly assign the values to n and s.\",\n            \"analysis\": \"This feedback is somewhat redundant since it's covered by lines 2 and 3. It's still valid regarding `eval`, but less helpful due to repetition.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 5,\n            \"feedback\": \"The eval function is not needed here, you can directly assign the values to n and s.\",\n            \"analysis\": \"This feedback is somewhat redundant since it's covered by lines 2 and 3. It's still valid regarding `eval`, but less helpful due to repetition.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 6,\n            \"feedback\": \"You need to import the math module to use the tan function and also the pi constant. Replace \\\"pi\\\" with math.pi and \\\"tan\\\" with math.tan.\",\n            \"analysis\": \"This is valid and crucial feedback. It correctly points out the missing math module import and the correct usage of tan and pi.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 8,\n            \"feedback\": \"You need to call the area function with parameters n and s. Replace \\\"area\\\" with \\\"area(\\'\",\n            \"analysis\": \"This is valid feedback, though incomplete. It correctly identifies that the area function needs to be called with arguments, but the feedback cuts off abruptly.  It should have said something like:  'Replace \\\"area\\\" with \\\"area(n, s)\\\".'\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": "2",
-                "feedback": "The eval function is not needed here, you can directly assign the values to n and s.",
-                "category": "TP"
-            },
-            {
-                "line_number": "3",
-                "feedback": "The eval function is not needed here, you can directly assign the values to n and s.",
-                "category": "TP"
-            },
-            {
-                "line_number": "4",
-                "feedback": "The eval function is not needed here, you can directly assign the values to n and s.",
-                "category": "FP-H"
-            },
-            {
-                "line_number": "5",
-                "feedback": "The eval function is not needed here, you can directly assign the values to n and s.",
-                "category": "FP-H"
-            },
-            {
-                "line_number": "6",
-                "feedback": "You need to import the math module to use the tan function and also the pi constant. Replace \"pi\" with math.pi and \"tan\" with math.tan.",
-                "category": "TP"
-            },
-            {
-                "line_number": "8",
-                "feedback": "You need to call the area function with parameters n and s. Replace \"area\" with \"area(",
-                "category": "TP"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"Unnecessary use of eval() function for assigning values to n and s.\",\n        \"Incorrect usage of tan() and pi. They should be accessed from the math module (math.tan() and math.pi)\",\n        \"The area function is not being called with the required parameters n and s when formatting the result.\"\n    ],\n    \"fixes\": [\n        \"Removed the eval() calls and directly assign values to n and s.\",\n        \"Imported the math module and used math.tan() and math.pi.\",\n        \"Called the area function with parameters n and s (area(n, s)) and formatted the returned value.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"The eval function is not needed here, you can directly assign the values to n and s.\",\n            \"analysis\": \"This feedback is valid. The eval function is not necessary and introduces potential security risks.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"The eval function is not needed here, you can directly assign the values to n and s.\",\n            \"analysis\": \"This feedback is valid. The eval function is not necessary and introduces potential security risks.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 4,\n            \"feedback\": \"The eval function is not needed here, you can directly assign the values to n and s.\",\n            \"analysis\": \"This feedback is redundant, but technically correct. The eval function is not necessary\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 5,\n            \"feedback\": \"The eval function is not needed here, you can directly assign the values to n and s.\",\n            \"analysis\": \"This feedback is redundant, but technically correct. The eval function is not necessary\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 6,\n            \"feedback\": \"You need to import the math module to use the tan function and also the pi constant. Replace \\\"pi\\\" with math.pi and \\\"tan\\\" with math.tan.\",\n            \"analysis\": \"This is valid feedback.  The student needs to use the math module for tan and pi.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 8,\n            \"feedback\": \"You need to call the area function with parameters n and s. Replace \\\"area\\\" with \\\"area(\\'\",\n            \"analysis\": \"This is valid feedback. The area function requires the arguments n and s to be passed when called.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
+        "output": []
     },
     {
         "sid": 87,
@@ -3820,20 +3809,8 @@
     },
     {
         "sid": 88,
-        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student's code does not generate a random uppercase letter.\",\n        \"The student's code initializes 'result' to 0, which is not a letter.\",\n        \"The student imports the 'math' module, which is not needed for this task.\"\n    ],\n    \"fixes\": [\n        \"Import the 'random' module.\",\n        \"Use 'random.randint(65, 90)' to generate a random integer representing an uppercase ASCII character.\",\n        \"Use 'chr()' to convert the integer to its character representation.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 1,\n            \"feedback\": \"You don\\\\\\\\\\'t need to import the entire math modul\",\n            \"analysis\": \"While technically incomplete, the feedback correctly points out that the 'math' module is unnecessary and therefore shouldn't be imported.  It would be better if the feedback explicitly stated *why* it is unnecessary and perhaps hint at the correct module to use ('random').\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 2,\n            \"feedback\": \"The variable result should store a randomly generated uppercase letter, not a number. You can use the random.randint function to generate a random number between 65 and 90 (inclusive), which are the ASCII values for uppercase letters, and then use the chr function to convert these ASCII values to their corresponding characters.\",\n            \"analysis\": \"This feedback is valid. It accurately identifies that 'result' should hold a letter, not a number, and provides the correct approach using 'random.randint' and 'chr'. While the feedback mentions 65 and 90 (inclusive), the fixed code uses 65 and 91. This slight discrepancy doesn't invalidate the core message and using 90 is actually more correct (91 is '[').\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": "1",
-                "feedback": "You don\\'t need to import the entire math modul",
-                "category": "TP"
-            },
-            {
-                "line_number": "2",
-                "feedback": "The variable result should store a randomly generated uppercase letter, not a number. You can use the random.randint function to generate a random number between 65 and 90 (inclusive), which are the ASCII values for uppercase letters, and then use the chr function to convert these ASCII values to their corresponding characters.",
-                "category": "TP"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student's code does not generate a random uppercase letter.\",\n        \"The student's code initializes 'result' to 0, which is not a letter.\",\n        \"The student imports the 'math' module, which is not necessary for this task.\"\n    ],\n    \"fixes\": [\n        \"Import the 'random' module.\",\n        \"Use 'random.randint(65, 90)' to generate a random integer representing an uppercase letter's ASCII value.\",\n        \"Use 'chr()' to convert the ASCII value to a character.\",\n        \"Store the resulting character in the 'result' variable.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 1,\n            \"feedback\": \"You don\\\\\\\\\\'t need to import the entire math modul\",\n            \"analysis\": \"This feedback is partially valid.  While the phrasing is incomplete and has an extra backslash, it correctly points out that the `math` module is unnecessary.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 2,\n            \"feedback\": \"The variable result should store a randomly generated uppercase letter, not a number. You can use the random.randint function to generate a random number between 65 and 90 (inclusive), which are the ASCII values for uppercase letters, and then use the chr function to convert these ASCII values to their corresponding characters.\",\n            \"analysis\": \"This feedback is valid. It correctly identifies that 'result' should hold a letter and provides guidance on using 'random.randint' with 'chr' to achieve this. Though, it should be 65 and 90 inclusive, corresponding to 'A' and 'Z'.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": []
     },
     {
         "sid": 89,
@@ -3918,15 +3895,25 @@
     },
     {
         "sid": 92,
-        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student used an invalid increment operator '++' instead of '+=' in the last loop. This prevented the lowercase character from being appended correctly to the result string, leading to an incorrect string format.\"\n    ],\n    \"fixes\": [\n        \"Corrected the invalid increment operator '++' to '+=' in the last loop to ensure proper appending of the lowercase character to the result string and achieve the correct 'CCNNNc' format.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 10,\n            \"feedback\": \"You have a syntax error in this line. The increment operator in python is \\\"+=\\'\",\n            \"analysis\": \"This feedback is valid. The student used '++', which is invalid Python syntax. The correct operator for appending is '+='.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": "10",
-                "feedback": "You have a syntax error in this line. The increment operator in python is \"+=",
-                "category": "TP"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student's code has an incorrect increment operator. It uses '++' which is not valid in Python.  It should be '+='.\",\n        \"The student's code generates a string with an incorrect format. It produces CCNNNcc instead of CCNNNc.\"\n    ],\n    \"fixes\": [\n        \"Changed '++' to '+='\",\n        \"Corrected the final loop to iterate only once, ensuring only one lowercase character is added.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 10,\n            \"feedback\": \"You have a syntax error in this line. The increment operator in python is \\\"+=\\\"\",\n            \"analysis\": \"This feedback is valid. The student used '++' which is invalid Python syntax for string concatenation.  The correct operator is '+='.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": {
+            "mistakes": [
+                "The student's code has an incorrect increment operator. It uses '++' which is not valid in Python.  It should be '+='.",
+                "The student's code generates a string with an incorrect format. It produces CCNNNcc instead of CCNNNc."
+            ],
+            "fixes": [
+                "Changed '++' to '+='",
+                "Corrected the final loop to iterate only once, ensuring only one lowercase character is added."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 10,
+                    "feedback": "You have a syntax error in this line. The increment operator in python is \"+=\"",
+                    "analysis": "This feedback is valid. The student used '++' which is invalid Python syntax for string concatenation.  The correct operator is '+='.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 93,
@@ -4169,25 +4156,35 @@
     },
     {
         "sid": 98,
-        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student incorrectly used escape characters and split the string unnecessarily.\",\n        \"Specifically, the student used too many backslashes when attempting to escape quotes and the nested backslash.\"\n    ],\n    \"fixes\": [\n        \"The TA combined the string into a single line and corrected the escape characters.\",\n        \"Specifically, single quotes within the string are escaped with a single backslash (\\\\'), and the nested backslash is escaped with four backslashes (\\\\\\\\\\\\\\\\).\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 1,\n            \"feedback\": \"You were on the right track with using escape characters, but you need to use them correctly. The backslash (\\\\\\\\) is used to escape special characters like quotes. To include a backslash in a string, you need to escape it with another backslash (\\\\\\\\\\\\\\\\). Also, you don\\'t need to split the string into two parts. You can define the entire string in one line.\",\n            \"analysis\": \"This feedback is mostly valid.  The TA correctly points out the misuse of escape characters and the unnecessary splitting of the string.  However, the explanation of escaping backslashes is confusing and could be clearer.  While technically correct that two backslashes (\\\\\\\\) represent a single backslash within a string, the student's error stemmed from using too many backslashes, not too few. The feedback should have focused on the specific error, e.g., to represent a single quote within a string, you only need one backslash (\\\\\\').\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 2,\n            \"feedback\": \"This line is unnecessary. The entire string can be defined in one line.\",\n            \"analysis\": \"This feedback is valid. Splitting the string across multiple lines was unnecessary and contributed to the student's confusion with escape characters.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"This line is unnecessary. The entire string can be defined in one line.\",\n            \"analysis\": \"This feedback is valid, for the same reason as the feedback on line 2.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": "1",
-                "feedback": "You were on the right track with using escape characters, but you need to use them correctly. The backslash (\\) is used to escape special characters like quotes. To include a backslash in a string, you need to escape it with another backslash (\\\\). Also, you don't need to split the string into two parts. You can define the entire string in one line.",
-                "category": "FP-I"
-            },
-            {
-                "line_number": "2",
-                "feedback": "This line is unnecessary. The entire string can be defined in one line.",
-                "category": "FP-E"
-            },
-            {
-                "line_number": "3",
-                "feedback": "This line is unnecessary. The entire string can be defined in one line.",
-                "category": "FP-E"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student incorrectly used escape characters and split the string unnecessarily.\"\n    ],\n    \"fixes\": [\n        \"The TA combined the string into a single line and correctly used escape characters for quotes and backslashes.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 1,\n            \"feedback\": \"You were on the right track with using escape characters, but you need to use them correctly. The backslash (\\\\\\\\) is used to escape special characters like quotes. To include a backslash in a string, you need to escape it with another backslash (\\\\\\\\\\\\\\\\). Also, you don't need to split the string into two parts. You can define the entire string in one line.\",\n            \"analysis\": \"This feedback is valid. The student's code has issues with escaping backslashes and quotes, and splitting the string is unnecessary.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 2,\n            \"feedback\": \"This line is unnecessary. The entire string can be defined in one line.\",\n            \"analysis\": \"This feedback is valid.  Splitting the string into multiple parts adds complexity without any benefit.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"This line is unnecessary. The entire string can be defined in one line.\",\n            \"analysis\": \"This feedback is valid, for the same reason as the feedback on line 2.  It correctly points out the unnecessary string concatenation.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": {
+            "mistakes": [
+                "The student incorrectly used escape characters and split the string unnecessarily."
+            ],
+            "fixes": [
+                "The TA combined the string into a single line and correctly used escape characters for quotes and backslashes."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 1,
+                    "feedback": "You were on the right track with using escape characters, but you need to use them correctly. The backslash (\\\\) is used to escape special characters like quotes. To include a backslash in a string, you need to escape it with another backslash (\\\\\\\\). Also, you don't need to split the string into two parts. You can define the entire string in one line.",
+                    "analysis": "This feedback is valid. The student's code has issues with escaping backslashes and quotes, and splitting the string is unnecessary.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 2,
+                    "feedback": "This line is unnecessary. The entire string can be defined in one line.",
+                    "analysis": "This feedback is valid.  Splitting the string into multiple parts adds complexity without any benefit.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 3,
+                    "feedback": "This line is unnecessary. The entire string can be defined in one line.",
+                    "analysis": "This feedback is valid, for the same reason as the feedback on line 2.  It correctly points out the unnecessary string concatenation.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 99,
@@ -6321,25 +6318,8 @@
     },
     {
         "sid": 154,
-        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"Incorrect handling of out-of-range inputs (should return False, not None).\",\n        \"Incorrect palindrome check for two-digit numbers (using modulo 11 instead of comparing digits).\",\n        \"Incorrect palindrome check for three-digit numbers (complex calculation instead of comparing first and last digits).\"\n    ],\n    \"fixes\": [\n        \"Changed the out-of-range check to 'number > 999 or number < 0' and returns False.\",\n        \"Corrected the two-digit palindrome check to 'number % 10 == number // 10'.\",\n        \"Simplified the three-digit palindrome check to compare 'hundreds == ones'.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 4,\n            \"feedback\": \"The condition to check if the number is out of range is incorrect. It should be \\'number > 999 or number < 0\",\n            \"analysis\": \"The original code returned None for out-of-range inputs instead of False.  The feedback correctly identifies this and suggests the correct condition.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 9,\n            \"feedback\": \"The condition to check if a two-digit number is a palindrome is incorrect. It should be \\'number % 10 == number // 10\",\n            \"analysis\": \"The student's code incorrectly used the modulo 11 operator.  The feedback correctly points out the mistake and provides the correct way to compare the two digits.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 17,\n            \"feedback\": \"The condition to check if a three-digit number is a palindrome is incorrect. It should be \\'hundreds == ones\",\n            \"analysis\": \"The student's code used a convoluted calculation. The feedback correctly identifies this and suggests the simpler and accurate comparison of the first and last digits.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": "4",
-                "feedback": "The condition to check if the number is out of range is incorrect. It should be 'number > 999 or number < 0",
-                "category": "TP"
-            },
-            {
-                "line_number": "9",
-                "feedback": "The condition to check if a two-digit number is a palindrome is incorrect. It should be 'number % 10 == number // 10",
-                "category": "FP-I"
-            },
-            {
-                "line_number": "17",
-                "feedback": "The condition to check if a three-digit number is a palindrome is incorrect. It should be 'hundreds == ones",
-                "category": "TP"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"Incorrect range check for invalid input. Should return False explicitly when number < 0 or number > 999\",\n        \"Incorrect logic for checking palindromes for two-digit numbers. Should compare the digits directly.\",\n        \"Incorrect logic for checking palindromes for three-digit numbers. Should extract the hundreds and ones digits and compare them.\"\n    ],\n    \"fixes\": [\n        \"Changed the range check to 'number > 999 or number < 0' and added 'return False'\",\n        \"Corrected the two-digit palindrome check to 'number % 10 == number // 10'\",\n        \"Corrected the three-digit palindrome check by extracting the hundreds and ones digits correctly and comparing them: 'hundreds == ones'\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 4,\n            \"feedback\": \"The condition to check if the number is out of range is incorrect. It should be \\'number > 999 or number < 0\",\n            \"analysis\": \"The original code returned None when number was out of range, not a boolean.  The corrected code fixes both the condition and the return value. The TA feedback points out the range issue correctly.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 9,\n            \"feedback\": \"The condition to check if a two-digit number is a palindrome is incorrect. It should be \\'number % 10 == number // 10\",\n            \"analysis\": \"The original code's modulo 11 check was not a valid way to determine two-digit palindromes. The TA's suggested fix correctly compares the digits using modulo and integer division.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 17,\n            \"feedback\": \"The condition to check if a three-digit number is a palindrome is incorrect. It should be \\'hundreds == ones\",\n            \"analysis\": \"The student's original three-digit check was overly complicated and incorrect. The TA's suggested fix is the direct comparison of hundreds and ones digits; much simpler and correct.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": []
     },
     {
         "sid": 155,
@@ -8794,30 +8774,45 @@
     },
     {
         "sid": 203,
-        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"Incorrect use of 'whileif' which is not a valid keyword in Python.\",\n        \"Incorrect logic for determining the state of the turnstiles.  The student uses subtraction instead of the modulo operator to account for the repeating cycles of the turnstiles.\",\n        \"The variable 'ans' is not initialized before use.\"\n    ],\n    \"fixes\": [\n        \"Replace 'whileif' with separate 'if' statements.\",\n        \"Use the modulo operator (%) to determine the position within the turnstile's cycle (A+B and C+D respectively). Check if this position is less than the operational time (A or C).\",\n        \"Initialize 'ans' to 0 before the conditional checks.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"The keyword \\\"whileif\\\" doesn\\\\\\\\\\\\\\'t exist in Python. You probably meant to use \\\"while\\\" or \\\"if\\\".\",\n            \"analysis\": \"This feedback is valid. The student code uses 'whileif', which is not a Python keyword. The correct approach is to use separate 'if' statements.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"The logic of your code is incorrect. You should check if the remainder of (X-1) divided by (A + B) is less than A. This will determine if the first turnstile is operational.\",\n            \"analysis\": \"This feedback is valid.  It correctly points out the flawed logic and provides the correct way to use the modulo operator to determine the turnstile's state.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 5,\n            \"feedback\": \"You should also check if the remainder of (X-1) divided by (C + D) is less than C. This will determine if the second turnstile is operational.\",\n            \"analysis\": \"This feedback is valid. It correctly explains how to determine the state of the second turnstile using the modulo operator.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 7,\n            \"feedback\": \"The variable \\\"ans\\\" is not defined in your code. You should initialize it before the if statements and increment it if a turnstile is operational.\",\n            \"analysis\": \"This feedback is valid.  The variable 'ans' needs to be initialized to 0 before being used to store the count of operational turnstiles.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": "2",
-                "feedback": "The keyword \"whileif\" doesn\\'t exist in Python. You probably meant to use \"while\" or \"if\".",
-                "category": "TP"
-            },
-            {
-                "line_number": "3",
-                "feedback": "The logic of your code is incorrect. You should check if the remainder of (X-1) divided by (A + B) is less than A. This will determine if the first turnstile is operational.",
-                "category": "TP"
-            },
-            {
-                "line_number": "5",
-                "feedback": "You should also check if the remainder of (X-1) divided by (C + D) is less than C. This will determine if the second turnstile is operational.",
-                "category": "TP"
-            },
-            {
-                "line_number": "7",
-                "feedback": "The variable \"ans\" is not defined in your code. You should initialize it before the if statements and increment it if a turnstile is operational.",
-                "category": "TP"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student used an invalid keyword 'whileif'.\",\n        \"The student's logic for checking the turnstile status is incorrect. It involves repeated subtraction instead of using the modulo operator to determine the position within a cycle.\",\n        \"The student did not initialize the variable 'ans' to store the count of operational turnstiles.\"\n    ],\n    \"fixes\": [\n        \"Replaced 'whileif' with separate 'if' statements.\",\n        \"Used the modulo operator (%) to determine the turnstile's state within its operational cycle.\",\n        \"Initialized 'ans' to 0 and incremented it based on the turnstile states.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"The keyword \\\"whileif\\\" doesn\\\\\\\\\\\\'t exist in Python. You probably meant to use \\\"while\\\" or \\\"if\\\".\",\n            \"analysis\": \"This feedback is valid. The student code uses the non-existent keyword 'whileif'.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"The logic of your code is incorrect. You should check if the remainder of (X-1) divided by (A + B) is less than A. This will determine if the first turnstile is operational.\",\n            \"analysis\": \"This feedback is valid.  The student's subtractive logic is flawed, and the TA correctly suggests using the modulo operator to determine the state within the cycle.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 5,\n            \"feedback\": \"You should also check if the remainder of (X-1) divided by (C + D) is less than C. This will determine if the second turnstile is operational.\",\n            \"analysis\": \"This feedback is valid.  It builds on the previous feedback, applying the correct logic to the second turnstile.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 7,\n            \"feedback\": \"The variable \\\"ans\\\" is not defined in your code. You should initialize it before the if statements and increment it if a turnstile is operational.\",\n            \"analysis\": \"This feedback is valid. The variable 'ans' was not initialized, leading to an error.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
+        "output": {
+            "mistakes": [
+                "The student used an invalid keyword 'whileif'.",
+                "The student's logic for checking the turnstile status is incorrect. It involves repeated subtraction instead of using the modulo operator to determine the position within a cycle.",
+                "The student did not initialize the variable 'ans' to store the count of operational turnstiles."
+            ],
+            "fixes": [
+                "Replaced 'whileif' with separate 'if' statements.",
+                "Used the modulo operator (%) to determine the turnstile's state within its operational cycle.",
+                "Initialized 'ans' to 0 and incremented it based on the turnstile states."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 2,
+                    "feedback": "The keyword \"whileif\" doesn\\\\\\'t exist in Python. You probably meant to use \"while\" or \"if\".",
+                    "analysis": "This feedback is valid. The student code uses the non-existent keyword 'whileif'.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 3,
+                    "feedback": "The logic of your code is incorrect. You should check if the remainder of (X-1) divided by (A + B) is less than A. This will determine if the first turnstile is operational.",
+                    "analysis": "This feedback is valid.  The student's subtractive logic is flawed, and the TA correctly suggests using the modulo operator to determine the state within the cycle.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 5,
+                    "feedback": "You should also check if the remainder of (X-1) divided by (C + D) is less than C. This will determine if the second turnstile is operational.",
+                    "analysis": "This feedback is valid.  It builds on the previous feedback, applying the correct logic to the second turnstile.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 7,
+                    "feedback": "The variable \"ans\" is not defined in your code. You should initialize it before the if statements and increment it if a turnstile is operational.",
+                    "analysis": "This feedback is valid. The variable 'ans' was not initialized, leading to an error.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 204,
@@ -9102,20 +9097,8 @@
     },
     {
         "sid": 210,
-        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student's code does not correctly account for the fact that the minute X starts from 1, not 0.  The modulo operation should be applied to (X-1) to align with the 0-indexed cycle of operation and breakdown.\"\n    ],\n    \"fixes\": [\n        \"Subtract 1 from X before taking the modulo in both turnstile checks.  Change `X % (A + B)` to `(X - 1) % (A + B)` and `X % (C + D)` to `(X - 1) % (C + D)`.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"You need to subtract 1 from X before performing the modulo operation. This is because the problem statement says \\\"if X is \\'\",\n            \"analysis\": \"The TA correctly points out the need to subtract 1 from X before the modulo operation. The feedback also provides a partial explanation about why it is necessary by referring to the problem statement's implication of 1-based indexing..\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 5,\n            \"feedback\": \"You need to subtract 1 from X before performing the modulo operation. This is because the problem statement says \\\"if X is \\'\",\n            \"analysis\": \"This feedback is also valid. It correctly identifies the same off-by-one error on the second turnstile's check and provides the same explanation.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": "2",
-                "feedback": "You need to subtract 1 from X before performing the modulo operation. This is because the problem statement says \"if X is ",
-                "category": "TP"
-            },
-            {
-                "line_number": "5",
-                "feedback": "You need to subtract 1 from X before performing the modulo operation. This is because the problem statement says \"if X is ",
-                "category": "TP"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student's code does not account for the fact that the time X represents the *end* of the Xth minute, not the beginning. Therefore, to check if a turnstile is operational at time X, the code should check if X-1 falls within the operational period of the turnstile.\"\n    ],\n    \"fixes\": [\n        \"Subtract 1 from X before using the modulo operator to determine the state of each turnstile.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"You need to subtract 1 from X before performing the modulo operation. This is because the problem statement says \\\"if X is \\'\",\n            \"analysis\": \"This feedback is valid. The student's code incorrectly uses X directly in the modulo operation.  The problem specifies X as the *minute* of arrival.  For example, X=3 implies the interval of time from t=2 to t=3.  Thus, turnstile 1 is open at minute X if (X-1)%(A+B) < A. The TA correctly points out the need to subtract 1 from X. Though the feedback is abruptly cut off, the core message about subtracting 1 is present and valid.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 5,\n            \"feedback\": \"You need to subtract 1 from X before performing the modulo operation. This is because the problem statement says \\\"if X is \\'\",\n            \"analysis\": \"This feedback is valid, echoing the same valid point as for the previous feedback line.  It addresses the same conceptual error applied to the second turnstile's operation calculation.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": []
     },
     {
         "sid": 211,
@@ -10530,20 +10513,8 @@
     },
     {
         "sid": 246,
-        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student's code does not handle the case where the input number is less than or equal to 1 correctly.\",\n        \"The student's code uses a strict less than comparison in the while loop condition, which can lead to incorrect results for perfect square numbers.\"\n    ],\n    \"fixes\": [\n        \"Added a condition at the beginning of the function to check if n <= 1 and return False if so.\",\n        \"Changed the while loop condition from i < int(math.sqrt(n)) to i <= int(math.sqrt(n)).\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 3,\n            \"feedback\": \"You need to add a condition to check if the input number is less than or equal to 1. If it is, the function should return False because 1 is not a prime number and negative numbers are not considered in prime number theory.\",\n            \"analysis\": \"This feedback is valid. The student's original code did not handle the case where n <= 1, which is necessary for the function to be correct.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 5,\n            \"feedback\": \"The condition in your while loop should be \\\"i <= int(math.sqrt(n))\\\" instead of \\\"i < int(math.sqrt(n))\\\". This is because you want to check divisibility up to and including the square root of the number. If you don\\\\\\'t include the square roo\",\n            \"analysis\": \"This feedback is valid.  The student's code failed test cases like is_prime(4) and is_prime(9) because the loop condition was too restrictive.  By changing it to \\\"i <= int(math.sqrt(n))\\\", the code now correctly identifies numbers which are perfect squares as not prime.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": "3",
-                "feedback": "You need to add a condition to check if the input number is less than or equal to 1. If it is, the function should return False because 1 is not a prime number and negative numbers are not considered in prime number theory.",
-                "category": "TP"
-            },
-            {
-                "line_number": "5",
-                "feedback": "The condition in your while loop should be \"i <= int(math.sqrt(n))\" instead of \"i < int(math.sqrt(n))\". This is because you want to check divisibility up to and including the square root of the number. If you don't include the square roo",
-                "category": "TP"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student's code does not handle the case where the input number is less than or equal to 1 correctly.\",\n        \"The student's code uses a strict less than operator in the while loop condition, which can lead to incorrect results for perfect squares.\"\n    ],\n    \"fixes\": [\n        \"Add a condition at the beginning of the function to check if n is less than or equal to 1. If it is, return False.\",\n        \"Change the while loop condition from 'i < int(math.sqrt(n))' to 'i <= int(math.sqrt(n))'.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 3,\n            \"feedback\": \"You need to add a condition to check if the input number is less than or equal to 1. If it is, the function should return False because 1 is not a prime number and negative numbers are not considered in prime number theory.\",\n            \"analysis\": \"This feedback is valid. The student's code doesn't handle the case where n <= 1, which is necessary for correct prime checking.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 5,\n            \"feedback\": \"The condition in your while loop should be \\\"i <= int(math.sqrt(n))\\\" instead of \\\"i < int(math.sqrt(n))\\\". This is because you want to check divisibility up to and including the square root of the number. If you don\\\\\\'t include the square roo\",\n            \"analysis\": \"This feedback is valid.  The student's code should check divisibility up to and including the square root.  For example, if n is 9, the loop needs to check i=3. Using `<` would stop at i=2, incorrectly identifying 9 as prime.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": []
     },
     {
         "sid": 247,
@@ -11214,15 +11185,8 @@
     },
     {
         "sid": 258,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The while loop condition should be `x <= math.sqrt(n)` instead of `x < math.sqrt(n)`\"],\n    \"fixes\": [\"Changed the while loop condition to `x <= math.sqrt(n)`\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 8,\n            \"feedback\": \"The condition in your while loop should be \\'x <= math.sqrt(n)\\' instead of \\'x < math.sqrt(n)\\'. This is because you want to check all numbers up to and including the square root of n. If you only check numbers less than the square root of n, you might miss out on a factor and incorrectly identify a composite number as a prime number.\",\n            \"analysis\": \"The TA's feedback is valid. The student's original code failed to check the case where n is a perfect square (e.g., 4, 9). In such cases, the while loop would terminate before checking the square root of n itself, which is a factor.  By changing the condition to `x <= math.sqrt(n)`, the loop correctly checks all potential factors up to and including the square root.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": "8",
-                "feedback": "The condition in your while loop should be 'x <= math.sqrt(n)' instead of 'x < math.sqrt(n)'. This is because you want to check all numbers up to and including the square root of n. If you only check numbers less than the square root of n, you might miss out on a factor and incorrectly identify a composite number as a prime number.",
-                "category": "TP"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The while loop condition `x < math.sqrt(n)` is incorrect. It should be `x <= math.sqrt(n)` to handle perfect squares correctly.\"],\n    \"fixes\": [\"Changed the while loop condition to `x <= math.sqrt(n)`.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 8,\n            \"feedback\": \"The condition in your while loop should be \\'x <= math.sqrt(n)\\' instead of \\'x < math.sqrt(n)\\'. This is because you want to check all numbers up to and including the square root of n. If you only check numbers less than the square root of n, you might miss out on a factor and incorrectly identify a composite number as a prime number.\",\n            \"analysis\": \"The feedback accurately identifies the error in the student's code and explains the reason why the condition should include the square root.  Failing to check divisibility by the square root can lead to misclassifying perfect squares as prime.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": []
     },
     {
         "sid": 259,
@@ -12292,25 +12256,8 @@
     },
     {
         "sid": 282,
-        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student failed to initialize the variable 'n' before using it in the while loop.\",\n        \"The condition in the while loop 'n**2 - 1 > K' is incorrect. It should be 'n**2 <= K' to ensure the loop continues as long as n^2 is not greater than K.\",\n        \"Missing colon at the end of the while statement.\"\n    ],\n    \"fixes\": [\n        \"Initialize 'n' to 1 before the while loop.\",\n        \"Correct the while loop condition to 'n**2 <= K'.\",\n        \"Add a colon at the end of the while statement.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"You forgot to initialize the variable 'n'. Always remember to initialize your variables before using them.\",\n            \"analysis\": \"This feedback is valid. The student's code attempts to use 'n' without initializing it, which would cause an error.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"The condition in the while loop is incorrect. It should be 'n**2 <= K\\' to find the smallest 'n' such that 'n**2' is greater than 'K'.\",\n            \"analysis\": \"This feedback is valid.  The original condition 'n**2 - 1 > K' is incorrect for finding the smallest n such that n^2 > K. The correct condition is 'n**2 <= K' so the loop continues until n^2 exceeds K.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"Don't forget to use a colon at the end of the while statement. This is a syntax requirement in Python.\",\n            \"analysis\": \"This feedback is valid. The student's code is missing the colon at the end of the while statement, which is a syntax error in Python.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": "2",
-                "feedback": "You forgot to initialize the variable 'n'. Always remember to initialize your variables before using them.",
-                "category": "TP"
-            },
-            {
-                "line_number": "3",
-                "feedback": "The condition in the while loop is incorrect. It should be 'n**2 <= K' to find the smallest 'n' such that 'n**2' is greater than 'K'.",
-                "category": "TP"
-            },
-            {
-                "line_number": "3",
-                "feedback": "Don't forget to use a colon at the end of the while statement. This is a syntax requirement in Python.",
-                "category": "TP"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student forgot to initialize the variable 'n' before using it in the while loop.\",\n        \"The condition in the while loop is incorrect. It should be 'n**2 <= K' to ensure the loop continues as long as n^2 is not greater than K.\",\n        \"Missing colon at the end of the while statement\"\n    ],\n    \"fixes\": [\n        \"Initialize 'n' to 1 before the while loop.\",\n        \"Change the while loop condition to 'n**2 <= K'.\",\n        \"Add a colon at the end of the while statement\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"You forgot to initialize the variable 'n'. Always remember to initialize your variables before using them.\",\n            \"analysis\": \"This feedback is valid. The student's code did not initialize 'n' leading to an error.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"The condition in the while loop is incorrect. It should be 'n**2 <= K\\' to find the smallest 'n' such that 'n**2' is greater than 'K'.\",\n            \"analysis\": \"This feedback is valid. The original condition 'n**2 - 1 > K' is incorrect and will not produce the desired result.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"Don't forget to use a colon at the end of the while statement. This is a syntax requirement in Python.\",\n            \"analysis\": \"This feedback is valid.  The student's code is missing the colon which is a syntax error.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": []
     },
     {
         "sid": 283,
@@ -15565,35 +15512,8 @@
     },
     {
         "sid": 359,
-        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student incorrectly stored the first element of the list instead of the last element.\",\n        \"The student iterated in the wrong direction, effectively shifting elements to the left instead of the right.\",\n        \"The student used incorrect indexing within the loop, further contributing to the incorrect left shift.\",\n        \"The student placed the stored element at the end of the list instead of the beginning.\"\n    ],\n    \"fixes\": [\n        \"Store the last element of the list in the temp variable.\",\n        \"Iterate from the second to last element to the first element.\",\n        \"Shift elements to the right by assigning the value of the previous element to the current element.\",\n        \"Place the stored last element at the beginning of the list.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"You should retain the last element of the list, not the first one. So, replace \\'lst[0]\\' with \\'lst[-1]\\'.\",\n            \"analysis\": \"This feedback is valid. The student mistakenly stored the first element, which is incorrect for a right shift.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"You should iterate from the last element to the second one, not from the second to the last. So, replace \\'range(1, len(lst))\\' with \\'range(len(lst)-1, 0, -1)\\'.\",\n            \"analysis\": \"This feedback is valid. The student's iteration was in the wrong direction, causing a left shift instead of a right shift.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 4,\n            \"feedback\": \"You should shift the elements to the right, not to the left. So, replace \\'lst[i - 1] = lst[i]\\' with \\'lst[i] = lst[i - 1]\\'.\",\n            \"analysis\": \"This feedback is valid.  The assignment within the loop was incorrect, contributing to the left shift.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 6,\n            \"feedback\": \"You should replace the first element of the list with the last one. So, replace \\'lst[len(lst) - 1] = temp\\' with \\'lst[0] = temp\\'.\",\n            \"analysis\": \"This is valid feedback. The stored element should be placed at the beginning for a right shift.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 7,\n            \"feedback\": \"You should return the modified list \\'lst\",\n            \"analysis\": \"This feedback is invalid. The student code already returns the correct modified list using 'return list1', which given the function definition, is equivalent to 'lst'.\",\n            \"classification\": \"invalid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": "2",
-                "feedback": "You should retain the last element of the list, not the first one. So, replace 'lst[0]' with 'lst[-1]'.",
-                "category": "TP"
-            },
-            {
-                "line_number": "3",
-                "feedback": "You should iterate from the last element to the second one, not from the second to the last. So, replace 'range(1, len(lst))' with 'range(len(lst)-1, 0, -1)'.",
-                "category": "TP"
-            },
-            {
-                "line_number": "4",
-                "feedback": "You should shift the elements to the right, not to the left. So, replace 'lst[i - 1] = lst[i]' with 'lst[i] = lst[i - 1]'.",
-                "category": "TP"
-            },
-            {
-                "line_number": "6",
-                "feedback": "You should replace the first element of the list with the last one. So, replace 'lst[len(lst) - 1] = temp' with 'lst[0] = temp'.",
-                "category": "TP"
-            },
-            {
-                "line_number": "7",
-                "feedback": "You should return the modified list 'lst",
-                "category": "FP-I"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student incorrectly stored the first element of the list instead of the last element.\",\n        \"The student iterated in the wrong direction, effectively shifting elements to the left instead of right.\",\n        \"The student used incorrect indexing within the loop, leading to incorrect element assignments.\",\n        \"The student placed the stored element at the end of the list instead of the beginning.\",\n        \"The student returned the original input list `list1` instead of the modified list `lst`.\"\n    ],\n    \"fixes\": [\n        \"Store the last element of the list using `lst[-1]`.\",\n        \"Iterate from the second to last element to the first element using `range(len(lst)-1, 0, -1)`.\",\n        \"Shift elements to the right by assigning `lst[i] = lst[i-1]` within the loop.\",\n        \"Place the stored element at the beginning of the list using `lst[0] = temp`.\",\n        \"Return the modified list `lst`.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"You should retain the last element of the list, not the first one. So, replace 'lst[0]' with 'lst[-1]'.\",\n            \"analysis\": \"This feedback is valid. The student needs to store the last element to be placed at the beginning after the shift.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"You should iterate from the last element to the second one, not from the second to the last. So, replace 'range(1, len(lst))' with 'range(len(lst)-1, 0, -1)'.\",\n            \"analysis\": \"This feedback is valid.  The iteration needs to go backwards to avoid overwriting values during the right shift.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 4,\n            \"feedback\": \"You should shift the elements to the right, not to the left. So, replace 'lst[i - 1] = lst[i]' with 'lst[i] = lst[i - 1]'.\",\n            \"analysis\": \"This feedback is valid. The assignment within the loop was performing a left shift instead of a right shift.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 6,\n            \"feedback\": \"You should replace the first element of the list with the last one. So, replace 'lst[len(lst) - 1] = temp' with 'lst[0] = temp'.\",\n            \"analysis\": \"This feedback is valid. The stored element should be placed at the beginning, not the end.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 7,\n            \"feedback\": \"You should return the modified list \\'lst\",\n            \"analysis\": \"This feedback is valid. The student returned the wrong variable, the original list instead of updated one.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
+        "output": []
     },
     {
         "sid": 360,

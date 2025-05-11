@@ -3980,20 +3980,8 @@
     },
     {
         "sid": 84,
-        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student is using eval(input(\"\")) to get the values of n and s, which is not required for the problem statement where n and s are fixed values.\",\n        \"There is no other mistake in the calculation and formatting part of the code.\"\n    ],\n    \"fixes\": [\n        \"Directly assign the value 5 to n and the value 6.5 to s.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"The value of n should be directly assigned as 5 instead of using eval(input(\\\"\\\"))\",\n            \"analysis\": \"The TA's feedback is valid as the problem statement specifies that n is 5 and does not require user input.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"The value of s should be directly assigned as 6.5 instead of using eval(input(\\\"\\\"))\",\n            \"analysis\": \"The TA's feedback is valid as the problem statement specifies that s is 6.5 and does not require user input.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": "2",
-                "feedback": "The value of n should be directly assigned as 5 instead of using eval(input(\"\"))",
-                "category": "TP"
-            },
-            {
-                "line_number": "3",
-                "feedback": "The value of s should be directly assigned as 6.5 instead of using eval(input(\"\"))",
-                "category": "TP"
-            }
-        ]
+        "raw_response": "Error code: 400 - {'error': {'code': 'Arrearage', 'param': None, 'message': 'Access denied, please make sure your account is in good standing.', 'type': 'Arrearage'}, 'id': 'chatcmpl-b4b0b542-e454-9dbc-b5c6-4022f92d9e3a', 'request_id': 'b4b0b542-e454-9dbc-b5c6-4022f92d9e3a'}",
+        "output": []
     },
     {
         "sid": 85,

@@ -3068,22 +3068,22 @@
     },
     {
         "sid": 103,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 104,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 105,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 106,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {

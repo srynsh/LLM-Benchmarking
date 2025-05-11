@@ -1579,8 +1579,59 @@
     },
     {
         "sid": 56,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student is not updating the Fibonacci sequence correctly due to a logical error in the while loop.\"], \n    \"fixes\": [\"Adjust the loop to iterate n-1 times by using a for loop.\", \"Update a and b values simultaneously in one line.\", \"Remove redundant lines like 'n-=1', 'a = b', and 'b = ans'.\"],\n    \"feedback_lines\": [ \n        { \n            \"line_number\": 5, \n            \"feedback\": \"Change 'ans = 1' to 'return 1' to immediately return the answer for the base case of n=1.\",\n            \"analysis\": \"The TA correctly identifies the need for an immediate return and suggests the appropriate fix.\",\n            \"classification\": \"valid\" \n        }, \n        { \n            \"line_number\": 6-11,\n            \"feedback\": \"Replace the while loop with a for loop that iterates n-1 times. This will calculate the nth Fibonacci number correctly.\",\n            \"analysis\": \"The TA accurately identifies the issue with the loop structure and provides a suitable solution.\",\n            \"classification\": \"valid\" \n        },\n        { \n            \"line_number\": 7,\n            \"feedback\": \"Use a for loop like 'for i in range(n-1):' to iterate the correct number of times.\",\n            \"analysis\": \"The advice given helps in resolving the issue with the loop iteration.\",\n            \"classification\": \"valid\" \n        },\n        { \n            \"line_number\": 8, \n            \"feedback\": \"Update a and b simultaneously in one line using tuple assignment: 'a, b = b, a + b'.\",\n            \"analysis\": \"Correct identification of a more concise way to update the variables.\",\n            \"classification\": \"valid\" \n        }, \n        { \n            \"line_number\": 9,\n            \"feedback\": \"Remove the line 'n -= 1' as it is not needed with the for loop.\",\n            \"analysis\": \"Correct observation about the redundant line that can be eliminated.\",\n            \"classification\": \"valid\" \n        }, \n        { \n            \"line_number\": 10-11,\n            \"feedback\": \"Remove the lines 'a = b' and 'b = ans' as they are replaced by the tuple assignment 'a, b = b, a + b'.\",\n            \"analysis\": \"Accurate advice on cleaning up the code after using tuple assignment.\",\n            \"classification\": \"valid\" \n        },\n        { \n            \"line_number\": 12,\n            \"feedback\": \"Change 'return ans' to 'return b' to return the final value of b, which represents the nth Fibonacci number.\",\n            \"analysis\": \"Correctly guides to return the correct variable holding the Fibonacci value.\",\n            \"classification\": \"valid\" \n        }\n    ]\n}\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student did not update the Fibonacci sequence values correctly within the loop.\"],\n    \"fixes\": [\"Use a for loop to correctly update the Fibonacci sequence values.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 5,\n            \"feedback\": \"Change 'ans = 1' to 'return 1' to immediately return the answer for the base case of n=1.\",\n            \"analysis\": \"The TA accurately points out the improvement to return the value directly instead of assigning it to a variable.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": \"6-11\",\n            \"feedback\": \"Replace the while loop with a for loop that iterates n-1 times. This will calculate the nth Fibonacci number correctly.\",\n            \"analysis\": \"The TA correctly identifies the need for a for loop and provides guidance for correct iteration.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 7,\n            \"feedback\": \"Use a for loop like 'for i in range(n-1):' to iterate the correct number of times.\",\n            \"analysis\": \"The feedback provides clear instruction for improving the loop structure.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 8,\n            \"feedback\": \"Update a and b simultaneously in one line using tuple assignment: 'a, b = b, a + b'.\",\n            \"analysis\": \"The TA correctly suggests the use of tuple assignment for updating the sequence values.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 9,\n            \"feedback\": \"Remove the line 'n -= 1' as it is not needed with the for loop.\",\n            \"analysis\": \"This feedback accurately points out the redundant line that should be removed with a for loop.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": \"10-11\",\n            \"feedback\": \"Remove the lines 'a = b' and 'b = ans' as they are replaced by the tuple assignment 'a, b = b, a + b'.\",\n            \"analysis\": \"The TA correctly suggests removing redundant lines after implementing tuple assignment.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 12,\n            \"feedback\": \"Change 'return ans' to 'return b' to return the final value of b, which represents the nth Fibonacci number.\",\n            \"analysis\": \"The TA accurately identifies the return value correction needed to output the correct Fibonacci number.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
+        "output": {
+            "mistakes": [
+                "The student did not update the Fibonacci sequence values correctly within the loop."
+            ],
+            "fixes": [
+                "Use a for loop to correctly update the Fibonacci sequence values."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 5,
+                    "feedback": "Change 'ans = 1' to 'return 1' to immediately return the answer for the base case of n=1.",
+                    "analysis": "The TA accurately points out the improvement to return the value directly instead of assigning it to a variable.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": "6-11",
+                    "feedback": "Replace the while loop with a for loop that iterates n-1 times. This will calculate the nth Fibonacci number correctly.",
+                    "analysis": "The TA correctly identifies the need for a for loop and provides guidance for correct iteration.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 7,
+                    "feedback": "Use a for loop like 'for i in range(n-1):' to iterate the correct number of times.",
+                    "analysis": "The feedback provides clear instruction for improving the loop structure.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 8,
+                    "feedback": "Update a and b simultaneously in one line using tuple assignment: 'a, b = b, a + b'.",
+                    "analysis": "The TA correctly suggests the use of tuple assignment for updating the sequence values.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 9,
+                    "feedback": "Remove the line 'n -= 1' as it is not needed with the for loop.",
+                    "analysis": "This feedback accurately points out the redundant line that should be removed with a for loop.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": "10-11",
+                    "feedback": "Remove the lines 'a = b' and 'b = ans' as they are replaced by the tuple assignment 'a, b = b, a + b'.",
+                    "analysis": "The TA correctly suggests removing redundant lines after implementing tuple assignment.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 12,
+                    "feedback": "Change 'return ans' to 'return b' to return the final value of b, which represents the nth Fibonacci number.",
+                    "analysis": "The TA accurately identifies the return value correction needed to output the correct Fibonacci number.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 57,
@@ -2410,7 +2461,7 @@
     },
     {
         "sid": 84,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student used input() to get values for n and s instead of directly assigning them\"], \n    \"fixes\": [\"Assign n directly as 5 instead of using eval(input())\", \"Assign s directly as 6.5 instead of using eval(input())\"],\n    \"feedback_lines\": [ \n        { \n            \"line_number\": 2, \n            \"feedback\": \"The value of n should be directly assigned as 5 instead of using eval(input(\"\"))\", \n            \"analysis\": \"The TA correctly identifies the mistake made by the student and provides the correct fix\", \n            \"classification\": \"valid\" \n        }, \n        { \n            \"line_number\": 3,\n            \"feedback\": \"The value of s should be directly assigned as 6.5 instead of using eval(input(\"\"))\", \n            \"analysis\": \"The TA correctly identifies the mistake made by the student and provides the correct fix\", \n            \"classification\": \"valid\" \n        }\n    ]\n}\n```",
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student incorrectly used input() and eval() functions to get the values of n and s from the user.\"],\n    \"fixes\": [\"Directly assign the values of n and s as 5 and 6.5 respectively.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"The value of n should be directly assigned as 5 instead of using eval(input(\"\"))\",\n            \"analysis\": \"The TA correctly identified the mistake related to the input method for n and provided the correct fix.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"The value of s should be directly assigned as 6.5 instead of using eval(input(\"\"))\",\n            \"analysis\": \"The TA accurately pointed out the mistake related to the input method for s and provided the appropriate correction.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
         "output": []
     },
     {
@@ -2441,8 +2492,44 @@
     },
     {
         "sid": 86,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"Incorrect usage of math functions and formula in the area calculation function\", \"Incorrect use of eval() function to take input\", \"Incorrect formatting of the result for the print statement\"], \n    \"fixes\": [\"Import the math module at the beginning of the code\", \"Directly assign the values of n and s instead of using eval()\", \"Use the correct formula for calculating the tangent and format the result properly for printing.\"],\n    \"feedback_lines\": [ \n        {\n            \"line_number\": 1, \n            \"feedback\": \"You need to import the math module to use math functions like tan().\", \n            \"analysis\": \"The TA correctly identified the need to import the math module for math functions.\",\n            \"classification\": \"valid\" \n        }, \n        {\n            \"line_number\": \"3-4\", \n            \"feedback\": \"The eval() lines are not needed. You can directly assign the values to n and s.\", \n            \"analysis\": \"The TA correctly identified the unnecessary use of eval() and provided a valid suggestion.\",\n            \"classification\": \"valid\" \n        }, \n        {\n            \"line_number\": 8, \n            \"feedback\": \"When calculating tan(), you need to pass pi/n, not \"pi\"/5 which is dividing strings.\", \n            \"analysis\": \"The TA correctly identified the mistake in the formula and provided a valid correction.\",\n            \"classification\": \"valid\" \n        },\n        {\n            \"line_number\": 11, \n            \"feedback\": \"To format the area, you need to pass the return value of the area() function, not just the function name itself. Also, pass the format specifier \".4f\" directly in the format() call.\", \n            \"analysis\": \"The TA accurately pointed out the mistake in formatting the result for print statement.\",\n            \"classification\": \"valid\" \n        }\n    ]\n}\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student incorrectly tries to use eval() for input, uses incorrect formula for tan(), does not import math module, and formats the area incorrectly.\"],\n    \"fixes\": [\"Directly assign the values of n and s without using eval().\", \"Use 'math.tan(pi/n)' instead of 'tan(\\\"pi\\\"/5)' to calculate tan().\", \"Import the math module at the beginning of the code.\", \"Pass the return value of area(n,s) function to format() and include the format specifier \\\".4f\\\" in the function call.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 1,\n            \"feedback\": \"You need to import the math module to use math functions like tan().\",\n            \"analysis\": \"The TA correctly points out the need to import the math module.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": \"3-4\",\n            \"feedback\": \"The eval() lines are not needed. You can directly assign the values to n and s.\",\n            \"analysis\": \"The feedback correctly addresses the unnecessary use of eval() and suggests the correct approach.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 8,\n            \"feedback\": \"When calculating tan(), you need to pass pi/n, not \\\"pi\\\"/5 which is dividing strings.\",\n            \"analysis\": \"The feedback accurately identifies the mistake in the calculation of tan() function.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 11,\n            \"feedback\": \"To format the area, you need to pass the return value of the area() function, not just the function name itself. Also, pass the format specifier \\\".4f\\\" directly in the format() call.\",\n            \"analysis\": \"The TA correctly points out the mistake in formatting and provides a valid fix.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": {
+            "mistakes": [
+                "The student incorrectly tries to use eval() for input, uses incorrect formula for tan(), does not import math module, and formats the area incorrectly."
+            ],
+            "fixes": [
+                "Directly assign the values of n and s without using eval().",
+                "Use 'math.tan(pi/n)' instead of 'tan(\"pi\"/5)' to calculate tan().",
+                "Import the math module at the beginning of the code.",
+                "Pass the return value of area(n,s) function to format() and include the format specifier \".4f\" in the function call."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 1,
+                    "feedback": "You need to import the math module to use math functions like tan().",
+                    "analysis": "The TA correctly points out the need to import the math module.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": "3-4",
+                    "feedback": "The eval() lines are not needed. You can directly assign the values to n and s.",
+                    "analysis": "The feedback correctly addresses the unnecessary use of eval() and suggests the correct approach.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 8,
+                    "feedback": "When calculating tan(), you need to pass pi/n, not \"pi\"/5 which is dividing strings.",
+                    "analysis": "The feedback accurately identifies the mistake in the calculation of tan() function.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 11,
+                    "feedback": "To format the area, you need to pass the return value of the area() function, not just the function name itself. Also, pass the format specifier \".4f\" directly in the format() call.",
+                    "analysis": "The TA correctly points out the mistake in formatting and provides a valid fix.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 87,
@@ -2808,22 +2895,22 @@
     },
     {
         "sid": 103,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 104,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 105,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 106,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
@@ -3458,7 +3545,7 @@
     },
     {
         "sid": 131,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The loop iterates in the wrong direction, resulting in incorrect words order in the pig latin sentence.\"],\n    \"fixes\": [\"Change the loop range to go from 0 to len(a) in the forward direction to process the words in the correct order.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 3,\n            \"feedback\": \"Remove the space character \" \" inside split() so that it splits on any whitespace, not just single spaces.\",\n            \"analysis\": \"The TA correctly identified the need to split on any whitespace, not just single spaces.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 5,\n            \"feedback\": \"Change the range to go from 0 to len(a) in the forward direction. This will process the words in the correct order.\",\n            \"analysis\": \"The feedback correctly addresses the mistake of processing words in reverse order.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 6,\n            \"feedback\": \"Use the loop variable i to index into a directly, rather than i-1.\",\n            \"analysis\": \"This advice is incorrect as the logic for accessing the elements is correct as per the corrected code.\",\n            \"classification\": \"invalid\"\n        },\n        {\n            \"line_number\": 7,\n            \"feedback\": \"Instead of adding the translated last word separately after the loop, remove the trailing space from res using slicing.\",\n            \"analysis\": \"The feedback correctly suggests removing the trailing space using slicing.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student's code is not correctly converting the sentence into pig latin by iterating in the wrong order and not handling the last word properly.\"], \n    \"fixes\": [\"Change the iteration range to go from 0 to len(a) to process the words in the correct order.\", \"Index into a directly using the loop variable i instead of i-1.\", \"Remove the trailing space from res using slicing instead of adding the translated last word separately after the loop.\"],\n    \"feedback_lines\": [ \n        { \n            \"line_number\": 3, \n            \"feedback\": 'Remove the space character \" \" inside split() so that it splits on any whitespace, not just single spaces.', \n            \"analysis\": \"The advice about removing the space character inside split() is accurate as it helps split on any kind of whitespace. This suggestion is valid.\",\n            \"classification\": \"valid\" \n        }, \n        { \n            \"line_number\": 5,\n            \"feedback\": 'Change the range to go from 0 to len(a) in the forward direction. This will process the words in the correct order.', \n            \"analysis\": \"The TA correctly identified the issue with the iteration range and provided a valid solution to process the words in the correct order.\",\n            \"classification\": \"valid\" \n        },\n        {\n            \"line_number\": 6,\n            \"feedback\": 'Use the loop variable i to index into a directly, rather than i-1.',\n            \"analysis\": \"The TA correctly highlighted the mistake the student made in indexing and provided a valid fix. This feedback is valid.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 7,\n            \"feedback\": 'Instead of adding the translated last word separately after the loop, remove the trailing space from res using slicing.',\n            \"analysis\": \"The TA has accurately pointed out the issue with handling the last word and provided a valid solution. This feedback is valid.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
         "output": []
     },
     {

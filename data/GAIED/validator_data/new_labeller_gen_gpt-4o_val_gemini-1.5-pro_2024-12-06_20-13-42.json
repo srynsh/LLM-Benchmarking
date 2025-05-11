@@ -6189,15 +6189,8 @@
     },
     {
         "sid": 142,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student defined the function with the name 'remove_bar' instead of 'remove_bars'.\"],\n    \"fixes\": [\"Changed the function name from 'remove_bar' to 'remove_bars'.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 1,\n            \"feedback\": \"The function name should be \\'remove_bars\\' instead of \\'remove_bar\\' to match the required function name.\",\n            \"analysis\": \"The feedback correctly points out the discrepancy between the student's function name ('remove_bar') and the expected name ('remove_bars'). This is the reason why the tests failed, as they were calling 'remove_bars' which was not defined.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": 1,
-                "feedback": "The function name should be 'remove_bars' instead of 'remove_bar' to match the required function name.",
-                "category": "TP"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student defined the function with the name 'remove_bar' instead of 'remove_bars'.\"],\n    \"fixes\": [\"Changed the function name from 'remove_bar' to 'remove_bars'.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 1,\n            \"feedback\": \"The function name should be \\'remove_bars\\' instead of \\'remove_bar\\' to match the required function name.\",\n            \"analysis\": \"The feedback correctly points out that the student used the wrong function name ('remove_bar') instead of the expected 'remove_bars'.  This mismatch would cause the tests to fail because they are calling 'remove_bars'.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": []
     },
     {
         "sid": 143,
@@ -13906,42 +13899,67 @@
     },
     {
         "sid": 283,
-        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student's code is missing the logic to calculate the smallest integer 'n' such that n^2 > K. It simply returns 'ans' which is undefined.\"\n    ],\n    \"fixes\": [\n        \"Initialize 'n' to 1.\",\n        \"Use a while loop with the condition n^2 <= K.\",\n        \"Increment 'n' by 1 in each iteration of the loop.\",\n        \"Return 'n' after the loop terminates.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"You need to initialize 'n' to 1 and use a while loop to find the smallest integer 'n' such that n^2 is greater than K.\",\n            \"analysis\": \"This feedback is valid. The student's code lacks the initialization of 'n' and the while loop necessary to find the desired value.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"Use a while loop to increment 'n' until n^2 is greater than K.\",\n            \"analysis\": \"This feedback is also valid.  It correctly points out the need for a while loop and its termination condition based on the square of 'n' exceeding K.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 4,\n            \"feedback\": \"Return 'n\\' after the while loop to get the correct result.\",\n            \"analysis\": \"This feedback is valid.  The student's code lacks a return statement, and this feedback correctly indicates that 'n' should be returned after the loop.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": 2,
-                "feedback": "You need to initialize 'n' to 1 and use a while loop to find the smallest integer 'n' such that n^2 is greater than K.",
-                "category": "TP"
-            },
-            {
-                "line_number": 3,
-                "feedback": "Use a while loop to increment 'n' until n^2 is greater than K.",
-                "category": "TP"
-            },
-            {
-                "line_number": 4,
-                "feedback": "Return 'n' after the while loop to get the correct result.",
-                "category": "TP"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student's code does not initialize 'n' and lacks a 'while' loop to find the smallest integer 'n' such that n^2 > K.\",\n        \"The student's code does not increment 'n' within a loop to check for the condition n^2 > K.\",\n        \"The student's code lacks a return statement to output the desired value of 'n'.\"\n    ],\n    \"fixes\": [\n        \"Initialize 'n' to 1.\",\n        \"Use a 'while' loop with the condition n^2 <= K.\",\n        \"Increment 'n' by 1 within the loop.\",\n        \"Return 'n' after the loop terminates.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"You need to initialize 'n' to 1 and use a while loop to find the smallest integer 'n' such that n^2 is greater than K.\",\n            \"analysis\": \"This feedback correctly points out the missing initialization of 'n' and the need for a 'while' loop to increment and check the condition. It accurately addresses the core issue in the student's code.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"Use a while loop to increment 'n' until n^2 is greater than K.\",\n            \"analysis\": \"While covered by the feedback at line 2, this feedback reinforces the importance of the 'while' loop and the condition that should be used within it.  While slightly redundant, it is not incorrect.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 4,\n            \"feedback\": \"Return 'n' after the while loop to get the correct result.\",\n            \"analysis\": \"This feedback correctly identifies the missing return statement which is necessary to provide the computed value of 'n'.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": {
+            "mistakes": [
+                "The student's code does not initialize 'n' and lacks a 'while' loop to find the smallest integer 'n' such that n^2 > K.",
+                "The student's code does not increment 'n' within a loop to check for the condition n^2 > K.",
+                "The student's code lacks a return statement to output the desired value of 'n'."
+            ],
+            "fixes": [
+                "Initialize 'n' to 1.",
+                "Use a 'while' loop with the condition n^2 <= K.",
+                "Increment 'n' by 1 within the loop.",
+                "Return 'n' after the loop terminates."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 2,
+                    "feedback": "You need to initialize 'n' to 1 and use a while loop to find the smallest integer 'n' such that n^2 is greater than K.",
+                    "analysis": "This feedback correctly points out the missing initialization of 'n' and the need for a 'while' loop to increment and check the condition. It accurately addresses the core issue in the student's code.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 3,
+                    "feedback": "Use a while loop to increment 'n' until n^2 is greater than K.",
+                    "analysis": "While covered by the feedback at line 2, this feedback reinforces the importance of the 'while' loop and the condition that should be used within it.  While slightly redundant, it is not incorrect.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 4,
+                    "feedback": "Return 'n' after the while loop to get the correct result.",
+                    "analysis": "This feedback correctly identifies the missing return statement which is necessary to provide the computed value of 'n'.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 284,
-        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student's while loop condition is incorrect. It should be `n**2 <= K` to ensure the loop continues as long as n^2 is less than or equal to K.\",\n        \"The student unnecessarily assigns the value of 'n' to a new variable 'ans' inside the loop before returning it.\"\n    ],\n    \"fixes\": [\n        \"Changed the while loop condition to `n**2 <= K`.\",\n        \"Removed the 'ans' variable and directly returned 'n' after the loop.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 3,\n            \"feedback\": \"The condition in the while loop should be \\'n**2 <= K\\' instead of \\'K < n**2\\' to find the smallest n such that n^2 is greater than K.\",\n            \"analysis\": \"This feedback is valid. The original condition `K < n**2` stops the loop prematurely, and `n**2 <= K` is the correct condition to find the smallest n such that n^2 > K.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 5,\n            \"feedback\": \"Remove the assignment of \\'ans\\' inside the loop and directly return \\'n\\' after the loop ends. \\'ans\\' is unnecessary.\",\n            \"analysis\": \"This feedback is valid.  The introduction of the `ans` variable is redundant.  Returning `n` directly is more efficient and clearer.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": "3",
-                "feedback": "The condition in the while loop should be 'n**2 <= K' instead of 'K < n**2' to find the smallest n such that n^2 is greater than K.",
-                "category": "TP"
-            },
-            {
-                "line_number": "5",
-                "feedback": "Remove the assignment of 'ans' inside the loop and directly return 'n' after the loop ends. 'ans' is unnecessary.",
-                "category": "FP-E"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student's while loop condition is incorrect, leading to an incorrect final value of 'n'.\"\n    ],\n    \"fixes\": [\n        \"Changed the while loop condition from 'K < n**2' to 'n**2 <= K'.\",\n        \"Removed the unnecessary 'ans' variable and directly returned 'n'.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 3,\n            \"feedback\": \"The condition in the while loop should be 'n**2 <= K' instead of 'K < n**2' to find the smallest n such that n^2 is greater than K.\",\n            \"analysis\": \"This feedback is **valid**. The original condition terminates the loop prematurely.  The correct condition ensures the loop continues as long as n^2 is less than or equal to K, so the loop terminates when n^2 is strictly greater than K.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 5,\n            \"feedback\": \"Remove the assignment of 'ans' inside the loop and directly return 'n' after the loop ends. 'ans' is unnecessary.\",\n            \"analysis\": \"This feedback is **valid**. The `ans` variable is redundant.  Directly returning 'n' simplifies the code and achieves the same result.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": {
+            "mistakes": [
+                "The student's while loop condition is incorrect, leading to an incorrect final value of 'n'."
+            ],
+            "fixes": [
+                "Changed the while loop condition from 'K < n**2' to 'n**2 <= K'.",
+                "Removed the unnecessary 'ans' variable and directly returned 'n'."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 3,
+                    "feedback": "The condition in the while loop should be 'n**2 <= K' instead of 'K < n**2' to find the smallest n such that n^2 is greater than K.",
+                    "analysis": "This feedback is **valid**. The original condition terminates the loop prematurely.  The correct condition ensures the loop continues as long as n^2 is less than or equal to K, so the loop terminates when n^2 is strictly greater than K.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 5,
+                    "feedback": "Remove the assignment of 'ans' inside the loop and directly return 'n' after the loop ends. 'ans' is unnecessary.",
+                    "analysis": "This feedback is **valid**. The `ans` variable is redundant.  Directly returning 'n' simplifies the code and achieves the same result.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 285,
@@ -16348,15 +16366,23 @@
     },
     {
         "sid": 332,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student's code does not return the generated list 'x'.  It uses a 'pass' statement where a 'return' statement is needed.\"],\n    \"fixes\": [\"Added a return statement to return the list 'x'.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 6,\n            \"feedback\": \"You need to return the list \\'x\\' at the end of the function.\",\n            \"analysis\": \"This feedback is valid. The student's code was missing the `return x` statement, which is necessary to provide the generated list as output.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": 6,
-                "feedback": "You need to return the list 'x' at the end of the function.",
-                "category": "TP"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student's code does not return the generated list 'x'.\"],\n    \"fixes\": [\"Added a return statement at the end of the function to return the generated list 'x'.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 6,\n            \"feedback\": \"You need to return the list 'x' at the end of the function.\",\n            \"analysis\": \"The TA correctly identified the missing return statement which was preventing the function from returning the created list. The test case likely failed because the function implicitly returned `None` instead of the list.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": {
+            "mistakes": [
+                "The student's code does not return the generated list 'x'."
+            ],
+            "fixes": [
+                "Added a return statement at the end of the function to return the generated list 'x'."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 6,
+                    "feedback": "You need to return the list 'x' at the end of the function.",
+                    "analysis": "The TA correctly identified the missing return statement which was preventing the function from returning the created list. The test case likely failed because the function implicitly returned `None` instead of the list.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 333,
@@ -17188,20 +17214,8 @@
     },
     {
         "sid": 354,
-        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student incorrectly stored the first element of the list in the temporary variable 'temp' instead of the last element.\",\n        \"There's a typo in the loop where 'list' is used instead of 'list1'.\"\n    ],\n    \"fixes\": [\n        \"Store the last element of the list in 'temp' using list1[-1].\",\n        \"Correct the typo by replacing 'list[i]' with 'list1[i]'.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"You should store the last element of the list in \\'temp\\' instead of the first element.\",\n            \"analysis\": \"This feedback is valid. The student's code incorrectly stores the first element, which prevents the correct shifting of elements.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 4,\n            \"feedback\": \"You have a typo in the loop. It should be \\'list1[i]\\' instead of \\'list[i]\\'.\",\n            \"analysis\": \"This feedback is valid.  The typo 'list[i]' causes a NameError and prevents the code from running correctly.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": 2,
-                "feedback": "You should store the last element of the list in 'temp' instead of the first element.",
-                "category": "TP"
-            },
-            {
-                "line_number": 4,
-                "feedback": "You have a typo in the loop. It should be 'list1[i]' instead of 'list[i]'.",
-                "category": "TP"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student incorrectly stored the first element of the list in the 'temp' variable instead of the last element.\",\n        \"The student used 'list[i]' inside the loop instead of 'list1[i]', resulting in a NameError.\"\n    ],\n    \"fixes\": [\n        \"Store the last element of the list in 'temp' using list1[-1].\",\n        \"Correct the typo inside the loop by using 'list1[i]' instead of 'list[i]'.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"You should store the last element of the list in \\'temp\\' instead of the first element.\",\n            \"analysis\": \"This feedback is valid. The student's code incorrectly stores the first element, which prevents the correct shifting of elements.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 4,\n            \"feedback\": \"You have a typo in the loop. It should be \\'list1[i]\\' instead of \\'list[i]\\'.\",\n            \"analysis\": \"This feedback is valid.  The student used 'list' instead of 'list1', referring to a built-in Python function and causing a NameError.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": []
     },
     {
         "sid": 355,
@@ -17571,20 +17585,31 @@
     },
     {
         "sid": 363,
-        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student's code has an incorrect mapping logic. The digits should start from 2 for 'abc', 3 for 'def', and so on. The student's code starts from 1, leading to incorrect mapping.\",\n        \"The 'else: continue' statement after the 'while' loop is unnecessary and disrupts the intended logic. The code should execute the assignment 'tele_str[count] = str(i + 2)' regardless of whether the while loop's condition evaluates to false.\"\n    ],\n    \"fixes\": [\n        \"Increment the assigned digit by 2 instead of 1, correcting the mapping to the correct digit on the keypad.\",\n        \"Remove the unnecessary 'else: continue' statement, allowing the digit assignment 'tele_str[count] = str(i + 2)' to execute correctly after the while loop.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 13,\n            \"feedback\": \"Remove the 'else: continue' statement as it is unnecessary and causes logical issues.\",\n            \"analysis\": \"This feedback is valid. The 'else: continue' after the 'while' loop is unnecessary and prevents the correct digit assignment from happening.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 14,\n            \"feedback\": \"Change 'tele_str[count] = i+1' to 'tele_str[count] = str(i+2)\\' to correctly map the letters to their corresponding digits and ensure the result is a string.\",\n            \"analysis\": \"This feedback is valid.  The student's code uses 'i + 1', which results in incorrect digit mapping. The fix correctly changes it to 'i + 2' and also ensures the assigned value is a string, consistent with the rest of the string being built.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": 13,
-                "feedback": "Remove the 'else: continue' statement as it is unnecessary and causes logical issues.",
-                "category": "FP-E"
-            },
-            {
-                "line_number": 14,
-                "feedback": "Change 'tele_str[count] = i+1' to 'tele_str[count] = str(i+2)' to correctly map the letters to their corresponding digits and ensure the result is a string.",
-                "category": "TP"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student's code has an incorrect offset when assigning the digits. It uses `i + 1` instead of `i + 2`, resulting in incorrect digit mapping.\",\n        \"The student's code includes an unnecessary `else: continue` block after the `while` loop, disrupting the intended logic. The digit assignment should happen directly after the loop.\"\n    ],\n    \"fixes\": [\n        \"Change `tele_str[count] = i+1` to `tele_str[count] = str(i+2)`\",\n        \"Remove the 'else: continue' statement\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 13,\n            \"feedback\": \"Remove the 'else: continue' statement as it is unnecessary and causes logical issues.\",\n            \"analysis\": \"This feedback is valid. The `else: continue` after the `while` loop prevents the code from reaching the line that assigns the correct digit, thus causing a logical error. Removing it allows the correct digit assignment (`i + 2`) to execute after the loop finds the corresponding mapping.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 14,\n            \"feedback\": \"Change 'tele_str[count] = i+1' to 'tele_str[count] = str(i+2)' to correctly map the letters to their corresponding digits and ensure the result is a string.\",\n            \"analysis\": \"This feedback is valid.  The mapping starts at index 0 but the digits start at 2.  The student uses `i+1`, resulting in numbers being off by one.  Converting to string with `str(i+2)` is correct to maintain the string type for the `tele_str`.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": {
+            "mistakes": [
+                "The student's code has an incorrect offset when assigning the digits. It uses `i + 1` instead of `i + 2`, resulting in incorrect digit mapping.",
+                "The student's code includes an unnecessary `else: continue` block after the `while` loop, disrupting the intended logic. The digit assignment should happen directly after the loop."
+            ],
+            "fixes": [
+                "Change `tele_str[count] = i+1` to `tele_str[count] = str(i+2)`",
+                "Remove the 'else: continue' statement"
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 13,
+                    "feedback": "Remove the 'else: continue' statement as it is unnecessary and causes logical issues.",
+                    "analysis": "This feedback is valid. The `else: continue` after the `while` loop prevents the code from reaching the line that assigns the correct digit, thus causing a logical error. Removing it allows the correct digit assignment (`i + 2`) to execute after the loop finds the corresponding mapping.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 14,
+                    "feedback": "Change 'tele_str[count] = i+1' to 'tele_str[count] = str(i+2)' to correctly map the letters to their corresponding digits and ensure the result is a string.",
+                    "analysis": "This feedback is valid.  The mapping starts at index 0 but the digits start at 2.  The student uses `i+1`, resulting in numbers being off by one.  Converting to string with `str(i+2)` is correct to maintain the string type for the `tele_str`.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 364,
@@ -17655,14 +17680,22 @@
     },
     {
         "sid": 366,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student forgot to return the calculated 16-bit binary string 'res'.\"],\n    \"fixes\": [\"Added a return statement to return the value of 'res'.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 4,\n            \"feedback\": \"You need to return the result \\'res\\' to get the 16-bit binary representation.\",\n            \"analysis\": \"The feedback correctly points out the missing return statement, which is the reason the function isn't working as expected.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
-        "output": [],
-        "human_label": [
-            {
-                "line_number": 4,
-                "feedback": "You need to return the result 'res' to get the 16-bit binary representation.",
-                "category": "TP"
-            }
-        ]
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student forgot to return the result from the function.\"],\n    \"fixes\": [\"Added a return statement to return the 16-bit binary string 'res'.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 4,\n            \"feedback\": \"You need to return the result 'res' to get the 16-bit binary representation.\",\n            \"analysis\": \"The TA correctly points out that the function is missing a return statement, which is why the test cases failed.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": {
+            "mistakes": [
+                "The student forgot to return the result from the function."
+            ],
+            "fixes": [
+                "Added a return statement to return the 16-bit binary string 'res'."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 4,
+                    "feedback": "You need to return the result 'res' to get the 16-bit binary representation.",
+                    "analysis": "The TA correctly points out that the function is missing a return statement, which is why the test cases failed.",
+                    "classification": "valid"
+                }
+            ]
+        }
     }
 ]

@@ -108,8 +108,23 @@
     },
     {
         "sid": 5,
-        "raw_response": "```json \n{\n    \"mistakes\": [\"Incorrect string concatenation in the message stored in the 'result' variable.\"],\n    \"fixes\": [\"Use the correct string concatenation format: + operator between string segments.\"],\n    \"feedback_lines\": [ \n        {\n            \"line_number\": 3,\n            \"feedback\": \"The concatenation of strings is incorrect. Use the '+' operator to concatenate strings properly. For example, '\\\"My friend \" + str(n) + \" is \" + str(a) + \" years old.\\\"'.\",\n            \"analysis\": \"The TA accurately identified the mistake in the string concatenation method used by the student and provided a proper example.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student has made a mistake in concatenating strings in the 'result' variable.\"],\n    \"fixes\": [\"Use the correct string concatenation format: concatenate each string and variable using the '+' operator.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 3,\n            \"feedback\": \"The concatenation of strings is incorrect. Use the '+' operator to concatenate strings properly. For example, '\\\"My friend \\\" + str(n) + \\\" is \\\" + str(a) + \\\" years old.\\\"'.\",\n            \"analysis\": \"The TA has correctly identified the mistake in how the student attempted to concatenate strings, and provided the correct format.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": {
+            "mistakes": [
+                "The student has made a mistake in concatenating strings in the 'result' variable."
+            ],
+            "fixes": [
+                "Use the correct string concatenation format: concatenate each string and variable using the '+' operator."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 3,
+                    "feedback": "The concatenation of strings is incorrect. Use the '+' operator to concatenate strings properly. For example, '\"My friend \" + str(n) + \" is \" + str(a) + \" years old.\"'.",
+                    "analysis": "The TA has correctly identified the mistake in how the student attempted to concatenate strings, and provided the correct format.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 6,
@@ -860,8 +875,43 @@
     },
     {
         "sid": 31,
-        "raw_response": "```json\n{\n    \"mistakes\": [],\n    \"fixes\": [],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 1,\n            \"feedback\": \"The variable 'a' should be assigned the value 'True' to match the expected output of the expression '3 * 6 == 6.0 * 3.0'.\",\n            \"analysis\": \"The feedback is accurate as the expression evaluates to True.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 2,\n            \"feedback\": \"The variable 'b' should be assigned the value 'False' to match the expected output of the expression '2 > 5 or (1 < 2 and 9 >= 11)'.\",\n            \"analysis\": \"The feedback is accurate as the expression evaluates to False.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"The variable 'c' should be assigned the value 'False' to match the expected output of the expression '3 > 4 or (2 < 3 and 9 > 10)'.\",\n            \"analysis\": \"The feedback is accurate as the expression evaluates to False.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 4,\n            \"feedback\": \"The variable 'd' should be assigned the value 'False' to match the expected output of the expression 'not (11 % 3 == 2)'.\",\n            \"analysis\": \"The feedback is accurate as the expression evaluates to False.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 5,\n            \"feedback\": 'The variable \\'e\\' should be assigned the value \\'True\\' to match the expected output of the expression \\'\"2\" + \"3\" == \"23\"\\'.',\n            \"analysis\": \"The feedback is accurate as the expression evaluates to True.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [], \n    \"fixes\": [], \n    \"feedback_lines\": [\n        {\n            \"line_number\": 1, \n            \"feedback\": \"The variable 'a' should be assigned the value 'True' to match the expected output of the expression '3 * 6 == 6.0 * 3.0'.\", \n            \"analysis\": \"The TA has rightly identified the expected output and the value assignment needed for it.\", \n            \"classification\": \"valid\"\n        }, \n        {\n            \"line_number\": 2, \n            \"feedback\": \"The variable 'b' should be assigned the value 'False' to match the expected output of the expression '2 > 5 or (1 < 2 and 9 >= 11)'.\", \n            \"analysis\": \"The TA has rightly identified the expected output and the value assignment needed for it.\", \n            \"classification\": \"valid\"\n        }, \n        {\n            \"line_number\": 3, \n            \"feedback\": \"The variable 'c' should be assigned the value 'False' to match the expected output of the expression '3 > 4 or (2 < 3 and 9 > 10)'.\", \n            \"analysis\": \"The TA has rightly identified the expected output and the value assignment needed for it.\", \n            \"classification\": \"valid\"\n        }, \n        {\n            \"line_number\": 4, \n            \"feedback\": \"The variable 'd' should be assigned the value 'False' to match the expected output of the expression 'not (11 % 3 == 2)'.\", \n            \"analysis\": \"The TA has rightly identified the expected output and the value assignment needed for it.\", \n            \"classification\": \"valid\"\n        }, \n        {\n            \"line_number\": 5, \n            \"feedback\": \"The variable 'e' should be assigned the value 'True' to match the expected output of the expression ' \\\"2\\\" + \\\"3\\\" == \\\"23\\\" '.\", \n            \"analysis\": \"The TA has rightly identified the expected output and the value assignment needed for it.\", \n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
+        "output": {
+            "mistakes": [],
+            "fixes": [],
+            "feedback_lines": [
+                {
+                    "line_number": 1,
+                    "feedback": "The variable 'a' should be assigned the value 'True' to match the expected output of the expression '3 * 6 == 6.0 * 3.0'.",
+                    "analysis": "The TA has rightly identified the expected output and the value assignment needed for it.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 2,
+                    "feedback": "The variable 'b' should be assigned the value 'False' to match the expected output of the expression '2 > 5 or (1 < 2 and 9 >= 11)'.",
+                    "analysis": "The TA has rightly identified the expected output and the value assignment needed for it.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 3,
+                    "feedback": "The variable 'c' should be assigned the value 'False' to match the expected output of the expression '3 > 4 or (2 < 3 and 9 > 10)'.",
+                    "analysis": "The TA has rightly identified the expected output and the value assignment needed for it.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 4,
+                    "feedback": "The variable 'd' should be assigned the value 'False' to match the expected output of the expression 'not (11 % 3 == 2)'.",
+                    "analysis": "The TA has rightly identified the expected output and the value assignment needed for it.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 5,
+                    "feedback": "The variable 'e' should be assigned the value 'True' to match the expected output of the expression ' \"2\" + \"3\" == \"23\" '.",
+                    "analysis": "The TA has rightly identified the expected output and the value assignment needed for it.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 32,
@@ -2676,7 +2726,7 @@
     },
     {
         "sid": 96,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student incorrectly used escape characters in the string assignment.\"], \n    \"fixes\": [\n        \"Correct the escape characters for quotes and backslashes in the string assignment.\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 1,\n            \"feedback\": \"The string should include the entire message, including 'Steve recalled.'. Additionally, the escape characters for quotes and backslashes need to be corrected. The correct format should be: \\\\\" for double quotes, \\\\\\' for single quotes, and \\\\\\\\ for backslashes.\",\n            \"analysis\": \"The feedback correctly addresses the mistakes in the student's code, providing guidance on the correct escape characters and the missing part of the message.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student incorrectly used escape characters in the string assignment\"],\n    \"fixes\": [\"Fix the escape characters for quotes and backslashes in the string assignment\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 1,\n            \"feedback\": \"The string should include the entire message, including 'Steve recalled.'. Additionally, the escape characters for quotes and backslashes need to be corrected. The correct format should be: \\\\\" for double quotes, \\\\\\' for single quotes, and \\\\\\\\ for backslashes.\",\n            \"analysis\": \"The TA correctly pointed out the mistake in the escape character usage and provided guidance on the correct format.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
         "output": []
     },
     {
@@ -2850,22 +2900,22 @@
     },
     {
         "sid": 103,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 104,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 105,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 106,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {

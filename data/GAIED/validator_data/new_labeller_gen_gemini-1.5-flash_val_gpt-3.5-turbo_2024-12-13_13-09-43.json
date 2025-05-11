@@ -2649,7 +2649,7 @@
     },
     {
         "sid": 98,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student incorrectly defined the string split across two lines and did not properly handle the escape characters.\"],\n    \"fixes\": [\"Define the string in a single line using the correct escape characters.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": \"1-2\", \n            \"feedback\": \"The string should be defined in a single line using escape characters.  You need to escape the inner double quotes using \\\\\" and the backslash using \\\\\\.  Concatenating strings like this is less efficient and makes the code harder to read.\",\n            \"analysis\": \"The TA correctly identified the issue of defining the string across two lines and mentioned the need for proper escape characters. However, the comment on efficiency and readability could be subjective.\", \n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
+        "raw_response": "```json\n{\n    \"mistakes\": [\n        \"The student has incorrectly defined the string variable in multiple lines instead of a single line\",\n        \"The student has not escaped the inner double quotes or backslashes correctly\"\n    ],\n    \"fixes\": [\n        \"Define the string variable in a single line using escape characters\",\n        \"Ensure to escape the inner double quotes using \\\\\" and backslashes using \\\\\\\\\"\n    ],\n    \"feedback_lines\": [\n        {\n            \"line_number\": \"1-2\",\n            \"feedback\": \"The string should be defined in a single line using escape characters.  You need to escape the inner double quotes using \\\\\" and the backslash using \\\\\\.  Concatenating strings like this is less efficient and makes the code harder to read.\",\n            \"analysis\": \"The TA correctly identified the mistakes in how the string was defined and provided guidance on improving code readability\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n```",
         "output": []
     },
     {
@@ -2674,8 +2674,23 @@
     },
     {
         "sid": 100,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student incorrectly handled the quotes and backslashes in the string.\"], \n    \"fixes\": [\"Correctly enclose the string in double quotes, double the backslashes before 'annoying', and include 'Steve recalled.' at the end of the string.\"],\n    \"feedback_lines\": [ \n        {\n            \"line_number\": 1, \n            \"feedback\": \"You almost had it!  The issue is with how you're handling the outer quotes and Steve's recall. The string should be enclosed in double quotes so you can use single quotes internally without needing to escape them.  Also, you need to include \"Steve recalled.\" at the end of the string.  The backslashes before annoying need to be doubled to be correctly interpreted as single backslashes within the string.\", \n            \"analysis\": \"The TA has correctly identified the mistakes in the student's code and provided guidance on how to fix them.\", \n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student did not correctly handle the quotes and backslashes in the string.\"], \n    \"fixes\": [\"Enclose the entire string in double quotes to avoid escaping single quotes within it. Add 'Steve recalled.' at the end of the string. Double the backslashes before 'annoying' to correctly interpret them as single backslashes within the string.\"], \n    \"feedback_lines\": [\n        {\n            \"line_number\": 1,\n            \"feedback\": \"You almost had it! The issue is with how you're handling the outer quotes and Steve's recall. The string should be enclosed in double quotes so you can use single quotes internally without needing to escape them. Also, you need to include 'Steve recalled.' at the end of the string. The backslashes before annoying need to be doubled to be correctly interpreted as single backslashes within the string.\",\n            \"analysis\": \"The TA has provided clear and accurate feedback on the issues with the handling of quotes and backslashes in the student's string.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
+        "output": {
+            "mistakes": [
+                "The student did not correctly handle the quotes and backslashes in the string."
+            ],
+            "fixes": [
+                "Enclose the entire string in double quotes to avoid escaping single quotes within it. Add 'Steve recalled.' at the end of the string. Double the backslashes before 'annoying' to correctly interpret them as single backslashes within the string."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 1,
+                    "feedback": "You almost had it! The issue is with how you're handling the outer quotes and Steve's recall. The string should be enclosed in double quotes so you can use single quotes internally without needing to escape them. Also, you need to include 'Steve recalled.' at the end of the string. The backslashes before annoying need to be doubled to be correctly interpreted as single backslashes within the string.",
+                    "analysis": "The TA has provided clear and accurate feedback on the issues with the handling of quotes and backslashes in the student's string.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 101,
@@ -2719,22 +2734,22 @@
     },
     {
         "sid": 103,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 104,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 105,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 106,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
@@ -4466,8 +4481,30 @@
     },
     {
         "sid": 166,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student's initial approach to checking for palindromes is inefficient and prone to errors.\"],\n    \"fixes\": [\"A more efficient and concise approach would be to convert the number to a string, reverse it, and compare it to the original string. Additionally, the function should handle cases outside the specified range (0-999) explicitly.\"],\n    \"feedback_lines\": [ \n        { \n            \"line_number\": 2-10, \n            \"feedback\": \"Your initial approach only handled 2 and 3 digit numbers separately using string indexing which is inefficient and prone to errors. A more concise and efficient approach is to convert the number to a string, reverse it, and compare it to the original string. This handles all cases within the 0-999 range effectively.\", \n            \"analysis\": \"The TA correctly points out the inefficiency in the student's initial approach and provides a more efficient and comprehensive solution.\",\n            \"classification\": \"valid\" \n        }, \n        { \n            \"line_number\": 1,\n            \"feedback\": \"The function should explicitly handle cases where the input is outside the specified range (0-999).\", \n            \"analysis\": \"This feedback is **valid** as it highlights the need to explicitly address out-of-range inputs in the function.\",\n            \"classification\": \"valid\" \n        }\n    ]\n}\n```\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student's code only handled checking for palindromes in 2 and 3 digit numbers separately, which is inefficient and prone to errors.\"], \n    \"fixes\": [\"A more efficient approach is to handle all cases within the 0-999 range by converting the number to a string, reversing it, and comparing it to the original string.\", \"The function should explicitly handle cases where the input is outside the specified range (0-999).\"], \n    \"feedback_lines\": [ \n        { \n            \"line_number\": \"2-10\", \n            \"feedback\": \"Your initial approach only handled 2 and 3 digit numbers separately using string indexing which is inefficient and prone to errors. A more concise and efficient approach is to convert the number to a string, reverse it, and compare it to the original string. This handles all cases within the 0-999 range effectively.\", \n            \"analysis\": \"The TA correctly identified the inefficiency and error-prone nature of the student's approach.\", \n            \"classification\": \"valid\" \n        }, \n        {\n            \"line_number\": \"1\", \n            \"feedback\": \"The function should explicitly handle cases where the input is outside the specified range (0-999).\", \n            \"analysis\": \"The TA correctly noted that the student's code should have included handling for numbers outside the specified range.\", \n            \"classification\": \"valid\" \n        }\n    ]\n}\n```",
+        "output": {
+            "mistakes": [
+                "The student's code only handled checking for palindromes in 2 and 3 digit numbers separately, which is inefficient and prone to errors."
+            ],
+            "fixes": [
+                "A more efficient approach is to handle all cases within the 0-999 range by converting the number to a string, reversing it, and comparing it to the original string.",
+                "The function should explicitly handle cases where the input is outside the specified range (0-999)."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": "2-10",
+                    "feedback": "Your initial approach only handled 2 and 3 digit numbers separately using string indexing which is inefficient and prone to errors. A more concise and efficient approach is to convert the number to a string, reverse it, and compare it to the original string. This handles all cases within the 0-999 range effectively.",
+                    "analysis": "The TA correctly identified the inefficiency and error-prone nature of the student's approach.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": "1",
+                    "feedback": "The function should explicitly handle cases where the input is outside the specified range (0-999).",
+                    "analysis": "The TA correctly noted that the student's code should have included handling for numbers outside the specified range.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 167,

@@ -2886,22 +2886,22 @@
     },
     {
         "sid": 103,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 104,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 105,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
         "sid": 106,
-        "raw_response": "Error code: 400 - {'error': {'message': \"Sorry! We've encountered an issue with repetitive patterns in your prompt. Please try again with a different prompt.\", 'type': 'invalid_request_error', 'param': 'prompt', 'code': 'invalid_prompt'}}",
+        "raw_response": "",
         "output": []
     },
     {
@@ -3339,8 +3339,23 @@
     },
     {
         "sid": 126,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student mistakenly used 'swapcase(s)' instead of 's.swapcase()' to swap cases in the string.\"],\n    \"fixes\": [\"Use 's.swapcase()' to correctly swap the cases in the input string.\"],\n    \"feedback_lines\": [ \n        { \n            \"line_number\": 2, \n            \"feedback\": \"You were trying to use a non-existent function \"swapcase(s)\". The correct way to use it is \"s.swapcase()\". This is because swapcase is a built-in method in Python for string objects.\", \n            \"analysis\": \"The TA correctly pointed out the mistake in function call and provided the correct method to use.\",\n            \"classification\": \"valid\" \n        }\n    ]\n}\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student incorrectly used 'swapcase(s)' instead of 's.swapcase()'\"],\n    \"fixes\": [\"Use 's.swapcase()' instead of 'swapcase(s)' to utilize the built-in function correctly.\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"You were trying to use a non-existent function 'swapcase(s)'. The correct way to use it is 's.swapcase()'. This is because swapcase is a built-in method in Python for string objects.\",\n            \"analysis\": \"The TA accurately identified the mistake made by the student and provided the correct solution.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
+        "output": {
+            "mistakes": [
+                "The student incorrectly used 'swapcase(s)' instead of 's.swapcase()'"
+            ],
+            "fixes": [
+                "Use 's.swapcase()' instead of 'swapcase(s)' to utilize the built-in function correctly."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 2,
+                    "feedback": "You were trying to use a non-existent function 'swapcase(s)'. The correct way to use it is 's.swapcase()'. This is because swapcase is a built-in method in Python for string objects.",
+                    "analysis": "The TA accurately identified the mistake made by the student and provided the correct solution.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 127,
@@ -3688,8 +3703,29 @@
     },
     {
         "sid": 139,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student is not correctly returning the joined string after insertion.\"], \n    \"fixes\": [\"Return the joined string instead of the list \"meow\".\"],\n    \"feedback_lines\": [ \n        { \n            \"line_number\": 4, \n            \"feedback\": \"You are trying to join the list into a string but you are not assigning it to any variable.\", \n            \"analysis\": \"The TA correctly identifies the mistake made by the student in not assigning the joined string to any variable.\", \n            \"classification\": \"valid\" \n        }, \n        { \n            \"line_number\": 5,\n            \"feedback\": \"You are returning the list \"meow\" instead of a string. After joining the list into a string.\", \n            \"analysis\": \"The feedback correctly points out the issue of returning a list instead of a string after joining.\", \n            \"classification\": \"valid\" \n        }\n    ]\n}\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student is not correctly returning the joined string after inserting the substring.\"], \n    \"fixes\": [\"Return the joined string instead of just the list.\"],\n    \"feedback_lines\": [ \n        { \n            \"line_number\": 4, \n            \"feedback\": \"You are trying to join the list into a string but you are not assigning it to any variable. S\", \n            \"analysis\": \"The TA has correctly identified the mistake made by the student and its fix\",\n            \"classification\": \"valid\" \n        }, \n        { \n            \"line_number\": 5,\n            \"feedback\": \"You are returning the list 'meow' instead of a string. After joining the list into a strin\", \n            \"analysis\": \"The provided feedback is **invalid** as it correctly mentions the issue but gets cut off at the end.\",\n            \"classification\": \"invalid\" \n        }\n    ]\n}\n```",
+        "output": {
+            "mistakes": [
+                "The student is not correctly returning the joined string after inserting the substring."
+            ],
+            "fixes": [
+                "Return the joined string instead of just the list."
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 4,
+                    "feedback": "You are trying to join the list into a string but you are not assigning it to any variable. S",
+                    "analysis": "The TA has correctly identified the mistake made by the student and its fix",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 5,
+                    "feedback": "You are returning the list 'meow' instead of a string. After joining the list into a strin",
+                    "analysis": "The provided feedback is **invalid** as it correctly mentions the issue but gets cut off at the end.",
+                    "classification": "invalid"
+                }
+            ]
+        }
     },
     {
         "sid": 140,
@@ -5040,8 +5076,62 @@
     },
     {
         "sid": 183,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student did not correctly handle the calculations and conditions to determine the relationship between two rectangles.\"], \n    \"fixes\": [\"Correctly calculate the absolute difference between x1 and x2 using the abs() function.\", \n              \"Update the return strings to remove extra spaces and fix the typo in one of the messages.\"],\n    \"feedback_lines\": [ \n        {\n            \"line_number\": 2, \n            \"feedback\": \"Instead of using if-else condition to calculate the absolute difference between x1 and x2, you can directly use the abs() function.\",\n            \"analysis\": \"The TA accurately identified the need to use abs() function here for calculating the absolute difference.\",\n            \"classification\": \"valid\"\n        }, \n        {\n            \"line_number\": 3, \n            \"feedback\": \"Instead of using if-else condition to calculate the absolute difference between y1 and y2, you can directly use the abs() function.\",\n            \"analysis\": \"The TA correctly identified the need to use abs() function here for calculating the absolute difference.\",\n            \"classification\": \"valid\"\n        }, \n        {\n            \"line_number\": 6, \n            \"feedback\": \"There should not be any spaces in the return string. It should be \"Not a valid rectangle\" instead of \" Not a valid rectangle \".\",\n            \"analysis\": \"The feedback is inaccurate as the spaces do not affect the functionality of the code.\",\n            \"classification\": \"invalid\"\n        }, \n        {\n            \"line_number\": 8, \n            \"feedback\": \"There should not be any spaces in the return string. It should be \"r2 intersect r1 exactly\" instead of \" r2 interesect r1 exactly \".\",\n            \"analysis\": \"The feedback correctly addresses the presence of extra spaces in the return string.\",\n            \"classification\": \"valid\"\n        }, \n        {\n            \"line_number\": 14, \n            \"feedback\": \"There should not be any spaces in the return string. It should be \"r2 does not overlap r1\" instead of \" r2 does not overlap r1 \".\",\n            \"analysis\": \"The feedback correctly addresses the presence of extra spaces in the return string.\",\n            \"classification\": \"valid\"\n        }, \n        {\n            \"line_number\": 16, \n            \"feedback\": \"There should not be any spaces in the return string. It should be \"r2 overlaps r1\" instead of \" r2 overlaps r1 \".\",\n            \"analysis\": \"The feedback correctly addresses the presence of extra spaces in the return string.\",\n            \"classification\": \"valid\"\n        }, \n        {\n            \"line_number\": 12, \n            \"feedback\": \"There is a typo in the return string. It should be \"r1 is inside r2\" instead of \"r1 is inside r \".\",\n            \"analysis\": \"The TA accurately identified the typo in the return string.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student has made mistakes in the calculations to determine the relationship between rectangles\", \"The student is not correctly handling the case for rectangles when one is inside the other\", \"The student's implementation is not considering the case where the rectangles exactly intersect\"],\n    \"fixes\": [\"Use abs() function directly to calculate the absolute difference between coordinates\", \"Correct the return strings for each scenario to remove extra spaces and fix typos\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 2,\n            \"feedback\": \"Instead of using if-else condition to calculate the absolute difference between x1 and x2, you can directly use the abs() function.\",\n            \"analysis\": \"The feedback is valid as it suggests an improvement to simplify the code.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 3,\n            \"feedback\": \"Instead of using if-else condition to calculate the absolute difference between y1 and y2, you can directly use the abs() function.\",\n            \"analysis\": \"The feedback is valid as it suggests an improvement to simplify the code.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 6,\n            \"feedback\": \"There should not be any spaces in the return string. It should be 'Not a valid rectangle' instead of ' Not a valid rectangle '.\",\n            \"analysis\": \"The feedback is valid as it correctly points out the formatting issue in the return string.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 8,\n            \"feedback\": \"There should not be any spaces in the return string. It should be 'r2 intersect r1 exactly' instead of ' r2 interesect r1 exactly '.\",\n            \"analysis\": \"The feedback is valid as it correctly points out the formatting issue in the return string.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 14,\n            \"feedback\": \"There should not be any spaces in the return string. It should be 'r2 does not overlap r1' instead of ' r2 does not overlap r1 '.\",\n            \"analysis\": \"The feedback is valid as it correctly points out the formatting issue in the return string.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 16,\n            \"feedback\": \"There should not be any spaces in the return string. It should be 'r2 overlaps r1' instead of ' r2 overlaps r1 '.\",\n            \"analysis\": \"The feedback is valid as it correctly points out the formatting issue in the return string.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 12,\n            \"feedback\": \"There is a typo in the return string. It should be 'r1 is inside r2' instead of 'r1 is inside r '.\",\n            \"analysis\": \"The feedback is valid as it correctly identifies and suggests a fix for the typographical error.\",\n            \"classification\": \"valid\"\n        }\n    ]\n}\n```\n",
+        "output": {
+            "mistakes": [
+                "The student has made mistakes in the calculations to determine the relationship between rectangles",
+                "The student is not correctly handling the case for rectangles when one is inside the other",
+                "The student's implementation is not considering the case where the rectangles exactly intersect"
+            ],
+            "fixes": [
+                "Use abs() function directly to calculate the absolute difference between coordinates",
+                "Correct the return strings for each scenario to remove extra spaces and fix typos"
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 2,
+                    "feedback": "Instead of using if-else condition to calculate the absolute difference between x1 and x2, you can directly use the abs() function.",
+                    "analysis": "The feedback is valid as it suggests an improvement to simplify the code.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 3,
+                    "feedback": "Instead of using if-else condition to calculate the absolute difference between y1 and y2, you can directly use the abs() function.",
+                    "analysis": "The feedback is valid as it suggests an improvement to simplify the code.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 6,
+                    "feedback": "There should not be any spaces in the return string. It should be 'Not a valid rectangle' instead of ' Not a valid rectangle '.",
+                    "analysis": "The feedback is valid as it correctly points out the formatting issue in the return string.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 8,
+                    "feedback": "There should not be any spaces in the return string. It should be 'r2 intersect r1 exactly' instead of ' r2 interesect r1 exactly '.",
+                    "analysis": "The feedback is valid as it correctly points out the formatting issue in the return string.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 14,
+                    "feedback": "There should not be any spaces in the return string. It should be 'r2 does not overlap r1' instead of ' r2 does not overlap r1 '.",
+                    "analysis": "The feedback is valid as it correctly points out the formatting issue in the return string.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 16,
+                    "feedback": "There should not be any spaces in the return string. It should be 'r2 overlaps r1' instead of ' r2 overlaps r1 '.",
+                    "analysis": "The feedback is valid as it correctly points out the formatting issue in the return string.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 12,
+                    "feedback": "There is a typo in the return string. It should be 'r1 is inside r2' instead of 'r1 is inside r '.",
+                    "analysis": "The feedback is valid as it correctly identifies and suggests a fix for the typographical error.",
+                    "classification": "valid"
+                }
+            ]
+        }
     },
     {
         "sid": 184,
@@ -6790,8 +6880,29 @@
     },
     {
         "sid": 246,
-        "raw_response": "```json\n{\n    \"mistakes\": [\"The student did not handle cases where the input number is less than or equal to 1.\"], \n    \"fixes\": [\"Add a condition to check if the input number is less than or equal to 1, returning False in that case.\"],\n    \"feedback_lines\": [ \n        { \n            \"line_number\": 3, \n            \"feedback\": \"You need to add a condition to check if the input number is less than or equal to 1. If it is, the function should return False because 1 is not a prime number and negative numbers are not considered in prime number theory.\", \n            \"analysis\": \"The TA correctly identified that the student did not handle the case if the input number is less than or equal to 1.\",\n            \"classification\": \"valid\" \n        }, \n        { \n            \"line_number\": 5,\n            \"feedback\": \"The condition in your while loop should be \"i <= int(math.sqrt(n))\" instead of \"i < int(math.sqrt(n))\". This is because you want to check divisibility up to and including the square root of the number.\", \n            \"analysis\": \"The TA correctly identified that the condition in the while loop was incorrect and provided a valid fix.\",\n            \"classification\": \"valid\" \n        }\n    ]\n}\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [\"The student program doesn't correctly handle whether 1 is a prime number or not\"],\n    \"fixes\": [\"Add a condition to check if the input number is less than or equal to 1 and return False in such cases\"],\n    \"feedback_lines\": [\n        {\n            \"line_number\": 3,\n            \"feedback\": \"You need to add a condition to check if the input number is less than or equal to 1. If it is, the function should return False because 1 is not a prime number and negative numbers are not considered in prime number theory.\",\n            \"analysis\": \"The TA correctly identified that the student program doesn't handle the case when the input number is 1, which should not be considered a prime number. The fix suggested addresses this issue.\",\n            \"classification\": \"valid\"\n        },\n        {\n            \"line_number\": 5,\n            \"feedback\": \"The condition in your while loop should be 'i <= int(math.sqrt(n))' instead of 'i < int(math.sqrt(n))'. This is because you want to check divisibility up to and including the square root of the number. If you don't include the square root\",\n            \"analysis\": \"This feedback is incomplete and unclear. It seems to be cut off before completion, which could confuse the student. Therefore, it is considered invalid.\",\n            \"classification\": \"invalid\"\n        }\n    ]\n}\n```",
+        "output": {
+            "mistakes": [
+                "The student program doesn't correctly handle whether 1 is a prime number or not"
+            ],
+            "fixes": [
+                "Add a condition to check if the input number is less than or equal to 1 and return False in such cases"
+            ],
+            "feedback_lines": [
+                {
+                    "line_number": 3,
+                    "feedback": "You need to add a condition to check if the input number is less than or equal to 1. If it is, the function should return False because 1 is not a prime number and negative numbers are not considered in prime number theory.",
+                    "analysis": "The TA correctly identified that the student program doesn't handle the case when the input number is 1, which should not be considered a prime number. The fix suggested addresses this issue.",
+                    "classification": "valid"
+                },
+                {
+                    "line_number": 5,
+                    "feedback": "The condition in your while loop should be 'i <= int(math.sqrt(n))' instead of 'i < int(math.sqrt(n))'. This is because you want to check divisibility up to and including the square root of the number. If you don't include the square root",
+                    "analysis": "This feedback is incomplete and unclear. It seems to be cut off before completion, which could confuse the student. Therefore, it is considered invalid.",
+                    "classification": "invalid"
+                }
+            ]
+        }
     },
     {
         "sid": 247,
@@ -7627,8 +7738,19 @@
     },
     {
         "sid": 272,
-        "raw_response": "```json\n{\n    \"mistakes\": [],\n    \"fixes\": [],\n    \"feedback_lines\": [],\n}\n```",
-        "output": []
+        "raw_response": "```json\n{\n    \"mistakes\": [],\n    \"fixes\": [],\n    \"feedback_lines\": [ \n        {\n            \"line_number\": 2, \n            \"feedback\": \"Indentation is very important in Python. It indicates a block of code. Make sure to indent your code correctly.\", \n            \"analysis\": \"The indentation of the code block in line 2 is correct as it is consistent with the while loop. Hence, the feedback is **invalid**.\", \n            \"classification\": \"invalid\" \n        }\n    ]\n}\n```",
+        "output": {
+            "mistakes": [],
+            "fixes": [],
+            "feedback_lines": [
+                {
+                    "line_number": 2,
+                    "feedback": "Indentation is very important in Python. It indicates a block of code. Make sure to indent your code correctly.",
+                    "analysis": "The indentation of the code block in line 2 is correct as it is consistent with the while loop. Hence, the feedback is **invalid**.",
+                    "classification": "invalid"
+                }
+            ]
+        }
     },
     {
         "sid": 273,
