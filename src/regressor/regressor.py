@@ -565,7 +565,7 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
 if __name__ == '__main__':
     GV, pGa, VALIDATOR_COUNTS, PVVA, PVIVA = read_data()
 
-    redo = False
+    redo = True
     if redo:
         all_errors = []
         all_avg_errors = []
