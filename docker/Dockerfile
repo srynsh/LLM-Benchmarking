@@ -1,8 +1,8 @@
-# cd ..
-# sudo docker build -t llm-benchmarking -f docker/Dockerfile .
+# cd .. (comment retained for context)
+# sudo docker build --no-cache -t llm-benchmarking -f docker/Dockerfile .
 # sudo docker run --rm -v $(pwd)/output:/app/output llm-benchmarking
 
-FROM python:3.11-slim
+FROM ubuntu:22.04
 
 WORKDIR /app
 
@@ -10,28 +10,32 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    python3 \
+    python3-pip \
+    git && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first to leverage Docker cache
-COPY src/requirements.txt .
+COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN python3 -m pip install --no-cache-dir -r requirements.txt
 
 # Create directory for output images
 RUN mkdir -p /app/src
-RUN mkdir -p /app/data
-RUN mkdir -p /app/output /app/output/images /app/output/images/pdfs /app/output/images/pngs /app/output/latex /app/output/interim /app/output/logs
-RUN chmod 777 /app/output  
+# RUN mkdir -p /app/output /app/output/images /app/output/images/pdf_files /app/output/images/png_files /app/output/latex /app/output/interim /app/output/logs
+# RUN mkdir -p /app/output /app/output/images /app/output/images/pdfs /app/output/images/pngs /app/output/latex /app/output/interim /app/output/logs
+# RUN chmod -R 777 /app/output
+
+# docker
 
 
 # Copy the rest of the code
 COPY src/ /app/src/
 COPY data/ /app/data/
 
-# Set working directory to the regressor directory
-WORKDIR /app/src/regressor
+# Set working directory to the src directory
+WORKDIR /app/src/
 
 # Command to run when container starts
-CMD ["python", "regressor.py"]
+CMD ["python3", "helloWorld.py"]
