@@ -39,11 +39,11 @@ def loss_pred_crossEntropy(pVv, pViv, pG, GV):
     ------
     A small epsilon (1e-9) is added to avoid log(0) errors through clipping.
     """
-    G_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
+    GV_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
     epsilon = 1e-9
     return -np.mean([
-        GV[i, j]*np.log(np.clip(G_hat[i, j], epsilon, 1))
-        + (1 - GV[i, j])*np.log(np.clip(1 - G_hat[i, j], epsilon, 1))
+        GV[i, j]*np.log(np.clip(GV_hat[i, j], epsilon, 1))
+        + (1 - GV[i, j])*np.log(np.clip(1 - GV_hat[i, j], epsilon, 1))
         for i in range(GV.shape[0])
         for j in range(GV.shape[1])
     ])
@@ -72,8 +72,8 @@ def loss_pred_mae(pVv, pViv, pG, GV):
     float
         Mean absolute error between GV and GV_hat.
     """
-    G_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
-    return np.mean(np.abs(G_hat - GV))
+    GV_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
+    return np.mean(np.abs(GV_hat - GV))
     
 def loss_pred_huber(pVv, pViv, pG, GV):
     """
@@ -99,11 +99,11 @@ def loss_pred_huber(pVv, pViv, pG, GV):
     float
         Huber loss between GV and GV_hat.
     """
-    G_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
+    GV_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
     delta = 0.05
-    return np.mean(np.where(np.abs(G_hat - GV) < delta,
-                             0.5 * (G_hat - GV)**2,
-                             delta * (np.abs(G_hat - GV) - 0.5 * delta)))
+    return np.mean(np.where(np.abs(GV_hat - GV) < delta,
+                             0.5 * (GV_hat - GV)**2,
+                             delta * (np.abs(GV_hat - GV) - 0.5 * delta)))
 
 def loss_pred_rmse(pVv, pViv, pG, GV):
     """
@@ -129,8 +129,8 @@ def loss_pred_rmse(pVv, pViv, pG, GV):
     float
         RMSE between GV and GV_hat.
     """
-    G_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
-    return np.sqrt(np.mean((G_hat - GV)**2))
+    GV_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
+    return np.sqrt(np.mean((GV_hat - GV)**2))
 
 
 def loss_pred(pVv, pViv, pG, GV):
