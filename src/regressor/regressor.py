@@ -134,6 +134,7 @@ def print_values_k(k1, numComb, j, pGa, VALIDATOR_COUNTS, log, max_errors, avg_e
     print(f"=========================")
 
     G, Ghat, errorG, pVv, pViv = extract_values_log(pGa, VALIDATOR_COUNTS, log)
+    GV_hat = np.outer(Ghat, pVv) + np.outer((1 - Ghat), (1 - pViv))
     
     print(f'\tG vs G_hat:', end=' ')
     print_values_pair(G, Ghat, pGa.keys())
@@ -146,6 +147,8 @@ def print_values_k(k1, numComb, j, pGa, VALIDATOR_COUNTS, log, max_errors, avg_e
     
     print(f"\n\tMax G Error (Validation): {max_errors[-1]}")
     print(f"\tAvg G Error (Validation): {avg_errors[-1]}")
+
+    print(GV_hat)
 
     print(f"\tG Error (Test): {errorG}")
 

@@ -48,6 +48,33 @@ def loss_pred_crossEntropy(pVv, pViv, pG, GV):
         for j in range(GV.shape[1])
     ])
 
+def loss_pred_mse(pVv, pViv, pG, GV):
+    """
+    Calculate the mean squared error between the predicted and actual gene-variant matrices.
+
+    This function computes the mean squared error between the generator precision
+    prediction by validator (GV) and its estimate by regression method (GV_hat).
+    The GV_hat matrix is constructed using outer products of generator and validator performance vectors.
+    
+    Parameters:
+    -----------
+    pVv : numpy.ndarray
+        Probability vector of a validator classifying output as valid.
+    pViv : numpy.ndarray
+        Probability vector of a validator classifying output as invalid.
+    pG : numpy.ndarray
+        Probability vector for generator output being valid.
+    GV : numpy.ndarray
+        Generator precision prediction by validator matrix.
+    
+    Returns:
+    --------
+    float
+        Mean squared error between GV and GV_hat.
+    """
+    GV_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
+    return np.mean((GV_hat - GV)**2)
+
 def loss_pred_mae(pVv, pViv, pG, GV):
     """
     Calculate the mean absolute error between the predicted and actual gene-variant matrices.
@@ -100,7 +127,7 @@ def loss_pred_huber(pVv, pViv, pG, GV):
         Huber loss between GV and GV_hat.
     """
     GV_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
-    delta = 0.05
+    delta = 0.01
     return np.mean(np.where(np.abs(GV_hat - GV) < delta,
                              0.5 * (GV_hat - GV)**2,
                              delta * (np.abs(GV_hat - GV) - 0.5 * delta)))
@@ -136,6 +163,8 @@ def loss_pred_rmse(pVv, pViv, pG, GV):
 def loss_pred(pVv, pViv, pG, GV):
     if LOSS_PRED == 'crossEntropy':
         return loss_pred_crossEntropy(pVv, pViv, pG, GV)
+    elif LOSS_PRED == 'mse':
+        return loss_pred_mse(pVv, pViv, pG, GV)
     elif LOSS_PRED == 'rmse':
         return loss_pred_rmse(pVv, pViv, pG, GV)
     elif LOSS_PRED == 'mae':
