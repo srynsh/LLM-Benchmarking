@@ -11,9 +11,9 @@ def read_dfs():
     return dfs, df_gens, df_val_tpr_tnr
 
 def write_latex(dfs, df_gens, df_val_tpr_tnr):
-    genMeanHash, genPrecHash = predMatrixTex.generate_predicted_matrix_latex(dfs, config.MODELS, config.mapping, config.fnamePredMatrix)
-    predMatrixTex.generate_predicted_matrix_error(dfs, genMeanHash, genPrecHash, config.MODELS, config.MODELS_GEN, config.mapping, config.fnamePredMatrix)
-    validatorTex.generate_validator_latex(dfs, config.tpr_tnr_genModel, config.MODELS, config.mapping, config.fnameTprTnrTex)
+    genMeanHash, genPrecHash = predMatrixTex.generate_predicted_matrix_latex(dfs, config.MODELS, config.mapping_latex, config.fnamePredMatrix)
+    predMatrixTex.generate_predicted_matrix_error(dfs, genMeanHash, genPrecHash, config.MODELS, config.MODELS_GEN, config.mapping_latex, config.fnamePredMatrix)
+    validatorTex.generate_validator_latex(dfs, config.tpr_tnr_genModel, config.MODELS, config.mapping_latex, config.fnameTprTnrTex)
 
 if __name__ == "__main__":
     dfs, df_gens, df_val_tpr_tnr = read_dfs()

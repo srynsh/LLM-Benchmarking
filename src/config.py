@@ -1,3 +1,10 @@
+from enum import Enum
+
+# =========================
+#   NUMBER OF SIDS
+# =========================
+NUM_SIDS = 366
+
 # =========================
 #   PATHS
 # =========================
@@ -9,28 +16,88 @@ pathLatex = '../output/latex/'
 #   MODEL NAMES
 # =========================
 
-MODELS = ['gpt-4-turbo', 'gpt-4o-mini', 'gpt-4o', 
-          'claude_3_opus', 'claude_3.5_sonnet', 'gemini-1.5-flash', 'gemini-1.5-pro', 'qwen-coder-plus', 'deepseek-chat', 
-          'claude_3.5_haiku', 'gemini-2.5-flash-preview-04-17', 'gemini-2.5-pro-preview-03-25', 'gpt-4.1-2025-04-14', 'gpt-4.1-mini-2025-04-14']
-MODELS_GEN = ['gpt-4-turbo', 'gpt-4o', 'claude_3_opus', 'gemini-1.5-pro', 'qwen-coder-plus', 'deepseek-chat']
+# Sonnet : anthropic.claude-3-5-sonnet-20241022-v2:0
+# Haiku: anthropic.claude-3-5-haiku-20241022-v1:0
+# Opus: anthropic.claude-3-opus-20240229-v1:0
+# Gemini 1.5 Flash: gemini-1.5-flash-002
+# Gemini 1.5 Pro: gemini-1.5-pro-002
+# GPT 4: gpt-4-0613
+# GPT 4T: gpt-4-turbo-2024-04-09
+# GPT 4o: gpt-4o-2024-11-20
+# GPT 4o mini: gpt-4o-mini-2024-07-18
+# Qwen: qwen-coder-plus-2024-11-06
+# Deepseek: deepseek-chat 
 
-mapping = {
-    'gpt-3.5-turbo': '\\gptThreeTurbo',
-    'gpt-4-turbo': '\\gptFour',
-    'gpt-4o-mini': '\\gptFourOMini',
-    'gpt-4o': '\\gptFourO',
-    'claude_3_opus': '\\opus',
-    'claude_3.5_sonnet': '\\sonnet',
-    'gemini-1.5-flash': '\\flash',
-    'gemini-1.5-pro': '\\pro',
-    'qwen-coder-plus': '\\qwen',
-    'deepseek-chat': '\\deepseek',
-    'claude_3.5_haiku': '\\haiku', 
-    'gemini-2.5-flash-preview-04-17': '\\flashTwoFive', 
-    'gemini-2.5-pro-preview-03-25': '\\proTwoFive', 
-    'gpt-4.1-2025-04-14': '\\gptFourOne', 
-    'gpt-4.1-mini-2025-04-14': '\\gptFourOneMini'
+
+class Model(Enum):
+    GPT_3_5_TURBO = "gpt-3.5-turbo"
+    GPT_4_TURBO = "gpt-4-turbo-2024-04-09"
+    GPT_4O_MINI = "gpt-4o-mini-2024-07-18"
+    GPT_4O = "gpt-4o-2024-08-06"
+    GPT_4_1_MINI = "gpt-4.1-mini-2025-04-14"
+    GPT_4_1 = "gpt-4.1-2025-04-14"
+    CLAUDE_3_OPUS = "claude_3_opus"
+    CLAUDE_3_5_SONNET = "claude_3.5_sonnet"
+    CLAUDE_3_5_HAIKU = "claude_3.5_haiku"
+    GEMINI_1_5_FLASH = "gemini-1.5-flash"
+    GEMINI_1_5_PRO = "gemini-1.5-pro"
+    GEMINI_2_5_FLASH = "gemini-2.5-flash-preview-04-17"
+    GEMINI_2_5_PRO = "gemini-2.5-pro-preview-03-25"
+    QWEN_CODER_PLUS = "qwen-coder-plus"
+    DEEPSEEK_CHAT = "deepseek-chat"
+
+
+# List of all model values
+MODELS = [
+    Model.GPT_3_5_TURBO.value,
+    Model.GPT_4_TURBO.value,
+    Model.GPT_4O_MINI.value,
+    Model.GPT_4O.value,
+    Model.GPT_4_1_MINI.value,
+    Model.GPT_4_1.value,
+    Model.CLAUDE_3_OPUS.value,
+    Model.CLAUDE_3_5_SONNET.value,
+    Model.CLAUDE_3_5_HAIKU.value,
+    Model.GEMINI_1_5_FLASH.value,
+    Model.GEMINI_1_5_PRO.value,
+    Model.GEMINI_2_5_FLASH.value,
+    Model.GEMINI_2_5_PRO.value,
+    Model.QWEN_CODER_PLUS.value,
+    Model.DEEPSEEK_CHAT.value
+]
+
+MODELS_GEN = [
+    Model.GPT_4_TURBO.value,
+    Model.GPT_4O.value,
+    Model.CLAUDE_3_OPUS.value,
+    Model.GEMINI_1_5_PRO.value,
+    Model.QWEN_CODER_PLUS.value,
+    Model.DEEPSEEK_CHAT.value
+]
+
+mapping_latex = {
+    Model.GPT_3_5_TURBO.value: '\\gptThreeTurbo',
+    Model.GPT_4_TURBO.value: '\\gptFour',
+    Model.GPT_4O_MINI.value: '\\gptFourOMini',
+    Model.GPT_4O.value: '\\gptFourO',
+    Model.CLAUDE_3_OPUS.value: '\\opus',
+    Model.CLAUDE_3_5_SONNET.value: '\\sonnet',
+    Model.CLAUDE_3_5_HAIKU.value: '\\haiku',
+    Model.GEMINI_1_5_FLASH.value: '\\flash',
+    Model.GEMINI_1_5_PRO.value: '\\pro',
+    Model.QWEN_CODER_PLUS.value: '\\qwen',
+    Model.DEEPSEEK_CHAT.value: '\\deepseek',
+    Model.GEMINI_2_5_FLASH.value: '\\flashTwoFive',
+    Model.GEMINI_2_5_PRO.value: '\\proTwoFive',
+    Model.GPT_4_1.value: '\\gptFourOne',
+    Model.GPT_4_1_MINI.value: '\\gptFourOneMini'
 }
+
+# =========================
+#   MODEL SETTINGS
+# =========================
+MAX_RETRY_ATTEMPTS = 3  # Number of retries for failed JSON parsing
+RETRY_DELAY = 1  # Delay between retries in seconds
 
 # =========================
 #   ENSEMBLE CONFIG
