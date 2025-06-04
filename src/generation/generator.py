@@ -67,7 +67,7 @@ print(f"Output path: {path_existing}")
 available_sids = get_all_sids()
 
 # Load existing results if available
-existing_results = load_existing_results(path_existing)
+existing_results = load_existing_results(model)
 
 # Get list of already processed SIDs (only those with valid Pydantic structure)
 processed_sids = get_processed_sids(existing_results, category_required=category_required)

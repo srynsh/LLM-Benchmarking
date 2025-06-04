@@ -8,19 +8,20 @@ import os
 import sys
 from functools import lru_cache
 
-from src.config import NUM_SIDS, pathValidator
+from src.config import MODELS_GEN, NUM_SIDS, pathValidator
 
 from src.utils import print_warning, print_error
 from src.validation.models import (
-    ValidationResult, ValidationBatch, ValidationInput, FeedbackLine, TestCase, GroundTruthFeedback,
-    parse_feedback_from_json, parse_test_cases_from_json, convert_ground_truth_categories
+    ValidationResult, ValidationBatch
 )
+from src.generation.models import GeneratorData
+from src.generation.data import (load_existing_results, get_processed_results)
 
 
 class DataProvider:
     """Centralized data provider for validation operations."""
     validation_batch: Optional[ValidationBatch] = None
-    generation_batch: Optional[ValidationInput] = None
+    generation_batch: Optional[GeneratorData] = None
 
     @classmethod
     def load_validation_batch(cls, modelGen: str, modelVal: str) -> Optional[ValidationBatch]:
@@ -219,8 +220,20 @@ class DataProvider:
         }
     
     @classmethod
+    def load_generation_batch(cls, modelGen: str):
+        print(f"\n{'='*60}")
+        print(f"GENERATION SUMMARY: {modelGen}")
+        print(f"{'='*60}")
+
+        category_required = modelGen in MODELS_GEN
+        results = load_existing_results(modelGen)
+        processed_results = get_processed_results(results, category_required=category_required)
+        cls.generation_batch = processed_results
+
+    @classmethod
     def __init__(cls, modelGen: str, modelVal: str) -> None:
-        batch = cls.load_validation_batch(modelGen, modelVal)
+        cls.load_generation_batch(modelGen)
+        cls.load_validation_batch(modelGen, modelVal)
         
         # Print summary
         cls.print_validation_summary()

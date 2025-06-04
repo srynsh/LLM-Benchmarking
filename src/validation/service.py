@@ -7,8 +7,7 @@ import datetime
 import json
 
 from src.validation.models import (
-    ValidationInput, ValidationOutput, ValidationResult, 
-    validate_validation_output
+    ValidationOutput, ValidationResult
 )
 from src.validation.data import DataProvider
 from src.validation.prompt import get_validation_prompt, get_validation_prompt_with_ground_truth

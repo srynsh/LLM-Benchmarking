@@ -5,7 +5,7 @@ import numpy as np
 import os
 import sklearn.metrics as skm
 
-DATA_PATH = '../../data/generator' # path relative to a folder inside src.
+DATA_PATH = './data/generator' # path relative to a folder inside src.
 
 gpt_4o_PATH = f'{DATA_PATH}/EXCEL_DATA/dataset_4o.xlsx'
 gpt_4N_PATH = f'{DATA_PATH}/EXCEL_DATA/dataset.xlsx'

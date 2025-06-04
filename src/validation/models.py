@@ -7,24 +7,6 @@ from pydantic import BaseModel, ValidationError, validator, Field, model_validat
 from src.utils import print_warning, print_error
 import json
 
-
-class TestCase(BaseModel):
-    """Model for individual test case result."""
-    expression: str = Field(..., description="Test expression that was evaluated")
-    success: bool = Field(..., description="Whether the test case passed")
-
-
-class FeedbackLine(BaseModel):
-    """Model for individual feedback line to be validated."""
-    line_number: Union[str, int] = Field(..., description="Line number where the feedback applies")
-    feedback: str = Field(..., description="Feedback text for the student")
-    
-    @validator('line_number', pre=True)
-    def validate_line_number(cls, v):
-        """Convert line_number to string for consistency."""
-        return str(v)
-
-
 class GroundTruthFeedback(BaseModel):
     """Model for ground truth feedback with category."""
     line_number: Union[str, int] = Field(..., description="Line number where the feedback applies")
@@ -69,16 +51,6 @@ class ValidationOutput(BaseModel):
     mistakes: Optional[List[str]] = Field(..., description="List of mistakes found in the student's code")
     fixes: Optional[List[str]] = Field(..., description="List of corrections proposed in the fixed code")
     feedback_lines: List[ValidatedFeedbackLine] = Field(..., description="List of validated feedback lines")
-
-
-class ValidationInput(BaseModel):
-    """Model for validation input data."""
-    question: str = Field(..., description="The problem description")
-    student_code: str = Field(..., description="The buggy student code")
-    correct_code: str = Field(..., description="The fixed code")
-    feedback: List[FeedbackLine] = Field(..., description="List of feedback to validate")
-    test_cases: List[TestCase] = Field(..., description="Test case results")
-    human_label: Optional[List[GroundTruthFeedback]] = Field(None, description="Ground truth feedback for reference")
 
 
 class ValidationResult(BaseModel):
@@ -153,49 +125,6 @@ def validate_validation_output(llm_response: Dict[str, Any]) -> bool:
         print_error(f"Validation output validation failed: {e}")
         return False
 
-
-def parse_feedback_from_json(feedback_json: Union[str, List[Dict[str, Any]]]) -> List[FeedbackLine]:
-    """
-    Parse feedback from JSON string or list format.
-    
-    Args:
-        feedback_json: Feedback in JSON format
-        
-    Returns:
-        List[FeedbackLine]: Parsed feedback lines
-    """
-    try:
-        if isinstance(feedback_json, str):
-            feedback_data = json.loads(feedback_json)
-        else:
-            feedback_data = feedback_json
-        
-        return [FeedbackLine(**item) for item in feedback_data]
-    except Exception as e:
-        print_error(f"Error parsing feedback JSON: {e}")
-        return []
-
-
-def parse_test_cases_from_json(test_cases_json: Union[str, List[Dict[str, Any]]]) -> List[TestCase]:
-    """
-    Parse test cases from JSON string or list format.
-    
-    Args:
-        test_cases_json: Test cases in JSON format
-        
-    Returns:
-        List[TestCase]: Parsed test cases
-    """
-    try:
-        if isinstance(test_cases_json, str):
-            test_cases_data = json.loads(test_cases_json)
-        else:
-            test_cases_data = test_cases_json
-        
-        return [TestCase(**item) for item in test_cases_data]
-    except Exception as e:
-        print_error(f"Error parsing test cases JSON: {e}")
-        return []
 
 
 def convert_ground_truth_categories(ground_truth: List[Dict[str, Any]]) -> List[GroundTruthFeedback]:

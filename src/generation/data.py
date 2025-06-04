@@ -202,7 +202,7 @@ def clear_gaied_cache():
     _gaied_queries_cache = None
     print_warning("GAIED queries cache cleared")
 
-def load_existing_results(path_existing: str) -> List[Dict[str, Any]]:
+def load_existing_results(model: str) -> List[Dict[str, Any]]:
     """
     Load existing results from a JSON file.
     
@@ -212,6 +212,8 @@ def load_existing_results(path_existing: str) -> List[Dict[str, Any]]:
     Returns:
         List[Dict[str, Any]]: List of existing results, empty list if file doesn't exist or error occurs
     """
+    path_existing = os.path.join('data', 'generator', f'{model}_feedback.json')
+
     existing_results = []
     if os.path.exists(path_existing):
         try:
@@ -249,3 +251,18 @@ def get_processed_sids(existing_results: List[Dict[str, Any]], category_required
         print_warning(f"{numInvalid} out of {len(existing_results)} existing results have invalid data")
     
     return processed_sids
+
+def get_processed_results(existing_results: List[Dict[str, Any]], category_required: bool) -> List[int]:
+    """
+    Filter out SIDs that have already been processed.
+    
+    Args:
+        sids (List[int]): List of SIDs to filter
+        processed_sids (set): Set of already processed SIDs
+        
+    Returns:
+        List[int]: List of SIDs that have not been processed yet
+    """
+    sids = get_all_sids()
+    processed_sids = get_processed_sids(existing_results, category_required)
+    return [sid for sid in sids if sid not in processed_sids]
