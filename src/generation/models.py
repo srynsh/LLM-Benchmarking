@@ -31,6 +31,13 @@ class ProcessedFeedback(BaseModel):
     line_number: Union[str, int] = Field(..., description="Line number where the mistake occurs")
     feedback: str = Field(..., description="Feedback text for the student")
     category: Optional[str] = Field(None, description="Feedback category (TP, FP-H, FP-I, FP-E, FN)")
+    
+    @validator('category')
+    def validate_category(cls, v):
+        """Ignore feedback items with category 'FN'."""
+        if v == 'FN':
+            raise ValueError("Feedback items with category 'FN' should be ignored")
+        return v
 
 
 class RepairSuccess(BaseModel):
@@ -46,6 +53,19 @@ class GeneratorData(BaseModel):
     student_code: str = Field(..., description="Original student code from dataset")
     pid: int = Field(..., description="Problem ID")
     category_required: bool = Field(default=True, description="Whether category field is required in feedback")
+
+    def __init__(self, **data):
+        """Generate feedback list without 'FN' category."""
+        if 'feedback' in data:
+            feedback_list = data['feedback']
+            if isinstance(feedback_list, list):
+                # Remove feedback items with category 'FN' before validation
+                filtered_feedback = []
+                for item in feedback_list:
+                    if isinstance(item, dict) and item.get('category') != 'FN':
+                        filtered_feedback.append(item)
+                data['feedback'] = filtered_feedback
+        super().__init__(**data)
     
     @model_validator(mode='before')
     def validate_feedback_with_category_required(cls, values: Dict[str, Any]) -> Dict[str, Any]:
