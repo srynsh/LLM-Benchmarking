@@ -12,11 +12,7 @@ from src.config import NUM_SIDS, Model
 sys.path.append("..")
 
 from src.validation.service import ValidationRunner, ValidationService
-from src.validation.data import filter_quota_exceeded_sids
-from src.validation.utils import (
-    print_validation_summary, 
-    analyze_error_patterns
-)
+from src.validation.data import DataProvider
 from src.validation.models import ValidationBatch, ValidationResult
 from src.utils import print_warning, print_error
 
@@ -34,7 +30,6 @@ from src.utils import print_warning, print_error
 modelGen = Model.CLAUDE_3_OPUS.value
 modelVal = Model.CLAUDE_3_OPUS.value
 
-EXPORT_RESULTS_TO_CSV = False  # Set to True to export results to CSV
 
 def main():
     """Main entry point for validation operations."""
@@ -114,31 +109,6 @@ def validate_specific_sids(sids: List[int], generator_model: str, validator_mode
     return batch
 
 
-def analyze_validation_results(modelGen: str, modelVal: str) -> None:
-    """
-    Analyze validation results from a file and print comprehensive statistics.
-    
-    Args:
-        file_path: Path to the validation results file
-    """
-    from src.validation.utils import load_validation_batch_from_file
-    
-    batch = load_validation_batch_from_file(modelGen, modelVal)
-    
-    # Print summary
-    print_validation_summary(batch)
-    
-    # Analyze error patterns
-    error_analysis = analyze_error_patterns(batch.results)
-    if error_analysis['total_failed'] > 0:
-        print(f"\nError Analysis:")
-        print(f"Total Failed: {error_analysis['total_failed']}")
-        for error_type, count in error_analysis['error_counts'].items():
-            print(f"  {error_type}: {count} SIDs")
-    
-    # Export to CSV if required
-    if EXPORT_RESULTS_TO_CSV:
-        export_results_to_csv(batch, modelGen, modelVal)
     
 
 def compare_validation_runs(file_paths: List[str]) -> None:
@@ -179,4 +149,4 @@ def compare_validation_runs(file_paths: List[str]) -> None:
 # TODO: (1) Run for a single validator file and print stats. (2) Run LLM on failures and write into a new file. (3) Run LLM on all generator and validator combinations and write into a new file.
 if __name__ == "__main__":
     # main()
-    analyze_validation_results(modelGen, modelVal)
+    dataProvider = DataProvider(modelGen, modelVal)
