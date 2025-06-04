@@ -8,20 +8,23 @@ import os
 import sys
 from functools import lru_cache
 
+from jsonschema import ValidationError
+
 from src.config import MODELS_GEN, NUM_SIDS, pathValidator
 
 from src.utils import print_warning, print_error
 from src.validation.models import (
-    ValidationResult, ValidationBatch
+    GroundTruthFeedback, ValidationOutput, ValidationResult, ValidationBatch
 )
-from src.generation.models import GeneratorData
+from src.generation.models import GenerationBatch
+import traceback
 from src.generation.data import (load_existing_results, get_processed_results)
 
 
 class DataProvider:
     """Centralized data provider for validation operations."""
     validation_batch: Optional[ValidationBatch] = None
-    generation_batch: Optional[GeneratorData] = None
+    generation_batch: Optional[GenerationBatch] = None
 
     @classmethod
     def load_validation_batch(cls, modelGen: str, modelVal: str) -> Optional[ValidationBatch]:
@@ -50,6 +53,10 @@ class DataProvider:
                 # Convert list to ValidationResult objects
                 results = []
                 for item in data:
+                    sid = item.get('sid', -1)
+                    generatorData = cls.generation_batch.getById(sid) if cls.generation_batch else None
+                    item['generatorData'] = generatorData
+
                     try:
                         # Ensure item has required fields and attach it
                         result = ValidationResult(**item)
@@ -64,6 +71,7 @@ class DataProvider:
 
                         # Try to atleast create a minimal result
                         minimal_result = ValidationResult(
+                            generatorData=generatorData,
                             sid=item.get('sid', -1),
                             success=False,
                             output=None,
@@ -85,6 +93,8 @@ class DataProvider:
 
         except Exception as e:
             print_error(f"Error loading validation batch for gen={modelGen}, val={modelVal}: {e}")
+            print_warning(f"Full traceback: {traceback.format_exc()}")
+            
             sys.exit(1)
             cls.validation_batch = None
 
@@ -225,10 +235,10 @@ class DataProvider:
         print(f"GENERATION SUMMARY: {modelGen}")
         print(f"{'='*60}")
 
-        category_required = modelGen in MODELS_GEN
-        results = load_existing_results(modelGen)
-        processed_results = get_processed_results(results, category_required=category_required)
+
+        processed_results = get_processed_results(modelGen)
         cls.generation_batch = processed_results
+
 
     @classmethod
     def __init__(cls, modelGen: str, modelVal: str) -> None:
@@ -246,3 +256,90 @@ class DataProvider:
             for error_type, count in error_analysis['error_counts'].items():
                 print(f"  {error_type}: {count} SIDs")
         
+
+
+
+def convert_ground_truth_categories(ground_truth: List[Dict[str, Any]]) -> List[GroundTruthFeedback]:
+    """
+    Convert ground truth categories from detailed format to valid/invalid.
+    
+    Args:
+        ground_truth: List of ground truth feedback with detailed categories
+        
+    Returns:
+        List[GroundTruthFeedback]: Converted ground truth feedback
+    """
+    converted_feedback = []
+    
+    for item in ground_truth:
+        # Convert detailed categories to valid/invalid
+        category = item.get('category', '')
+        if category in ['TP', 'FP-E', 'FP-R', 'TP-E', 'TP-R']:
+            new_category = 'valid'
+        elif category in ['FP-H', 'FP-I']:
+            new_category = 'invalid'
+        else:
+            new_category = category  # Keep as is if already valid/invalid
+        
+        converted_item = {
+            'line_number': item['line_number'],
+            'feedback': item['feedback'],
+            'category': new_category
+        }
+        
+        try:
+            converted_feedback.append(GroundTruthFeedback(**converted_item))
+        except ValidationError as e:
+            print_warning(f"Error converting ground truth item: {e}")
+    
+    return converted_feedback
+
+
+def validate_json_file_data(file_path: str) -> List[ValidationResult]:
+    """
+    Validate and parse validation results from a JSON file.
+    
+    Args:
+        file_path: Path to the JSON file containing validation results
+        
+    Returns:
+        List[ValidationResult]: List of valid validation results
+    """
+    try:
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+        
+        if not isinstance(data, list):
+            print_error(f"Expected list in JSON file {file_path}")
+            return []
+        
+        valid_results = []
+        for item in data:
+            try:
+                # Parse the output if it exists and is not empty
+                output = None
+                if item.get('output') and isinstance(item['output'], dict):
+                    try:
+                        output = ValidationOutput(**item['output'])
+                    except ValidationError as e:
+                        print_warning(f"Invalid output format for SID {item.get('sid', 'unknown')}: {e}")
+                
+                result = ValidationResult(
+                    sid=item['sid'],
+                    raw_response=item['raw_response'],
+                    output=output,
+                    success=output is not None,
+                    generator_model=item.get('generator_model', 'unknown'),
+                    validator_model=item.get('validator_model', 'unknown'),
+                    timestamp=item.get('timestamp')
+                )
+                valid_results.append(result)
+                
+            except ValidationError as e:
+                print_warning(f"Error validating result for SID {item.get('sid', 'unknown')}: {e}")
+        
+        return valid_results
+        
+    except Exception as e:
+        print_error(f"Error reading validation file {file_path}: {e}")
+        return []

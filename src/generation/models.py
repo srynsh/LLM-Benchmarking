@@ -4,7 +4,6 @@ Pydantic models for Generator data validation.
 
 from typing import List, Dict, Any, Optional, Union
 from pydantic import BaseModel, ValidationError, validator, Field, model_validator
-from src.generation.data import load_student_code_mapping
 from src.utils import print_warning, print_error
 import pandas as pd
 import os
@@ -74,7 +73,45 @@ class GeneratorData(BaseModel):
                 raise ValueError("Category cannot be empty when category_required is True")
         
         return values
+    
+class GenerationBatch(BaseModel):
+    """Model for a batch of Generator data."""
+    generator_model: str = Field(..., description="Model used for generation")
+    results: List[GeneratorData] = Field(..., description="List of Generator data entries")
+    use_ground_truth: bool = Field(default=False, description="Whether to use ground truth data for validation")
+    
+    @model_validator(mode='before')
+    def validate_results(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """Ensure results is a list of GeneratorData."""
+        results = values.get('results', [])
+        if not isinstance(results, list):
+            raise ValueError("results must be a list")
+        
+        # Validate each result
+        for item in results:
+            if not isinstance(item, dict):
+                raise ValueError("Each result must be a dictionary")
+            try:
+                GeneratorData(**item)
+            except ValidationError as e:
+                raise ValueError(f"Invalid GeneratorData entry: {e}")
+        
+        return values
+    
+    def getById(self, sid: int) -> Optional['GenerationBatch']:
+        """
+        Retrieve a GenerationBatch by student ID.
+        
+        Args:
+            sid: Student ID as integer
 
+        Returns:
+            GenerationBatch or None: Batch if found, None otherwise
+        """
+        for item in self.results:
+            if item.sid == sid:
+                return item
+        return None
 
 def validate_llm_output(llm_response: Dict[str, Any]) -> bool:
     """
@@ -91,29 +128,6 @@ def validate_llm_output(llm_response: Dict[str, Any]) -> bool:
         return True
     except ValidationError as e:
         print_error(f"LLM output validation failed: {e}")
-        return False
-
-
-def validate_generator_data(data: Dict[str, Any], category_required: bool = True) -> bool:
-    """
-    Validate that data matches the complete Generator data structure.
-    
-    Args:
-        data: Data dictionary to validate
-        category_required: Whether category field is required in feedback
-        
-    Returns:
-        bool: True if valid, False otherwise
-    """
-    try:
-        # Add category_required to data if not present
-        if 'category_required' not in data:
-            data['category_required'] = category_required
-        
-        GeneratorData(**data)
-        return True
-    except ValidationError as e:
-        print(f"- {e}")
         return False
 
 
@@ -178,49 +192,3 @@ def convert_llm_to_generator_data(llm_output: Dict[str, Any], sid: int, pid: int
         return None
 
 
-def validate_json_file_data(data: List[Dict[str, Any]], category_required: bool = True) -> List[int]:
-    """
-    Validate data from a JSON file and return list of valid SIDs.
-    
-    Args:
-        data: List of data entries from JSON file
-        category_required: Whether category field is required in feedback
-        
-    Returns:
-        List[int]: List of SIDs that have valid data structure
-    """
-    valid_sids = []
-    student_code_mapping = load_student_code_mapping()
-    
-    for entry in data:
-        try:
-            # Add category_required to entry if not present
-            if 'category_required' not in entry:
-                entry['category_required'] = category_required
-                
-            # Validate the entry structure
-            if validate_generator_data(entry, category_required):
-                sid = entry['sid']
-                
-                # Check if student_code matches the dataset
-                expected_student_code = student_code_mapping.get(sid)
-                if expected_student_code is not None:
-                    actual_student_code = entry.get('student_code', '')
-                    
-                    # Normalize whitespace for comparison
-                    expected_normalized = ' '.join(expected_student_code.split())
-                    actual_normalized = ' '.join(actual_student_code.split())
-                    
-                    if expected_normalized == actual_normalized:
-                        valid_sids.append(sid)
-                    else:
-                        print_warning(f"Student code mismatch for sid {sid}")
-                else:
-                    print_warning(f"No expected student code found for sid {sid}")
-            else:
-                print_warning(f"SID {entry.get('sid', 'unknown')} validation failed")
-
-        except Exception as e:
-            print_error(f"Error validating entry: {e}")
-            
-    return valid_sids

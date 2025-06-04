@@ -4,6 +4,7 @@ Pydantic models for Validator data validation.
 
 from typing import List, Dict, Any, Optional, Union
 from pydantic import BaseModel, ValidationError, validator, Field, model_validator
+from src.generation.models import GeneratorData
 from src.utils import print_warning, print_error
 import json
 
@@ -55,6 +56,7 @@ class ValidationOutput(BaseModel):
 
 class ValidationResult(BaseModel):
     """Model for complete validation result."""
+    generatorData: Optional[GeneratorData] = Field(None, description="Corresponding Generator data used for validation")
     sid: int = Field(..., description="Student ID")
     raw_response: str = Field(..., description="Raw LLM response")
     output: Optional[ValidationOutput] = Field(None, description="Parsed validation output")
@@ -72,7 +74,34 @@ class ValidationResult(BaseModel):
             if classification in counts:
                 counts[classification] += 1
         
-        return counts
+        return counts    
+    
+    @validator('output')
+    def validate_output_against_generator(cls, v, values):
+        """Ensure all generator feedback lines are accounted for in validation output."""
+        if not v or not v.feedback_lines:
+            return v
+            
+        generator_data = values.get('generatorData')
+        if not generator_data or not generator_data.feedback:
+            return v
+            
+        # Create sets of (line_number, feedback) tuples for comparison
+        generator_feedback_items = set()
+        for fb in generator_data.feedback:
+            generator_feedback_items.add((str(fb.line_number), fb.feedback))
+        
+        validation_feedback_items = set()
+        for fb_line in v.feedback_lines:
+            validation_feedback_items.add((str(fb_line.line_number), fb_line.feedback))
+        
+        # Check if all generator feedback items are present in validation output
+        missing_items = generator_feedback_items - validation_feedback_items
+        if missing_items:
+            missing_str = "; ".join([f"Line {ln}: {fb}" for ln, fb in missing_items])
+            raise ValueError(f"Missing generator feedback lines in validation output: {missing_str}")
+        
+        return v
 
 
 class ValidationBatch(BaseModel):
@@ -125,89 +154,3 @@ def validate_validation_output(llm_response: Dict[str, Any]) -> bool:
         print_error(f"Validation output validation failed: {e}")
         return False
 
-
-
-def convert_ground_truth_categories(ground_truth: List[Dict[str, Any]]) -> List[GroundTruthFeedback]:
-    """
-    Convert ground truth categories from detailed format to valid/invalid.
-    
-    Args:
-        ground_truth: List of ground truth feedback with detailed categories
-        
-    Returns:
-        List[GroundTruthFeedback]: Converted ground truth feedback
-    """
-    converted_feedback = []
-    
-    for item in ground_truth:
-        # Convert detailed categories to valid/invalid
-        category = item.get('category', '')
-        if category in ['TP', 'FP-E', 'FP-R', 'TP-E', 'TP-R']:
-            new_category = 'valid'
-        elif category in ['FP-H', 'FP-I']:
-            new_category = 'invalid'
-        else:
-            new_category = category  # Keep as is if already valid/invalid
-        
-        converted_item = {
-            'line_number': item['line_number'],
-            'feedback': item['feedback'],
-            'category': new_category
-        }
-        
-        try:
-            converted_feedback.append(GroundTruthFeedback(**converted_item))
-        except ValidationError as e:
-            print_warning(f"Error converting ground truth item: {e}")
-    
-    return converted_feedback
-
-
-def validate_json_file_data(file_path: str) -> List[ValidationResult]:
-    """
-    Validate and parse validation results from a JSON file.
-    
-    Args:
-        file_path: Path to the JSON file containing validation results
-        
-    Returns:
-        List[ValidationResult]: List of valid validation results
-    """
-    try:
-        with open(file_path, 'r') as f:
-            data = json.load(f)
-        
-        if not isinstance(data, list):
-            print_error(f"Expected list in JSON file {file_path}")
-            return []
-        
-        valid_results = []
-        for item in data:
-            try:
-                # Parse the output if it exists and is not empty
-                output = None
-                if item.get('output') and isinstance(item['output'], dict):
-                    try:
-                        output = ValidationOutput(**item['output'])
-                    except ValidationError as e:
-                        print_warning(f"Invalid output format for SID {item.get('sid', 'unknown')}: {e}")
-                
-                result = ValidationResult(
-                    sid=item['sid'],
-                    raw_response=item['raw_response'],
-                    output=output,
-                    success=output is not None,
-                    generator_model=item.get('generator_model', 'unknown'),
-                    validator_model=item.get('validator_model', 'unknown'),
-                    timestamp=item.get('timestamp')
-                )
-                valid_results.append(result)
-                
-            except ValidationError as e:
-                print_warning(f"Error validating result for SID {item.get('sid', 'unknown')}: {e}")
-        
-        return valid_results
-        
-    except Exception as e:
-        print_error(f"Error reading validation file {file_path}: {e}")
-        return []

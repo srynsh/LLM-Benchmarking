@@ -1,8 +1,10 @@
 import os
+from jsonschema import ValidationError
 import pandas as pd
 from typing import Dict, List, Union, Any, Optional
 import json
-from src.config import NUM_SIDS
+from src.config import MODELS_GEN, NUM_SIDS
+from src.generation.models import GenerationBatch, GeneratorData
 from src.utils import print_warning, print_error
 
 
@@ -237,7 +239,6 @@ def get_processed_sids(existing_results: List[Dict[str, Any]], category_required
     Returns:
         set: Set of SIDs that have already been processed with valid data
     """
-    from .models import validate_json_file_data
     
     # Use Pydantic validation to determine which SIDs have valid data
     valid_sids = validate_json_file_data(existing_results, category_required=category_required)
@@ -252,7 +253,7 @@ def get_processed_sids(existing_results: List[Dict[str, Any]], category_required
     
     return processed_sids
 
-def get_processed_results(existing_results: List[Dict[str, Any]], category_required: bool) -> List[int]:
+def get_processed_results(model) -> GenerationBatch:
     """
     Filter out SIDs that have already been processed.
     
@@ -263,6 +264,87 @@ def get_processed_results(existing_results: List[Dict[str, Any]], category_requi
     Returns:
         List[int]: List of SIDs that have not been processed yet
     """
-    sids = get_all_sids()
+    category_required = model in MODELS_GEN
+    
+    existing_results = load_existing_results(model)
+    if not existing_results:
+        print_warning(f"No existing results found for model {model}. Generating new batch.")
+        return GenerationBatch(generator_model=model, results=[], use_ground_truth=category_required)
+    
     processed_sids = get_processed_sids(existing_results, category_required)
-    return [sid for sid in sids if sid not in processed_sids]
+    return GenerationBatch(
+        generator_model=model,
+        results=[item for item in existing_results if item.get('sid') in processed_sids],
+        use_ground_truth=category_required
+    )
+
+
+
+def validate_generator_data(data: Dict[str, Any], category_required: bool = True) -> bool:
+    """
+    Validate that data matches the complete Generator data structure.
+    
+    Args:
+        data: Data dictionary to validate
+        category_required: Whether category field is required in feedback
+        
+    Returns:
+        bool: True if valid, False otherwise
+    """
+    try:
+        # Add category_required to data if not present
+        if 'category_required' not in data:
+            data['category_required'] = category_required
+        
+        GeneratorData(**data)
+        return True
+    except ValidationError as e:
+        print(f"- {e}")
+        return False
+
+def validate_json_file_data(data: List[Dict[str, Any]], category_required: bool = True) -> List[int]:
+    """
+    Validate data from a JSON file and return list of valid SIDs.
+    
+    Args:
+        data: List of data entries from JSON file
+        category_required: Whether category field is required in feedback
+        
+    Returns:
+        List[int]: List of SIDs that have valid data structure
+    """
+    valid_sids = []
+    student_code_mapping = load_student_code_mapping()
+    
+    for entry in data:
+        try:
+            # Add category_required to entry if not present
+            if 'category_required' not in entry:
+                entry['category_required'] = category_required
+                
+            # Validate the entry structure
+            if validate_generator_data(entry, category_required):
+                sid = entry['sid']
+                
+                # Check if student_code matches the dataset
+                expected_student_code = student_code_mapping.get(sid)
+                if expected_student_code is not None:
+                    actual_student_code = entry.get('student_code', '')
+                    
+                    # Normalize whitespace for comparison
+                    expected_normalized = ' '.join(expected_student_code.split())
+                    actual_normalized = ' '.join(actual_student_code.split())
+                    
+                    if expected_normalized == actual_normalized:
+                        valid_sids.append(sid)
+                    else:
+                        print_warning(f"Student code mismatch for sid {sid}")
+                else:
+                    print_warning(f"No expected student code found for sid {sid}")
+            else:
+                print_warning(f"SID {entry.get('sid', 'unknown')} validation failed")
+
+        except Exception as e:
+            print_error(f"Error validating entry: {e}")
+            
+    return valid_sids
