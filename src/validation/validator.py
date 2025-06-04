@@ -144,6 +144,25 @@ def compare_validation_runs(file_paths: List[str]) -> None:
         print(f"  Total Valid: {stats['total_valid']}")
         print(f"  Total Invalid: {stats['total_invalid']}")
 
+def merge_df_y_yhat(df_y: pd.DataFrame, df_yhat: pd.DataFrame) -> pd.DataFrame:
+    merged_df = df_y.merge(
+        df_yhat, 
+        on=['sid', 'line_number', 'feedback'], 
+        how='left', 
+        suffixes=('_true', '_pred')
+    )
+    return merged_df
+
+def merge_df_merged_yhat(df_merged: pd.DataFrame, df_yhat: pd.DataFrame, model) -> pd.DataFrame:
+    merged_df = pd.merge(
+        df_merged, 
+        df_yhat, 
+        on=['sid', 'line_number', 'feedback'], 
+        how='left', 
+        suffixes=('', f'_{model}')
+    )
+    return merged_df
+
 def calculate_confusion_matrix(df_y: pd.DataFrame, df_yhat: pd.DataFrame) -> List[int]:
     """
     Calculate confusion matrix [TN, FN, FP, TP] from ground truth and predictions.
@@ -156,16 +175,11 @@ def calculate_confusion_matrix(df_y: pd.DataFrame, df_yhat: pd.DataFrame) -> Lis
         List[int]: [TN, FN, FP, TP] counts
     """
     # Perform left outer join on sid and line_number
-    merged_df = df_y.merge(
-        df_yhat, 
-        on=['sid', 'line_number', 'feedback'], 
-        how='left', 
-        suffixes=('_true', '_pred')
-    )
-    
+    merged_df = merge_df_y_yhat(df_y, df_yhat)
+
     y_true = merged_df['classification_true']
     y_pred = merged_df['classification_pred']
-    
+
     # Calculate confusion matrix components
     tn = ((y_true == 0) & (y_pred == 0)).sum()  # True Negative
     fp = ((y_true == 0) & (y_pred == 1)).sum()  # False Positive
@@ -232,10 +246,13 @@ def validate_model(MODEL_GENS, MODEL_VALS):
     confusion_matrices_gen = []
     confusion_matrices_val = []
     GV = []
+    dfs = {}
+    
 
     for modelGen in MODEL_GENS:
         row_gen = []
         row_gv = []
+        df_merged = pd.DataFrame()
 
         for j, modelVal in enumerate(MODEL_VALS):
             dataProvider = DataProvider(modelGen, modelVal)
@@ -243,6 +260,10 @@ def validate_model(MODEL_GENS, MODEL_VALS):
             # Create DataFrame with specified columns, filtering for successful validations only
             df_yhat = dataProvider.validation_batch.create_dataframe()
             df_y = dataProvider.generation_batch.create_dataframe()
+
+            if df_merged.empty:
+                df_merged = df_y.copy()
+            df_merged = merge_df_merged_yhat(df_merged, df_yhat, modelVal)
 
             confusion_matrix = calculate_confusion_matrix(df_y, df_yhat)
 
@@ -261,6 +282,7 @@ def validate_model(MODEL_GENS, MODEL_VALS):
 
         confusion_matrices_gen.append(row_gen)
         GV.append(row_gv)
+        dfs[modelGen] = df_merged
     
     tprs = []
     tnrs = []
@@ -269,8 +291,8 @@ def validate_model(MODEL_GENS, MODEL_VALS):
         tprs.append(tpr)
         tnrs.append(tnr)
 
-    return confusion_matrices_gen, tprs, tnrs, GV
-    
+    return confusion_matrices_gen, tprs, tnrs, GV, dfs
+
 
 def llm_judge_errors(MODEL_GENS, MODEL_VALS, GV_gen: List[List[float]]):
     max_error_max = 0
@@ -301,6 +323,79 @@ def llm_judge_errors(MODEL_GENS, MODEL_VALS, GV_gen: List[List[float]]):
     print(f"Max Error range: ({max_error_min*100}, {max_error_max*100})")
     print(f"Mean Error range: ({mean_error_min*100}, {mean_error_max*100})")
 
+def ensemble_prediction(dfs_gen, MODEL_VALS):
+        """
+        Create ensemble predictions and calculate errors for each dataset.
+        
+        Args:
+            dfs_gen: Dictionary of dataframes for different generator models
+        
+        Returns:
+            Dictionary containing ensemble results and errors for each model
+        """
+        # Get model validation columns (exclude 'classification' which is ground truth)
+        validation_columns = [f'classification_{model}' for model in MODEL_VALS]
+        ensemble_results = {}
+
+        maxError = 0
+        meanError = 0
+
+        for model_gen in MODEL_GENS:
+            df = dfs_gen[model_gen].copy()
+            
+            # Count how many models predict invalid (0) for each row
+            invalid_votes = (df[validation_columns] == 0).sum(axis=1)
+
+            # Ensemble rule: predict invalid (0) if at least 4 models predict invalid (0)
+            df['ensemble_prediction'] = (invalid_votes >= 4).astype(int)
+            # Flip the logic: when enough models say invalid (0), we predict invalid (0)
+            df['ensemble_prediction'] = 1 - df['ensemble_prediction']
+
+            # Calculate confusion matrix for ensemble vs ground truth
+            y_true = df['classification']
+            y_pred = df['ensemble_prediction']
+
+            y_true_clean = y_true
+            y_pred_clean = y_pred
+            
+            # Remove NaN values
+            # mask = ~(y_true.isna() | y_pred.isna())
+            # y_true_clean = y_true[mask]
+            # y_pred_clean = y_pred[mask]
+            
+            # Calculate confusion matrix components
+            tn = ((y_true_clean == 0) & (y_pred_clean == 0)).sum()
+            fp = ((y_true_clean == 0) & (y_pred_clean == 1)).sum()
+            fn = ((y_true_clean == 1) & (y_pred_clean == 0)).sum()
+            tp = ((y_true_clean == 1) & (y_pred_clean == 1)).sum()
+            
+            # Calculate metrics
+            accuracy = (tp + tn) / (tp + tn + fp + fn) if (tp + tn + fp + fn) > 0 else 0
+            precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+            recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+            f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+            
+            error = abs(precision - pGa_CONST[model_gen])
+            maxError = max(maxError, error)
+            meanError += error
+
+            ensemble_results[model_gen] = {
+                'confusion_matrix': [tn, fp, fn, tp],
+                'accuracy': accuracy,
+                'precision': precision,
+                'recall': recall,
+                'f1_score': f1_score,
+                'total_samples': len(y_true_clean),
+                'invalid_votes_distribution': invalid_votes.value_counts().sort_index().to_dict(),
+                'error': error
+            }
+
+        meanError /= len(MODEL_GENS)
+        print(f"Ensemble Max Error: {maxError * 100:.2f}%")
+        print(f"Ensemble Mean Error: {meanError * 100:.2f}%")
+        
+        return ensemble_results
+
 if __name__ == "__main__":
     MODEL_GENS = [Model.GPT_4O.value, Model.GPT_4_TURBO.value, Model.CLAUDE_3_OPUS.value, Model.GEMINI_1_5_PRO.value, Model.QWEN_CODER_PLUS.value, Model.DEEPSEEK_CHAT.value]
 
@@ -313,8 +408,11 @@ if __name__ == "__main__":
         Model.CLAUDE_3_5_HAIKU.value, Model.GEMINI_2_5_FLASH.value, Model.GEMINI_2_5_PRO.value, Model.GPT_4_1.value, Model.GPT_4_1_MINI.value
     ]
 
-    confusion_matrices_gen, tprs_gen, tnrs_gen, GV_gen = validate_model(MODEL_GENS, MODEL_VALS)
-    confusion_matrices_all, tprs_all, tnrs_all, GV_all = validate_model(MODEL_VALS, MODEL_VALS)
+    # Route 1
+    confusion_matrices_gen, tprs_gen, tnrs_gen, GV_gen, dfs_gen = validate_model(MODEL_GENS, MODEL_VALS)
+
+    # Round 2 for all gens
+    confusion_matrices_all, tprs_all, tnrs_all, GV_all, dfs_all = validate_model(MODEL_VALS, MODEL_VALS)
 
     print("\nConfusion Matrices:")
     pprint.pprint(confusion_matrices_gen)
@@ -329,3 +427,5 @@ if __name__ == "__main__":
     pprint.pprint(GV_all)
 
     llm_judge_errors(MODEL_GENS, MODEL_VALS, GV_gen)
+
+    ensemble_results = ensemble_prediction(dfs_gen, MODEL_VALS)
