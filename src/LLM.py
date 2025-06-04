@@ -11,7 +11,7 @@ from pydantic import BaseModel, ValidationError
 import typing_extensions as typing
 
 from src.config import MAX_RETRY_ATTEMPTS, RETRY_DELAY
-from src.validation.utils import (
+from src.validation.stale.utils import (
     get_claude_response, get_gemini_response, get_openai_response, 
     get_qwen_response, get_deepseek_response
 )

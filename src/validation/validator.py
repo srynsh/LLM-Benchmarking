@@ -1,149 +1,182 @@
+"""
+Refactored validator using Pydantic models and modular design.
+"""
+
 import sys
+import json
+import datetime
+from typing import List, Optional
+from tqdm import tqdm
+from src.config import NUM_SIDS, Model
 
 sys.path.append("..")
-from dataGenerator import get_data, get_row, get_row_4o_mini, get_row_4_1, get_row_3_opus, get_annonated_data, get_row_35, get_row_35_sonnet, get_row_gemini_15_pro, get_row_gemini_15_flash, get_row_qwen_coder_plus, get_row_deepseek_chat
 
-import json
-from utils import get_llama_response, get_gemini_response, get_claude_response, get_qwen_response, get_openai_response, get_deepseek_response, get_query, parse_response, convert_query_to_claude, convert_query_to_o1, get_cheat_query
-from tqdm import tqdm
-import datetime
-
-# model = "gpt-4-turbo"
-# model = "gpt-4o-2024-08-06"
-# model = "gpt-3.5-turbo"
-# model = "gpt-4o-mini-2024-07-18"
-# model = "o1-mini"
-# model = "o1-preview"
-# model = "claude_3_opus"
-# model = "claude_3.5_sonnet"
-# model = "gemini-1.5-pro"
-# model = "gemini-1.5-flash"
-# model = "llama"
-# model = "qwen-plus"
-# model = "qwen-coder-plus"
-# model = "deepseek-chat"
-
-cheat = False
-
-gv, giv = 0, 0
-
-# sids = [i for i in range(1, 367)]
-
-# sids = [1, 2, 3, 4, 6, 8, 9, 12, 13, 15, 22, 23, 25, 26, 69, 98, 113, 114, 115, 116, 117, 118, 119, 120, 121, 129, 181, 207, 272, 276, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 290, 291, 292, 293, 294, 295, 297, 298, 301, 302, 304, 305, 307, 308, 309, 313, 315, 316, 318, 319, 321, 323, 355, 356, 357, 358, 359, 361, 362]
-
-# gen = input("Enter generator: ")
-gen = 'claude_3.5_haiku'
-# validator = input("Enter model: ")
-validator = 'gemini-2.5-pro-preview-03-25'
+from src.validation.service import ValidationRunner, ValidationService
+from src.validation.data import filter_quota_exceeded_sids
+from src.validation.utils import (
+    print_validation_summary, 
+    analyze_error_patterns
+)
+from src.validation.models import ValidationBatch, ValidationResult
+from src.utils import print_warning, print_error
 
 
+####################
+# Config
+####################
 
-timeNow = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-if cheat:
-    ATTEMPT_NAME = f"new_labeller_gen_{gen}_val_{validator}_cheat_{timeNow}"
-else:
-    ATTEMPT_NAME = f"new_labeller_gen_{gen}_val_{validator}_{timeNow}"
+### Missing annotations
+# CLAUDE_3_OPUS: 2 SIDs
+# GPT_4_TURBO: 17 SIDs
+# GPT_4O: 2 SIDs
 
-ATTEMPT_NAME = 'new_labeller_gen_claude_3.5_haiku_val_gemini-2.5-pro-preview-03-25_2025-05-05_13-06-52'
-raw_responses = json.loads(open(f"./new_logs/{ATTEMPT_NAME}.json", "r").read())
-sids = [resp['sid'] for resp in raw_responses if '429 You exceeded your current quota.' in resp['raw_response']]
-print(sids)
+# Current selected model
+modelGen = Model.CLAUDE_3_OPUS.value
+modelVal = Model.CLAUDE_3_OPUS.value
 
-def label_sid(sid, gen, validator):
-    if gen == "gpt-4o":
-        labelled_feedback, unlabelled_feedback, student_code, correct_code, question, all_testcases, _, _, _ = get_data(get_row(sid))
-    elif gen == "gpt-4-turbo":
-        labelled_feedback, unlabelled_feedback, student_code, correct_code, question, all_testcases, _, _, _ = get_data(get_row_4_1(sid))
-    elif gen == "gpt-3.5-turbo":
-        labelled_feedback, unlabelled_feedback, student_code, correct_code, question, all_testcases, _, _, _ = get_data(get_row_35(sid))
-    elif gen == "gpt-4o-mini":
-        labelled_feedback, unlabelled_feedback, student_code, correct_code, question, all_testcases, _, _, _ = get_data(get_row_4o_mini(sid))
-    elif gen == "claude_3_opus":
-       labelled_feedback, unlabelled_feedback, student_code, correct_code, question, all_testcases, _, _, _ = get_data(get_row_3_opus(sid))
-    elif gen == "claude_3.5_sonnet":
-        labelled_feedback, unlabelled_feedback, student_code, correct_code, question, all_testcases, _, _, _ = get_data(get_row_35_sonnet(sid))
-    elif gen == "gemini-1.5-pro":
-        labelled_feedback, unlabelled_feedback, student_code, correct_code, question, all_testcases, _, _, _ = get_data(get_row_gemini_15_pro(sid))
-    elif gen == "gemini-1.5-flash":
-        labelled_feedback, unlabelled_feedback, student_code, correct_code, question, all_testcases, _, _, _ = get_data(get_row_gemini_15_flash(sid))
-    elif gen == "qwen-coder-plus":
-        labelled_feedback, unlabelled_feedback, student_code, correct_code, question, all_testcases, _, _, _ = get_data(get_row_qwen_coder_plus(sid))
-    elif gen == "deepseek-chat":
-        labelled_feedback, unlabelled_feedback, student_code, correct_code, question, all_testcases, _, _, _ = get_data(get_row_deepseek_chat(sid))
-    else:
-        labelled_feedback, unlabelled_feedback, student_code, correct_code, question, all_testcases, _, _, _ = get_data(get_row(sid, gen))
+EXPORT_RESULTS_TO_CSV = False  # Set to True to export results to CSV
 
-    if not cheat:
-        query = get_query(question, student_code, correct_code, unlabelled_feedback, all_testcases)
-    else:
-        ground_truth, _, _, _, _, _, _, _, _ = get_annonated_data(get_row_3_opus(sid))
-
-        for line in ground_truth:
-            if line['category'] in ['TP', 'FP-E', 'FN']:
-                line['category'] = 'valid'
-            elif line['category'] in ['FP-H', 'FP-I']:
-                line['category'] = 'invalid'
-
-        query = get_cheat_query(question, student_code, correct_code, unlabelled_feedback, all_testcases, ground_truth)
-
-    print(query)
-    asdf
-
-
-    if validator[:6] == "claude":
-        query, sys_query = convert_query_to_claude(query)
-    if validator[:2] == "o1":
-        query = convert_query_to_o1(query)
-
-    if validator == "llama":
-        resp = get_llama_response(query)
-    elif validator == "claude_3_opus":
-        resp = get_claude_response(query, sys_query, model=validator, sleep_time=50)
-    elif validator == "claude_3.5_sonnet":
-        resp = get_claude_response(query, sys_query, model=validator, sleep_time=0)
-    elif validator[:3] == "gpt":
-        resp = get_openai_response(query, model=validator)
-    elif validator[:2] == "o1":
-        resp = get_openai_response(query, model=validator)
-    elif validator[:6] == "gemini":
-        resp = get_gemini_response(str(query), model=validator)
-    elif validator[:4] == "qwen":
-        resp = get_qwen_response(query, model=validator)
-    elif validator[:8] == "deepseek":
-        resp = get_deepseek_response(query, model=validator)
-
-    return resp
-
-
-for sid in sids:
-    resp = label_sid(sid, gen, validator)
-
-    try:
-        gen_lab_fb = parse_response(resp)['feedback_lines']
+def main():
+    """Main entry point for validation operations."""
+    
+    # TODO: remove hardcoding
+    # Configuration
+    generator_model = 'claude_3.5_haiku'
+    validator_model = 'gemini-2.5-pro-preview-03-25'
+    use_ground_truth = False
+    
+    # Option 1: Resume from existing file (for quota exceeded errors)
+    resume_mode = True
+    existing_file = './new_logs/new_labeller_gen_claude_3.5_haiku_val_gemini-2.5-pro-preview-03-25_2025-05-05_13-06-52.json'
+    
+    if resume_mode and existing_file:
+        # Extract failed SIDs from existing file
+        failed_sids = filter_quota_exceeded_sids(existing_file)
         
-        for i in range(len(gen_lab_fb)):
-            if gen_lab_fb[i]['classification'] == 'invalid':
-                giv += 1
-            elif gen_lab_fb[i]['classification'] == 'valid':
-                gv += 1
-    except:
-        pass
+        if not failed_sids:
+            print("No SIDs with quota exceeded errors found.")
+            return
+        
+        print(f"Found {len(failed_sids)} SIDs with quota exceeded errors: {failed_sids}")
+        
+        # Create validation runner
+        runner = ValidationRunner(generator_model, validator_model, use_ground_truth)
+        
+        # Run quota recovery
+        runner.run_quota_recovery(existing_file)
+        
+    else:
+        # Option 2: Run fresh validation
+        sids = list(range(1, NUM_SIDS + 1))  # Replace NUM_SIDS with actual number of SIDs
+        # sids = list(range(1, 367))  # All SIDs
+        sids = [1, 2, 3, 4, 6, 8, 9, 12, 13, 15]  # Sample SIDs for testing
+        
+        # Create validation runner
+        runner = ValidationRunner(generator_model, validator_model, use_ground_truth)
+        
+        # Run validation
+        runner.run_validation(sids)
+    
+    print("Validation completed successfully!")
 
-    for i in raw_responses:
-        if i['sid'] == sid:
-            raw_responses.remove(i)
-            break
 
-    raw_responses.append({
-        "sid": sid,
-        "raw_response": str(resp),
-        "output": parse_response(resp)
-    })
+def validate_specific_sids(sids: List[int], generator_model: str, validator_model: str, 
+                          use_ground_truth: bool = False) -> ValidationBatch:
+    """
+    Validate specific SIDs and return results as a batch.
+    
+    Args:
+        sids: List of SIDs to validate
+        generator_model: Model used for generation
+        validator_model: Model used for validation
+        use_ground_truth: Whether to use ground truth data
+        
+    Returns:
+        ValidationBatch: Batch of validation results
+    """
+    service = ValidationService(generator_model, validator_model, use_ground_truth)
+    
+    results = []
+    for sid in tqdm(sids, desc="Validating SIDs"):
+        result = service.validate_single_sid(sid)
+        results.append(result)
+    
+    # Create batch
+    attempt_name = f"batch_gen_{generator_model}_val_{validator_model}_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
+    batch = ValidationBatch(
+        attempt_name=attempt_name,
+        generator_model=generator_model,
+        validator_model=validator_model,
+        results=results,
+        use_ground_truth=use_ground_truth
+    )
+    
+    return batch
 
-    with open(f"./new_logs/{ATTEMPT_NAME}.json", "w") as f:
-        json.dump(raw_responses, f, indent=4)
 
-    try:
-        print(f'[**{sid}**]: precision: {gv/(gv + giv)}, TP: {gv}, FP: {giv}')
-    except:
-        pass
+def analyze_validation_results(modelGen: str, modelVal: str) -> None:
+    """
+    Analyze validation results from a file and print comprehensive statistics.
+    
+    Args:
+        file_path: Path to the validation results file
+    """
+    from src.validation.utils import load_validation_batch_from_file
+    
+    batch = load_validation_batch_from_file(modelGen, modelVal)
+    
+    # Print summary
+    print_validation_summary(batch)
+    
+    # Analyze error patterns
+    error_analysis = analyze_error_patterns(batch.results)
+    if error_analysis['total_failed'] > 0:
+        print(f"\nError Analysis:")
+        print(f"Total Failed: {error_analysis['total_failed']}")
+        for error_type, count in error_analysis['error_counts'].items():
+            print(f"  {error_type}: {count} SIDs")
+    
+    # Export to CSV if required
+    if EXPORT_RESULTS_TO_CSV:
+        export_results_to_csv(batch, modelGen, modelVal)
+    
+
+def compare_validation_runs(file_paths: List[str]) -> None:
+    """
+    Compare multiple validation runs and print comparative statistics.
+    
+    Args:
+        file_paths: List of paths to validation result files
+    """
+    from src.validation.utils import load_validation_batch_from_file
+    
+    batches = []
+    for file_path in file_paths:
+        batch = load_validation_batch_from_file(file_path)
+        if batch:
+            batches.append(batch)
+        else:
+            print_warning(f"Could not load batch from {file_path}")
+    
+    if len(batches) < 2:
+        print_error("Need at least 2 valid batches to compare")
+        return
+    
+    print(f"\n{'='*80}")
+    print(f"VALIDATION COMPARISON ({len(batches)} runs)")
+    print(f"{'='*80}")
+    
+    for i, batch in enumerate(batches):
+        stats = batch.get_summary_stats()
+        print(f"\nRun {i+1}: {batch.attempt_name}")
+        print(f"  Generator: {batch.generator_model}")
+        print(f"  Validator: {batch.validator_model}")
+        print(f"  Success Rate: {stats['success_rate']:.2%}")
+        print(f"  Precision: {stats['precision']:.4f}")
+        print(f"  Total Valid: {stats['total_valid']}")
+        print(f"  Total Invalid: {stats['total_invalid']}")
+
+# TODO: (1) Run for a single validator file and print stats. (2) Run LLM on failures and write into a new file. (3) Run LLM on all generator and validator combinations and write into a new file.
+if __name__ == "__main__":
+    # main()
+    analyze_validation_results(modelGen, modelVal)

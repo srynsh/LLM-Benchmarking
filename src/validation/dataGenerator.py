@@ -5,10 +5,10 @@ import numpy as np
 import os
 import sklearn.metrics as skm
 
-DATA_PATH = '../../data/generator' # path relative to a folder inside src.
+DATA_PATH = './data/GAIED' # path relative to a folder inside src.
 
-gpt_4o_PATH = f'{DATA_PATH}/EXCEL_DATA/dataset_4o.xlsx'
-gpt_4N_PATH = f'{DATA_PATH}/EXCEL_DATA/dataset.xlsx'
+gpt_4o_PATH = f'{DATA_PATH}/dataset_4o.xlsx'
+gpt_4N_PATH = f'{DATA_PATH}/dataset.xlsx'
 
 gpt4o_benchmark = pd.read_excel(gpt_4o_PATH, sheet_name="gpt4o_refined")
 GPT4_N_benchmark = pd.read_excel(gpt_4N_PATH, sheet_name="gpt4_N_refined")

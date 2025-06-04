@@ -8,12 +8,65 @@ NUM_SIDS = 366
 # =========================
 #   PATHS
 # =========================
-pathData = '../data/'
-pathOutput = '../output/'
-pathLatex = '../output/latex/'
+pathData = './data/'
+pathOutput = './output/'
+pathLatex = './output/latex/'
+pathLogs = './logs/'
+
+pathGenerator = f'{pathData}/generator/'
+pathValidator = f'{pathData}/validator/'
 
 # =========================
-#   MODEL NAMES
+#   VALIDATION PATHS
+# =========================
+VALIDATION_LOGS_DIR = './new_logs'
+VALIDATION_OUTPUT_DIR = './validation_output'
+
+# =========================
+#   MODEL CONFIGURATION
+# =========================
+
+# TODO: Merge these with the model names in the Model enum
+
+# Model retry configuration
+MAX_RETRY_ATTEMPTS = 3
+RETRY_DELAY = 1.0  # seconds
+
+# Supported model names for validation
+SUPPORTED_GENERATOR_MODELS = [
+    "gpt-4o",
+    "gpt-4-turbo", 
+    "gpt-3.5-turbo",
+    "gpt-4o-mini",
+    "claude_3_opus",
+    "claude_3.5_sonnet",
+    "claude_3.5_haiku",
+    "gemini-1.5-pro",
+    "gemini-1.5-flash",
+    "gemini-2.5-pro-preview-03-25",
+    "gemini-2.5-flash-preview-04-17", 
+    "qwen-coder-plus",
+    "deepseek-chat"
+]
+
+SUPPORTED_VALIDATOR_MODELS = [
+    "gpt-4o",
+    "gpt-4-turbo",
+    "gpt-3.5-turbo", 
+    "gpt-4o-mini",
+    "claude_3_opus",
+    "claude_3.5_sonnet",
+    "claude_3.5_haiku",
+    "gemini-1.5-pro",
+    "gemini-1.5-flash",
+    "gemini-2.5-pro-preview-03-25",
+    "gemini-2.5-flash-preview-04-17",
+    "qwen-coder-plus",
+    "deepseek-chat"
+]
+
+# =========================
+#   MODEL NAMES (Legacy)
 # =========================
 
 # Sonnet : anthropic.claude-3-5-sonnet-20241022-v2:0
@@ -28,21 +81,38 @@ pathLatex = '../output/latex/'
 # Qwen: qwen-coder-plus-2024-11-06
 # Deepseek: deepseek-chat 
 
+# class Model(Enum):
+#     GPT_3_5_TURBO = "gpt-3.5-turbo"
+#     GPT_4_TURBO = "gpt-4-turbo-2024-04-09"
+#     GPT_4O_MINI = "gpt-4o-mini-2024-07-18"
+#     GPT_4O = "gpt-4o-2024-08-06"
+#     GPT_4_1_MINI = "gpt-4.1-mini-2025-04-14"
+#     GPT_4_1 = "gpt-4.1-2025-04-14"
+#     CLAUDE_3_OPUS = "claude_3_opus"
+#     CLAUDE_3_5_SONNET = "claude_3.5_sonnet"
+#     CLAUDE_3_5_HAIKU = "claude_3.5_haiku"
+#     GEMINI_1_5_FLASH = "gemini-1.5-flash"
+#     GEMINI_1_5_PRO = "gemini-1.5-pro"
+#     GEMINI_2_5_FLASH = "gemini-2.5-flash-preview-04-17"
+#     GEMINI_2_5_PRO = "gemini-2.5-pro-preview-03-25"
+#     QWEN_CODER_PLUS = "qwen-coder-plus"
+#     DEEPSEEK_CHAT = "deepseek-chat"
+
 
 class Model(Enum):
     GPT_3_5_TURBO = "gpt-3.5-turbo"
-    GPT_4_TURBO = "gpt-4-turbo-2024-04-09"
-    GPT_4O_MINI = "gpt-4o-mini-2024-07-18"
-    GPT_4O = "gpt-4o-2024-08-06"
-    GPT_4_1_MINI = "gpt-4.1-mini-2025-04-14"
-    GPT_4_1 = "gpt-4.1-2025-04-14"
+    GPT_4_TURBO = "gpt-4-turbo"
+    GPT_4O_MINI = "gpt-4o-mini"
+    GPT_4O = "gpt-4o"
+    GPT_4_1_MINI = "gpt-4.1-mini"
+    GPT_4_1 = "gpt-4.1"
     CLAUDE_3_OPUS = "claude_3_opus"
     CLAUDE_3_5_SONNET = "claude_3.5_sonnet"
     CLAUDE_3_5_HAIKU = "claude_3.5_haiku"
     GEMINI_1_5_FLASH = "gemini-1.5-flash"
     GEMINI_1_5_PRO = "gemini-1.5-pro"
-    GEMINI_2_5_FLASH = "gemini-2.5-flash-preview-04-17"
-    GEMINI_2_5_PRO = "gemini-2.5-pro-preview-03-25"
+    GEMINI_2_5_FLASH = "gemini-2.5-flash"
+    GEMINI_2_5_PRO = "gemini-2.5-pro"
     QWEN_CODER_PLUS = "qwen-coder-plus"
     DEEPSEEK_CHAT = "deepseek-chat"
 

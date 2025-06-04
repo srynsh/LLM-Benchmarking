@@ -1,415 +1,244 @@
-import pandas as pd
-import json
-import ast
-import numpy as np
+"""
+Utility functions for validation operations.
+"""
+
 import os
-from dotenv import load_dotenv
-from openai import OpenAI
-import sklearn.metrics as skm
-import time
-import requests
-import re
-import boto3
-import google.generativeai as genai
-import typing_extensions as typing
+import sys
+import json
+import datetime
+from typing import List, Dict, Any, Optional
 
-load_dotenv()
+from src.config import pathValidator, pathLogs
 
-CODAVERI_API_KEY = os.getenv("X_API_KEY")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-DASHSCOPE_API_KEY = os.getenv("DASHSCOPE_API_KEY")
-DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
-genai.configure(api_key=GEMINI_API_KEY)
-
-bedrock_runtime = boto3.client('bedrock-runtime', region_name='us-west-2')
-
-class feedback(typing.TypedDict):
-    line_number: int
-    feedback: str
-
-class output_format(typing.TypedDict):
-    correct_code: str
-    feedbacks: list[feedback]
-
-def get_llama_response(prompt):
-    try:
-        llama_payload = json.dumps({
-            "prompt": prompt,
-            "max_gen_len": 512,
-            "temperature":0.5,
-            "top_p":0.9
-        })
-
-        kwargs = {
-            "modelId": "meta.llama3-1-405b-instruct-v1:0",
-            "contentType": "application/json",
-            "accept": "application/json",
-            "body": llama_payload
-        }
-        
-        response = bedrock_runtime.invoke_model(**kwargs)
-        body = json.loads(response.get('body').read().decode('utf-8'))
-        content = body['generation']
-        # print(content)
-        return content
-    except Exception as e:
-        # print(e)
-        raise e
-
-def get_claude_response(prompt, system_prompt, model, sleep_time=10):
-    # time.sleep(sleep_time)
-    if model == "claude_3_opus":
-        modelId = "anthropic.claude-3-opus-20240229-v1:0"
-        anthropic_version = "bedrock-2023-05-31"
-    elif model == "claude_3.5_sonnet":
-        modelId = "anthropic.claude-3-5-sonnet-20240620-v1:0"
-        anthropic_version = "bedrock-2023-05-31"
-    elif model == "claude_3.5_haiku":
-        modelId = "anthropic.claude-3-5-haiku-20241022-v1:0"
-        anthropic_version = "bedrock-2023-05-31"
-    elif model == "claude_3.7_sonnet":
-        modelId = "anthropic.claude-3-7-sonnet-20250219-v1:0"
-        anthropic_version = "bedrock-2023-05-31"
-
-    try:    
-        kwargs = {
-            "modelId": modelId,
-            "contentType": "application/json",
-            "accept": "application/json",
-            "body": json.dumps({
-                "anthropic_version": anthropic_version,
-                "max_tokens": 4096,
-                "system": system_prompt,
-                "messages": prompt
-            })
-        }
-        
-        response = bedrock_runtime.invoke_model(**kwargs)
-        body = json.loads(response['body'].read())
-        content = body['content'][0]['text']
-        return content
-    except Exception as e:
-        raise e
+from src.utils import print_warning, print_error
+from src.validation.models import ValidationResult, ValidationBatch
 
 
-def get_gemini_response(prompt, model):
-    try:
-        # List all available Gemini models
-        
-        client = genai.GenerativeModel(model)
-        response_gemini = client.generate_content(
-            prompt
-        )
-        # print(response_gemini)
-        gemini_labels = response_gemini.text
-        return gemini_labels
-    except Exception as e:
-        raise e
-
-def get_openai_response(messages, model):
-    try:
-        client = OpenAI(api_key=OPENAI_API_KEY)
-        response = client.chat.completions.create(
-            model=model,
-            messages=messages
-        )
-
-        response = response.choices[0].message.content
-
-        return response
-    except Exception as e:
-        # print(e)
-        raise e
-
-def get_qwen_response(messages, model):
-    try:
-        client = OpenAI(api_key=DASHSCOPE_API_KEY, base_url="https://dashscope.aliyuncs.com/compatible-mode/v1")
-        response = client.chat.completions.create(
-            model=model,
-            messages=messages
-        )
-
-        response = response.choices[0].message.content
-
-        return response
-    except Exception as e:
-        # print(e)
-        raise e
+def load_validation_batch_from_file(modelGen: str, modelVal: str) -> Optional[ValidationBatch]:
+    """
+    Load a validation batch from a JSON file.
     
-def get_deepseek_response(messages, model):
+    Args:
+        modelGen: Model used for generation
+        modelVal: Model used for validation
+
+    Returns:
+        ValidationBatch or None: Loaded batch if successful
+    """
     try:
-        client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url="https://api.deepseek.com")
-        response = client.chat.completions.create(
-            model=model,
-            messages=messages
-        )
+        file_path = f'{pathValidator}/gen={modelGen}/val={modelVal}.json'
+        # file_path = f'{pathValidator}/new_labeller_gen_{modelGen}_val_{modelVal}_2025-05-05_13-06-52.json'
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+        
+        # If data is a list (old format), convert to new format
+        if isinstance(data, list):
+            # Try to extract metadata from filename
+            filename = os.path.basename(file_path)
+            use_ground_truth = "cheat" in filename
 
-        response = response.choices[0].message.content
+            
+            
+            # Convert list to ValidationResult objects
+            results = []
+            for item in data:
+                try:
+                    # Ensure item has required fields and attach it
+                    result = ValidationResult(**item)
+                    results.append(result)
 
-        return response
+                except Exception as e:
+                    # Handle parsing errors gracefully
+                    error_lines = str(e).splitlines()
+                    error_lines_alt = [error_lines[i] for i in range(1, len(error_lines), 3)]
+                    error_str = " | ".join(error_lines_alt)
+                    print_warning(f"Error parsing result for SID {item.get('sid', 'unknown')}: {error_str}")
+
+                    # Try to atleast create a minimal result
+                    minimal_result = ValidationResult(
+                        sid=item.get('sid', -1),
+                        success=False,
+                        output=None,
+                        raw_response=item.get('raw_response', ''),
+                        error=error_str
+                    )
+
+                    results.append(minimal_result)
+
+            return ValidationBatch(
+                generator_model=modelGen,
+                validator_model=modelVal,
+                results=results,
+                use_ground_truth=use_ground_truth
+            )
+        else:
+            # New format
+            return ValidationBatch(**data)
+            
     except Exception as e:
-        # print(e)
-        raise e
+        print_error(f"Error loading validation batch for gen={modelGen}, val={modelVal}: {e}")
+        sys.exit(1)
+        return None
 
- 
-def convert_query_to_claude(query):
-    for q in query:
-        q["content"] = [{
-            "type": "text",
-            "text": q["content"]
-        }]
 
-    return query[1:], query[0]["content"][0]["text"]
-
-def convert_query_to_o1(query):
-    for q in query:
-        if q["role"] == "system":
-            q["role"] = "user"
-
-    return query
-
-def parse_response(response):
-    try:
-        op = re.search(r'```json(.*?)```', response, re.DOTALL).group(1)
-        op = json.loads(op)
-        return op
-    except:
-        return []
+def save_validation_batch_to_file(batch: ValidationBatch, file_path: str) -> bool:
+    """
+    Save a validation batch to a JSON file.
     
+    Args:
+        batch: ValidationBatch to save
+        file_path: Path to save the batch
+        
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    try:
+        with open(file_path, 'w') as f:
+            json.dump(batch.dict(), f, indent=4)
+        
+        return True
+        
+    except Exception as e:
+        print_error(f"Error saving validation batch to {file_path}: {e}")
+        return False
 
-def get_query(question, student_code, correct_code, feedback, all_testcases):
-    query = [
-        {
-            "role": "system",
-            "content": """**Task**: Your goal is to assess the validity of feedback provided by a Teaching Assistant (TA) on a student's incorrect Python program.
-First, you will analyze the student's code to identify specific mistakes made.
-Next, compare the TA's fixed version of the code and pinpoint the changes needed to correct the student's mistakes.
-Finally, analyze the feedback provided by the TA and determine if it accurately addresses the student's errors.
-For each feedback line, classify it as either "valid" or "invalid" and explain your reasoning.
-**Output Format**: Provide your analysis in the following JSON format
 
-```json
-    {
-        "mistakes": [], // List of mistakes found in the student's code 
-        "fixes": [], // List of corrections proposed in the TA's fixed code
-        "feedback_lines": [ 
-            {
-                "line_number": <integer>, // Line number referenced by the TA feedback
-                "feedback": <string>, // The feedback provided by the TA
-                "analysis": <string>, // Your analysis of the feedback's accuracy 
-                "classification": "valid" | "invalid" // feedback validity classification
-            }
-        ]
+def merge_validation_results(file_paths: List[str], output_path: str) -> bool:
+    """
+    Merge multiple validation result files into a single file.
+    
+    Args:
+        file_paths: List of paths to validation result files
+        output_path: Path to save the merged results
+        
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    try:
+        all_results = []
+        
+        for file_path in file_paths:
+            batch = load_validation_batch_from_file(file_path)
+            if batch:
+                all_results.extend(batch.results)
+            else:
+                print_warning(f"Could not load results from {file_path}")
+        
+        if not all_results:
+            print_error("No results to merge")
+            return False
+        
+        # Create merged batch (use first batch's metadata)
+        first_batch = load_validation_batch_from_file(file_paths[0])
+        if not first_batch:
+            print_error("Could not load first batch for metadata")
+            return False
+        
+        merged_batch = ValidationBatch(
+            generator_model=first_batch.generator_model,
+            validator_model=first_batch.validator_model,
+            results=all_results,
+            use_ground_truth=first_batch.use_ground_truth
+        )
+        
+        return save_validation_batch_to_file(merged_batch, output_path)
+        
+    except Exception as e:
+        print_error(f"Error merging validation results: {e}")
+        return False
+
+
+def filter_successful_results(results: List[ValidationResult]) -> List[ValidationResult]:
+    """
+    Filter results to only include successful validations.
+    
+    Args:
+        results: List of validation results
+        
+    Returns:
+        List[ValidationResult]: Filtered successful results
+    """
+    return [r for r in results if r.success and r.output]
+
+
+def get_failed_sids(results: List[ValidationResult]) -> List[int]:
+    """
+    Get list of SIDs that failed validation.
+    
+    Args:
+        results: List of validation results
+        
+    Returns:
+        List[int]: List of failed SIDs
+    """
+    return [r.sid for r in results if not r.success]
+
+
+def print_validation_summary(batch: ValidationBatch) -> None:
+    """
+    Print a comprehensive summary of validation results.
+    
+    Args:
+        batch: ValidationBatch to summarize
+    """
+    stats = batch.get_summary_stats()
+    
+    print(f"\n{'='*60}")
+    print(f"VALIDATION SUMMARY: {batch.generator_model} -> {batch.validator_model}")
+    print(f"{'='*60}")
+    print(f"Generator Model: {batch.generator_model}")
+    print(f"Validator Model: {batch.validator_model}")
+    print(f"Used Ground Truth: {'Yes' if batch.use_ground_truth else 'No'}")
+    print(f"")
+    print(f"Total Results: {stats['total_results']}")
+    print(f"Successful Results: {stats['successful_results']} ({stats['success_rate']:.2%})")
+    print(f"")
+    print(f"Classification Results:")
+    print(f"  Valid Feedback: {stats['total_valid']}")
+    print(f"  Invalid Feedback: {stats['total_invalid']}")
+    print(f"  Precision: {stats['precision']:.4f}")
+    print(f"{'='*60}")
+    
+    # Print failed SIDs if any
+    failed_sids = get_failed_sids(batch.results)
+    if failed_sids:
+        print(f"\nFailed SIDs ({len(failed_sids)}): {failed_sids}")
+
+
+def analyze_error_patterns(results: List[ValidationResult]) -> Dict[str, Any]:
+    """
+    Analyze error patterns in validation results.
+    
+    Args:
+        results: List of validation results
+        
+    Returns:
+        Dict containing error analysis
+    """
+    failed_results = [r for r in results if not r.success]
+    
+    error_patterns = {}
+    for result in failed_results:
+        # Extract error type from raw response
+        error_key = "unknown_error"
+        
+        if "429" in result.raw_response:
+            error_key = "quota_exceeded"
+        elif "timeout" in result.raw_response.lower():
+            error_key = "timeout"
+        elif "connection" in result.raw_response.lower():
+            error_key = "connection_error"
+        elif "json" in result.raw_response.lower():
+            error_key = "json_parse_error"
+        elif "error" in result.raw_response.lower():
+            error_key = "general_error"
+        
+        if error_key not in error_patterns:
+            error_patterns[error_key] = []
+        error_patterns[error_key].append(result.sid)
+    
+    return {
+        "total_failed": len(failed_results),
+        "error_patterns": error_patterns,
+        "error_counts": {k: len(v) for k, v in error_patterns.items()}
     }
-```
-"""
-        },
-        {
-            "role": "user",
-            "content": """**Problem description**:
-```text 
-You have two variables, x and y, each containing a random integer value.
-Your task is to write a piece of code that will exchange the values of these two variables.
-This means that the value initially held by x should be in y and vice versa.
-```
-
-**Buggy student program**:
-```python 
-x="newy"
-y="newx"
-x,y=x,y
-print(x)
-print(y)
-```
-**Fixed code generated by the teaching assistant**:
-```python 
-x, y = y, x
-print(x)
-print(y)
-```
-**Feedback lines by the teaching assistant that could be invalid**: 
-```json 
-[
-    {
-        "line_number": 1, 
-        "feedback": "You don't need to assign new strings to x and y before swapping their values. You can directly swap the values using the syntax \"x, y = y, x\"."
-    }, 
-    { 
-        "line_number": 2,
-        "feedback": "The input is a string, but you are treating it as an integer. You need to convert the string to an integer before performing mathematical operations on it."
-    }
-]```
-
-**Test case results**:
-```json 
-[ 
-    {"expression": "x == newx", "success": false},
-    {"expression": "y == newy", "success": false}, 
-]
-```
-
-"""
-        },
-        {
-            "role": "assistant",
-            "content": """```json
-{
-    "mistakes": ["The student has made a mistake when trying to swap the values of x and y"], 
-    "fixes": ["Directly swap the values instead, using the syntax \"x, y = y, x\"."],
-    "feedback_lines": [ 
-        { 
-            "line_number": 1, 
-            "feedback": "You don't need to assign new strings to x and y before swapping their values. You can directly swap the values using the syntax "x, y = y, x".", 
-            "analysis": "The TA has correctly identified the mistake made by student while swapping the values and its fix",
-            "classification": "valid" 
-        }, 
-        { 
-            "line_number": 2,
-            "feedback": "The print statements are correct. They will print the swapped values of x and y.", 
-            "analysis": "This feedback is **invalid** because it incorrectly identifies the issue (as related to input string).", 
-            "classification": "invalid" 
-        }
-    ]
-}
-```
-"""
-        },
-        {
-            "role": "user",
-            "content": f"""**Problem description**: ```text {question} ```
-**Buggy student program**: ```python {student_code} ```
-**Test case results**: ```json {all_testcases} ```
-**Fixed code generated by the teaching assistant**: ```python {correct_code} ```
-**Feedback by the teaching assistant that could be invalid**: ```json {feedback} ```
-"""
-        }
-    ]
-
-    return query
-
-def get_cheat_query(question, student_code, correct_code, feedback, all_testcases, ground_truth):
-    query = [
-        {
-            "role": "system",
-            "content": """**Task**: Your goal is to assess the validity of feedback provided by a Teaching Assistant (TA) on a student's incorrect Python program.
-First, you will analyze the student's code to identify specific mistakes made.
-Next, compare the TA's fixed version of the code and pinpoint the changes needed to correct the student's mistakes.
-Finally, analyze the feedback provided by the TA and determine if it accurately addresses the student's errors, for this you can also use the correct feedback.
-For each feedback line, classify it as either "valid" or "invalid" and explain your reasoning.
-**Output Format**: Provide your analysis in the following JSON format
-
-```json
-    {
-        "mistakes": [], // List of mistakes found in the student's code 
-        "fixes": [], // List of corrections proposed in the TA's fixed code
-        "feedback_lines": [ 
-            {
-                "line_number": <integer>, // Line number referenced by the TA feedback
-                "feedback": <string>, // The feedback provided by the TA
-                "analysis": <string>, // Your analysis of the feedback's accuracy 
-                "classification": "valid" | "invalid" // feedback validity classification
-            }
-        ]
-    }
-```
-"""
-        },
-        {
-            "role": "user",
-            "content": """**Problem description**:
-```text 
-You have two variables, x and y, each containing a random integer value.
-Your task is to write a piece of code that will exchange the values of these two variables.
-This means that the value initially held by x should be in y and vice versa.
-```
-
-**Buggy student program**:
-```python 
-x="newy"
-y="newx"
-x,y=x,y
-print(x)
-print(y)
-```
-**Fixed code generated by the teaching assistant**:
-```python 
-x, y = y, x
-print(x)
-print(y)
-```
-**Feedback lines by the teaching assistant that could be invalid**: 
-```json 
-[
-    {
-        "line_number": 1, 
-        "feedback": "You don't need to assign new strings to x and y before swapping their values. You can directly swap the values using the syntax \"x, y = y, x\"."
-    }, 
-    { 
-        "line_number": 2,
-        "feedback": "The input is a string, but you are treating it as an integer. You need to convert the string to an integer before performing mathematical operations on it."
-    }
-]```
-
-**Feedback lines of the correct feedback**: 
-```json 
-[
-    {
-        "line_number": 1, 
-        "feedback": "You don't need to assign new strings to x and y before swapping their values. You can directly swap the values using the syntax \"x, y = y, x\"."
-        "category": "valid"
-    }, 
-    { 
-        "line_number": 2,
-        "feedback": "The input is a string, but you are treating it as an integer. You need to convert the string to an integer before performing mathematical operations on it."
-        "category": "invalid"
-    }
-]```
-
-**Test case results**:
-```json 
-[ 
-    {"expression": "x == newx", "success": false},
-    {"expression": "y == newy", "success": false}, 
-]
-```
-
-"""
-        },
-        {
-            "role": "assistant",
-            "content": """```json
-{
-    "mistakes": ["The student has made a mistake when trying to swap the values of x and y"], 
-    "fixes": ["Directly swap the values instead, using the syntax "x, y = y, x"."],
-    "feedback_lines": [ 
-        { 
-            "line_number": 1, 
-            "feedback": "You don't need to assign new strings to x and y before swapping their values. You can directly swap the values using the syntax "x, y = y, x".", 
-            "analysis": "The TA has correctly identified the mistake made by student while swapping the values and its fix",
-            "classification": "valid" 
-        }, 
-        { 
-            "line_number": 2,
-            "feedback": "The print statements are correct. They will print the swapped values of x and y.", 
-            "analysis": "This feedback is **invalid** because it incorrectly identifies the issue (as related to input string).", 
-            "classification": "invalid" 
-        }
-    ]
-}
-```
-"""
-        },
-        {
-            "role": "user",
-            "content": f"""**Problem description**: ```text {question} ```
-**Buggy student program**: ```python {student_code} ```
-**Test case results**: ```json {all_testcases} ```
-**Fixed code generated by the teaching assistant**: ```python {correct_code} ```
-**Feedback by the teaching assistant that could be invalid**: ```json {feedback} ```
-**Feedback lines of the correct feedback**: ```json {ground_truth} ```
-"""
-        }
-    ]
-
-    return query
