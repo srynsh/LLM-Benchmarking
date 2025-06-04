@@ -4,9 +4,12 @@ Refactored validator using Pydantic models and modular design.
 
 import sys
 import json
+import numpy as np
+import pprint
 import datetime
 from typing import List, Optional
 from tqdm import tqdm
+import pandas as pd
 from src.config import NUM_SIDS, Model
 
 sys.path.append("..")
@@ -29,7 +32,6 @@ from src.utils import print_warning, print_error
 # Current selected model
 modelGen = Model.CLAUDE_3_OPUS.value
 modelVal = Model.CLAUDE_3_OPUS.value
-
 
 def main():
     """Main entry point for validation operations."""
@@ -74,7 +76,6 @@ def main():
     
     print("Validation completed successfully!")
 
-
 def validate_specific_sids(sids: List[int], generator_model: str, validator_model: str, 
                           use_ground_truth: bool = False) -> ValidationBatch:
     """
@@ -108,8 +109,6 @@ def validate_specific_sids(sids: List[int], generator_model: str, validator_mode
     
     return batch
 
-
-    
 
 def compare_validation_runs(file_paths: List[str]) -> None:
     """
@@ -146,7 +145,157 @@ def compare_validation_runs(file_paths: List[str]) -> None:
         print(f"  Total Valid: {stats['total_valid']}")
         print(f"  Total Invalid: {stats['total_invalid']}")
 
-# TODO: (1) Run for a single validator file and print stats. (2) Run LLM on failures and write into a new file. (3) Run LLM on all generator and validator combinations and write into a new file.
+def calculate_confusion_matrix(df_y: pd.DataFrame, df_yhat: pd.DataFrame) -> List[int]:
+    """
+    Calculate confusion matrix [TN, FN, FP, TP] from ground truth and predictions.
+    
+    Args:
+        df_y: Ground truth DataFrame with columns [sid, line_number, feedback, classification]
+        df_yhat: Predictions DataFrame with columns [sid, line_number, feedback, classification]
+    
+    Returns:
+        List[int]: [TN, FN, FP, TP] counts
+    """
+    # Perform left outer join on sid and line_number
+    merged_df = df_y.merge(
+        df_yhat, 
+        on=['sid', 'line_number', 'feedback'], 
+        how='left', 
+        suffixes=('_true', '_pred')
+    )
+    
+    y_true = merged_df['classification_true']
+    y_pred = merged_df['classification_pred']
+    
+    # Calculate confusion matrix components
+    tn = ((y_true == 0) & (y_pred == 0)).sum()  # True Negative
+    fp = ((y_true == 0) & (y_pred == 1)).sum()  # False Positive
+    fn = ((y_true == 1) & (y_pred == 0)).sum()  # False Negative
+    tp = ((y_true == 1) & (y_pred == 1)).sum()  # True Positive
+    
+    return [tn, fp, fn, tp]
+
+def tpr_tnr(tn, fp, fn, tp):
+    """
+    Calculate True Positive Rate (TPR) and True Negative Rate (TNR).
+    
+    Args:
+        tn: True Negatives
+        fp: False Positives
+        fn: False Negatives
+        tp: True Positives
+
+    Returns:
+        Tuple[float, float]: (TPR, TNR)
+    """
+    tpr = tp / (tp + fn) if (tp + fn) > 0 else 0
+    tnr = tn / (tn + fp) if (tn + fp) > 0 else 0
+    return tpr, tnr
+
+def tpr_tnr_list(confusion_matrices):
+    """
+    Calculate TPR and TNR for a list of confusion matrices.
+    
+    Args:
+        confusion_matrices: List of confusion matrices [TN, FP, FN, TP]
+    Returns:
+
+        List[Tuple[float, float]]: List of (TPR, TNR) tuples
+    """
+    tn_cumulative = 0
+    fp_cumulative = 0
+    fn_cumulative = 0
+    tp_cumulative = 0
+    
+
+    for cm in confusion_matrices:
+        tn, fp, fn, tp = cm
+        tn_cumulative += tn
+        fp_cumulative += fp
+        fn_cumulative += fn
+        tp_cumulative += tp
+
+    tpr, tnr = tpr_tnr(tn_cumulative, fp_cumulative, fn_cumulative, tp_cumulative)
+    return (tpr, tnr)
+
+def validate_model(MODEL_GENS, MODEL_VALS):
+    """
+    Validate a specific model and return the results as a batch.
+    
+    Args:
+        modelGen: Model used for generation
+        modelVal: Model used for validation
+        use_ground_truth: Whether to use ground truth data
+
+    Returns:
+        ValidationBatch: The validation results
+    """
+    confusion_matrices_gen = []
+    confusion_matrices_val = []
+    GV = []
+
+    for modelGen in MODEL_GENS:
+        row_gen = []
+        row_gv = []
+
+        for j, modelVal in enumerate(MODEL_VALS):
+            dataProvider = DataProvider(modelGen, modelVal)
+
+            # Create DataFrame with specified columns, filtering for successful validations only
+            df_yhat = dataProvider.validation_batch.create_dataframe()
+            df_y = dataProvider.generation_batch.create_dataframe()
+
+            confusion_matrix = calculate_confusion_matrix(df_y, df_yhat)
+
+            # Add confusion matrix calculation
+            row_gen.append(confusion_matrix)
+
+            if len(confusion_matrices_val) <= j:
+                confusion_matrices_val.append([])
+                
+            prev_row = confusion_matrices_val[j]
+            confusion_matrices_val[j] = prev_row + [confusion_matrix]
+
+            tn, fp, fn, tp = confusion_matrix
+            percentage_valid = (tp + fp) / (tp + fp + fn + tn) if (tp + fp + fn + tn) > 0 else 0
+            row_gv.append(percentage_valid)
+
+        confusion_matrices_gen.append(row_gen)
+        GV.append(row_gv)
+    
+    tprs = []
+    tnrs = []
+    for j, modelVal in enumerate(MODEL_VALS):
+        tpr, tnr = tpr_tnr_list(confusion_matrices_val[j])
+        tprs.append(tpr)
+        tnrs.append(tnr)
+
+    return confusion_matrices_gen, tprs, tnrs, GV
+    
+
 if __name__ == "__main__":
-    # main()
-    dataProvider = DataProvider(modelGen, modelVal)
+    MODEL_GENS = [Model.GPT_4O.value, Model.GPT_4_TURBO.value, Model.CLAUDE_3_OPUS.value, Model.GEMINI_1_5_PRO.value, Model.QWEN_CODER_PLUS.value, Model.DEEPSEEK_CHAT.value]
+
+    MODEL_VALS = [
+        Model.GPT_4_TURBO.value, Model.GPT_4O_MINI.value, Model.GPT_4O.value,
+        Model.CLAUDE_3_OPUS.value, Model.CLAUDE_3_5_SONNET.value,
+        Model.GEMINI_1_5_FLASH.value, Model.GEMINI_1_5_PRO.value,
+        Model.QWEN_CODER_PLUS.value,
+        Model.DEEPSEEK_CHAT.value,
+        Model.CLAUDE_3_5_HAIKU.value, Model.GEMINI_2_5_FLASH.value, Model.GEMINI_2_5_PRO.value, Model.GPT_4_1.value, Model.GPT_4_1_MINI.value
+    ]
+
+    confusion_matrices_gen, tprs, tnrs, GV = validate_model(MODEL_GENS, MODEL_VALS)
+    confusion_matrices_stale, tprs_stale, tnrs_stale, GV = validate_model(MODEL_VALS, MODEL_VALS)
+
+    print("\nConfusion Matrices:")
+    pprint.pprint(confusion_matrices_gen)
+
+    print("\nValidation TPR:")
+    pprint.pprint(tprs)
+
+    print("\nValidation TNR:")
+    pprint.pprint(tnrs)
+    
+    print("\nGV Array:")
+    pprint.pprint(GV)

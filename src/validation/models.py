@@ -3,6 +3,7 @@ Pydantic models for Validator data validation.
 """
 
 from typing import List, Dict, Any, Optional, Union
+import pandas as pd
 from pydantic import BaseModel, ValidationError, validator, Field, model_validator
 from src.generation.models import GeneratorData
 from src.utils import print_warning, print_error
@@ -135,6 +136,41 @@ class ValidationBatch(BaseModel):
             "total_invalid": total_invalid,
             "precision": precision
         }
+    
+    def create_dataframe(self) -> pd.DataFrame:
+        """
+        Create a DataFrame from dataProvider.validation_batch containing specified columns.
+        Only includes results where success is True (Pydantic validation succeeded).
+        
+        Args:
+            dataProvider: DataProvider instance with loaded validation_batch
+            
+        Returns:
+            pd.DataFrame: DataFrame with columns [sid, line_number, feedback, classification]
+        """
+        rows = []
+
+        # Filter for successful results only
+        successful_results = [r for r in self.results if r.success and r.output]
+
+        for result in successful_results:
+            if result.output and result.output.feedback_lines:
+                for feedback_line in result.output.feedback_lines:
+                    rows.append({
+                        'sid': result.sid,
+                        'line_number': feedback_line.line_number,
+                        'feedback': feedback_line.feedback,
+                        'classification': 1 if feedback_line.classification == 'valid' else 0
+                    })
+        
+        df = pd.DataFrame(rows)
+        df['sid'] = df['sid'].astype(str)
+        df['line_number'] = df['line_number'].astype(str)
+        df['feedback'] = df['feedback'].astype(str)
+        df['classification'] = df['classification'].astype(int)
+        print(f"Created DataFrame with {len(df)} rows from {len(successful_results)} successful validation results")
+        
+        return df
 
 
 def validate_validation_output(llm_response: Dict[str, Any]) -> bool:

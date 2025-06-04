@@ -31,6 +31,7 @@ class ProcessedFeedback(BaseModel):
     line_number: Union[str, int] = Field(..., description="Line number where the mistake occurs")
     feedback: str = Field(..., description="Feedback text for the student")
     category: Optional[str] = Field(None, description="Feedback category (TP, FP-H, FP-I, FP-E, FN)")
+    classification: Optional[str] = Field(None, description="Feedback validity classification (valid/invalid)")
     
     @validator('category')
     def validate_category(cls, v):
@@ -38,6 +39,18 @@ class ProcessedFeedback(BaseModel):
         if v == 'FN':
             raise ValueError("Feedback items with category 'FN' should be ignored")
         return v
+    
+    @validator('classification', pre=True, always=True)
+    def set_classification_from_category(cls, v, values):
+        """Set classification based on category."""
+        category = values.get('category')
+        if category in ['TP', 'TP-R', 'FP-R', 'TP-E', 'FP-E']:
+            return 'valid'
+        elif category in ['FP-H', 'FP-I']:
+            return 'invalid'
+        else:
+            # If category is not in either list, keep original value or default
+            return v if v is not None else 'valid'
 
 
 class RepairSuccess(BaseModel):
@@ -132,6 +145,36 @@ class GenerationBatch(BaseModel):
             if item.sid == sid:
                 return item
         return None
+    
+    def create_dataframe(self) -> pd.DataFrame:
+        """
+        Create a DataFrame from dataProvider.validation_batch containing specified columns.
+        Only includes results where success is True (Pydantic validation succeeded).
+        
+        Args:
+            dataProvider: DataProvider instance with loaded validation_batch
+            
+        Returns:
+            pd.DataFrame: DataFrame with columns [sid, line_number, feedback, classification]
+        """
+        rows = []
+
+        for result in self.results:
+            if result.feedback:
+                for feedback_line in result.feedback:
+                    rows.append({
+                        'sid': result.sid,
+                        'line_number': feedback_line.line_number,
+                        'feedback': feedback_line.feedback,
+                        'classification': 1 if feedback_line.classification == 'valid' else 0
+                    })
+        
+        df = pd.DataFrame(rows)
+        df['sid'] = df['sid'].astype(str)
+        df['line_number'] = df['line_number'].astype(str)
+        df['feedback'] = df['feedback'].astype(str)
+        df['classification'] = df['classification'].astype(int)
+        return df
 
 def validate_llm_output(llm_response: Dict[str, Any]) -> bool:
     """
