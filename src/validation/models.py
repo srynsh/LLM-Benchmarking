@@ -8,6 +8,7 @@ from pydantic import BaseModel, ValidationError, validator, Field, model_validat
 from src.generation.models import GeneratorData
 from src.utils import print_warning, print_error
 import json
+from fuzzywuzzy import fuzz
 
 class GroundTruthFeedback(BaseModel):
     """Model for ground truth feedback with category."""
@@ -27,14 +28,7 @@ class ValidatedFeedbackLine(BaseModel):
     feedback: str = Field(..., description="The feedback provided by the TA")
     analysis: str = Field(..., description="Analysis of the feedback's accuracy")
     classification: str = Field(..., description="Feedback validity classification (valid/invalid)")
-
-    def __init__(self, **data):
-        """Alias 'line_num' to 'line_number' for input data."""
-        if 'line_num' in data and 'line_number' not in data:
-            data['line_number'] = data.pop('line_num')
-        super().__init__(**data)
     
-    # TODO: Also ensure that the line number and feedback matches the generator's output
     @validator('line_number', pre=True)
     def validate_line_number(cls, v):
         """Convert line_number to string for consistency."""
@@ -86,18 +80,43 @@ class ValidationResult(BaseModel):
         generator_data = values.get('generatorData')
         if not generator_data or not generator_data.feedback:
             return v
-            
-        # Create sets of (line_number, feedback) tuples for comparison
-        generator_feedback_items = set()
+        
+        # Create lists of (line_number, feedback) tuples for comparison
+        generator_feedback_items = []
         for fb in generator_data.feedback:
-            generator_feedback_items.add((str(fb.line_number), fb.feedback))
+            generator_feedback_items.append((str(fb.line_number), fb.feedback))
         
-        validation_feedback_items = set()
+        validation_feedback_items = []
         for fb_line in v.feedback_lines:
-            validation_feedback_items.add((str(fb_line.line_number), fb_line.feedback))
+            validation_feedback_items.append((str(fb_line.line_number), fb_line.feedback))
         
-        # Check if all generator feedback items are present in validation output
-        missing_items = generator_feedback_items - validation_feedback_items
+        missing_items = set()
+        # Track which validation items have been matched to avoid duplicates
+        matched_validation_indices = set()
+        
+        for gen_line, gen_feedback in generator_feedback_items:
+            # Find best match for this generator feedback
+            best_match_score = 0
+            best_match_index = -1
+            
+            for val_index, (val_line, val_feedback) in enumerate(validation_feedback_items):
+                if val_index in matched_validation_indices:
+                    continue  # Skip already matched items
+                    
+                if gen_line == val_line:  # Same line number
+                    similarity = fuzz.ratio(gen_feedback, val_feedback)
+                    if similarity > best_match_score:
+                        best_match_score = similarity
+                        best_match_index = val_index
+            
+            # If good match found, replace validation feedback with generator feedback
+            if best_match_score >= 85:  # 85% similarity threshold
+                matched_validation_indices.add(best_match_index)
+                # Replace the feedback text in the validation feedback line
+                v.feedback_lines[best_match_index].feedback = gen_feedback
+            else:
+                # If no good match found, mark as missing
+                missing_items.add((gen_line, gen_feedback))
         if missing_items:
             missing_str = "; ".join([f"Line {ln}: {fb}" for ln, fb in missing_items])
             raise ValueError(f"Missing generator feedback lines in validation output: {missing_str}")

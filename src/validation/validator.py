@@ -243,6 +243,8 @@ def validate_model(MODEL_GENS, MODEL_VALS):
     Returns:
         ValidationBatch: The validation results
     """
+    count_invalids = 0
+    count_valids = 0
     confusion_matrices_gen = []
     confusion_matrices_val = []
     GV = []
@@ -256,6 +258,11 @@ def validate_model(MODEL_GENS, MODEL_VALS):
 
         for j, modelVal in enumerate(MODEL_VALS):
             dataProvider = DataProvider(modelGen, modelVal)
+            count_invalids += len(dataProvider.get_failed_sids())
+            count_valids += len(dataProvider.get_successful_results())
+
+            # if modelGen == modelVal == Model.CLAUDE_3_OPUS.value:
+            #     asdf
 
             # Create DataFrame with specified columns, filtering for successful validations only
             df_yhat = dataProvider.validation_batch.create_dataframe()
@@ -291,7 +298,7 @@ def validate_model(MODEL_GENS, MODEL_VALS):
         tprs.append(tpr)
         tnrs.append(tnr)
 
-    return confusion_matrices_gen, tprs, tnrs, GV, dfs
+    return count_valids, count_invalids, confusion_matrices_gen, tprs, tnrs, GV, dfs
 
 
 def llm_judge_errors(MODEL_GENS, MODEL_VALS, GV_gen: List[List[float]]):
@@ -409,10 +416,10 @@ if __name__ == "__main__":
     ]
 
     # Route 1
-    confusion_matrices_gen, tprs_gen, tnrs_gen, GV_gen, dfs_gen = validate_model(MODEL_GENS, MODEL_VALS)
+    count_valids_gen, count_invalids_gen, confusion_matrices_gen, tprs_gen, tnrs_gen, GV_gen, dfs_gen = validate_model(MODEL_GENS, MODEL_VALS)
 
     # Round 2 for all gens
-    confusion_matrices_all, tprs_all, tnrs_all, GV_all, dfs_all = validate_model(MODEL_VALS, MODEL_VALS)
+    count_valids_all, count_invalids_all, confusion_matrices_all, tprs_all, tnrs_all, GV_all, dfs_all = validate_model(MODEL_VALS, MODEL_VALS)
 
     print("\nConfusion Matrices:")
     pprint.pprint(confusion_matrices_gen)
@@ -429,3 +436,5 @@ if __name__ == "__main__":
     llm_judge_errors(MODEL_GENS, MODEL_VALS, GV_gen)
 
     ensemble_results = ensemble_prediction(dfs_gen, MODEL_VALS)
+
+    print(f'Validation counts: invalid={count_invalids_all}, percentage={count_invalids_all / (count_valids_all + count_invalids_all) * 100:.2f}%')

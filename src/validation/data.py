@@ -23,11 +23,26 @@ from src.generation.data import (load_existing_results, get_processed_results)
 
 class DataProvider:
     """Centralized data provider for validation operations."""
-    validation_batch: Optional[ValidationBatch] = None
-    generation_batch: Optional[GenerationBatch] = None
+    
+    def __init__(self, modelGen: str, modelVal: str) -> None:
+        self.validation_batch: Optional[ValidationBatch] = None
+        self.generation_batch: Optional[GenerationBatch] = None
+        
+        self.load_generation_batch(modelGen)
+        self.load_validation_batch(modelGen, modelVal)
+        
+        # Print summary
+        self.print_validation_summary()
 
-    @classmethod
-    def load_validation_batch(cls, modelGen: str, modelVal: str) -> Optional[ValidationBatch]:
+        # Analyze error patterns
+        error_analysis = self.analyze_error_patterns()
+        if error_analysis['total_failed'] > 0:
+            print(f"\nError Analysis:")
+            print(f"Total Failed: {error_analysis['total_failed']}")
+            for error_type, count in error_analysis['error_counts'].items():
+                print(f"  {error_type}: {count} SIDs")
+
+    def load_validation_batch(self, modelGen: str, modelVal: str) -> Optional[ValidationBatch]:
         """
         Load a validation batch from a JSON file.
         
@@ -54,8 +69,14 @@ class DataProvider:
                 results = []
                 for item in data:
                     sid = item.get('sid', -1)
-                    generatorData = cls.generation_batch.getById(sid) if cls.generation_batch else None
+                    generatorData = self.generation_batch.getById(sid) if self.generation_batch else None
                     item['generatorData'] = generatorData
+
+                    # Alias 'line_num' to 'line_number' in feedback_lines if needed
+                    if 'output' in item and isinstance(item['output'], dict) and 'feedback_lines' in item['output']:
+                        for feedback_line in item['output']['feedback_lines']:
+                            if isinstance(feedback_line, dict) and 'line_num' in feedback_line and 'line_number' not in feedback_line:
+                                feedback_line['line_number'] = feedback_line.pop('line_num')
 
                     try:
                         # Ensure item has required fields and attach it
@@ -81,7 +102,7 @@ class DataProvider:
 
                         results.append(minimal_result)
 
-                cls.validation_batch = ValidationBatch(
+                self.validation_batch = ValidationBatch(
                     generator_model=modelGen,
                     validator_model=modelVal,
                     results=results,
@@ -89,17 +110,16 @@ class DataProvider:
                 )
             else:
                 # New format
-                cls.validation_batch = ValidationBatch(**data)
+                self.validation_batch = ValidationBatch(**data)
 
         except Exception as e:
             print_error(f"Error loading validation batch for gen={modelGen}, val={modelVal}: {e}")
             print_warning(f"Full traceback: {traceback.format_exc()}")
             
             sys.exit(1)
-            cls.validation_batch = None
+            self.validation_batch = None
 
-    @classmethod
-    def save_validation_batch_to_file(cls, file_path: str) -> bool:
+    def save_validation_batch_to_file(self, file_path: str) -> bool:
         """
         Save a validation batch to a JSON file.
         
@@ -109,13 +129,13 @@ class DataProvider:
         Returns:
             bool: True if successful, False otherwise
         """
-        if cls.validation_batch is None:
+        if self.validation_batch is None:
             print_warning("No validation batch to save.")
             return False
 
         try:
             with open(file_path, 'w') as f:
-                json.dump(cls.validation_batch.dict(), f, indent=4)
+                json.dump(self.validation_batch.dict(), f, indent=4)
 
             return True
 
@@ -123,47 +143,35 @@ class DataProvider:
             print_error(f"Error saving validation batch to {file_path}: {e}")
             return False
 
-    @classmethod
-    def filter_successful_results(cls) -> List[ValidationResult]:
+    def get_successful_results(self) -> List[ValidationResult]:
         """
         Filter results to only include successful validations.
         
-        Args:
-            results: List of validation results
-            
         Returns:
             List[ValidationResult]: Filtered successful results
         """
-        if cls.validation_batch is None:
+        if self.validation_batch is None:
             return []
 
-        return [r for r in cls.validation_batch.results if r.success and r.output]
+        return [r for r in self.validation_batch.results if r.success and r.output]
     
-    @classmethod
-    def get_failed_sids(cls) -> List[int]:
+    def get_failed_sids(self) -> List[int]:
         """
         Get list of SIDs that failed validation.
         
-        Args:
-            results: List of validation results
-            
         Returns:
             List[int]: List of failed SIDs
         """
-        if cls.validation_batch is None:
+        if self.validation_batch is None:
             return []
 
-        return [r.sid for r in cls.validation_batch.results if not r.success]
+        return [r.sid for r in self.validation_batch.results if not r.success or not r.output]
 
-    @classmethod
-    def print_validation_summary(cls) -> None:
+    def print_validation_summary(self) -> None:
         """
         Print a comprehensive summary of validation results.
-    
-        Args:
-            batch: ValidationBatch to summarize
         """
-        batch = cls.validation_batch
+        batch = self.validation_batch
         if batch is None:
             print_warning("No validation batch loaded.")
             return
@@ -186,22 +194,18 @@ class DataProvider:
         print(f"{'='*60}")
         
         # Print failed SIDs if any
-        failed_sids = cls.get_failed_sids()
+        failed_sids = self.get_failed_sids()
         if failed_sids:
             print(f"\nFailed SIDs ({len(failed_sids)}): {failed_sids}")
 
-    @classmethod
-    def analyze_error_patterns(cls) -> Dict[str, Any]:
+    def analyze_error_patterns(self) -> Dict[str, Any]:
         """
         Analyze error patterns in validation results.
         
-        Args:
-            results: List of validation results
-            
         Returns:
             Dict containing error analysis
         """
-        failed_results = [r for r in cls.validation_batch.results if not r.success]
+        failed_results = [r for r in self.validation_batch.results if not r.success]
         
         error_patterns = {}
         for result in failed_results:
@@ -229,33 +233,13 @@ class DataProvider:
             "error_counts": {k: len(v) for k, v in error_patterns.items()}
         }
     
-    @classmethod
-    def load_generation_batch(cls, modelGen: str):
+    def load_generation_batch(self, modelGen: str):
         print(f"\n{'='*60}")
         print(f"GENERATION SUMMARY: {modelGen}")
         print(f"{'='*60}")
 
-
         processed_results = get_processed_results(modelGen)
-        cls.generation_batch = processed_results
-
-
-    @classmethod
-    def __init__(cls, modelGen: str, modelVal: str) -> None:
-        cls.load_generation_batch(modelGen)
-        cls.load_validation_batch(modelGen, modelVal)
-        
-        # Print summary
-        cls.print_validation_summary()
-
-        # Analyze error patterns
-        error_analysis = cls.analyze_error_patterns()
-        if error_analysis['total_failed'] > 0:
-            print(f"\nError Analysis:")
-            print(f"Total Failed: {error_analysis['total_failed']}")
-            for error_type, count in error_analysis['error_counts'].items():
-                print(f"  {error_type}: {count} SIDs")
-        
+        self.generation_batch = processed_results
 
 
 
