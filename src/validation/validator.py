@@ -18,7 +18,7 @@ from src.validation.service import ValidationRunner, ValidationService
 from src.validation.data import DataProvider
 from src.validation.models import ValidationBatch, ValidationResult
 from src.utils import print_warning, print_error
-
+from src.regressor.config import pGa_CONST
 
 ####################
 # Config
@@ -108,7 +108,6 @@ def validate_specific_sids(sids: List[int], generator_model: str, validator_mode
     )
     
     return batch
-
 
 def compare_validation_runs(file_paths: List[str]) -> None:
     """
@@ -273,6 +272,35 @@ def validate_model(MODEL_GENS, MODEL_VALS):
     return confusion_matrices_gen, tprs, tnrs, GV
     
 
+def llm_judge_errors(MODEL_GENS, MODEL_VALS, GV_gen: List[List[float]]):
+    max_error_max = 0
+    max_error_min = float('inf')
+    mean_error_max = 0
+    mean_error_min = float('inf')
+
+    for j, modelVal in enumerate(MODEL_VALS):
+        max_error_val = 0
+        mean_error_val = 0
+
+        for i, modelGen in enumerate(MODEL_GENS):
+            valueActual = pGa_CONST[modelGen]
+            valuePredicted = GV_gen[i][j]
+            error = abs(valueActual - valuePredicted)
+
+
+            max_error_val = max(max_error_val, error)
+            mean_error_val += error
+
+        mean_error_val /= len(MODEL_GENS)
+
+        max_error_max = max(max_error_max, max_error_val)
+        max_error_min = min(max_error_min, max_error_val)
+        mean_error_max = max(mean_error_max, mean_error_val)
+        mean_error_min = min(mean_error_min, mean_error_val)
+
+    print(f"Max Error range: ({max_error_min*100}, {max_error_max*100})")
+    print(f"Mean Error range: ({mean_error_min*100}, {mean_error_max*100})")
+
 if __name__ == "__main__":
     MODEL_GENS = [Model.GPT_4O.value, Model.GPT_4_TURBO.value, Model.CLAUDE_3_OPUS.value, Model.GEMINI_1_5_PRO.value, Model.QWEN_CODER_PLUS.value, Model.DEEPSEEK_CHAT.value]
 
@@ -285,17 +313,19 @@ if __name__ == "__main__":
         Model.CLAUDE_3_5_HAIKU.value, Model.GEMINI_2_5_FLASH.value, Model.GEMINI_2_5_PRO.value, Model.GPT_4_1.value, Model.GPT_4_1_MINI.value
     ]
 
-    confusion_matrices_gen, tprs, tnrs, GV = validate_model(MODEL_GENS, MODEL_VALS)
-    confusion_matrices_stale, tprs_stale, tnrs_stale, GV = validate_model(MODEL_VALS, MODEL_VALS)
+    confusion_matrices_gen, tprs_gen, tnrs_gen, GV_gen = validate_model(MODEL_GENS, MODEL_VALS)
+    confusion_matrices_all, tprs_all, tnrs_all, GV_all = validate_model(MODEL_VALS, MODEL_VALS)
 
     print("\nConfusion Matrices:")
     pprint.pprint(confusion_matrices_gen)
 
     print("\nValidation TPR:")
-    pprint.pprint(tprs)
+    pprint.pprint(tprs_gen)
 
     print("\nValidation TNR:")
-    pprint.pprint(tnrs)
+    pprint.pprint(tnrs_gen)
     
     print("\nGV Array:")
-    pprint.pprint(GV)
+    pprint.pprint(GV_all)
+
+    llm_judge_errors(MODEL_GENS, MODEL_VALS, GV_gen)
