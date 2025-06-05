@@ -241,6 +241,8 @@ def validate_model(MODEL_GENS, MODEL_VALS):
         ValidationBatch: The validation results
     """
     count_invalids = 0
+    count_invalid_max = 0
+    label_max = None
     count_valids = 0
     confusion_matrices_gen = []
     confusion_matrices_val = []
@@ -255,6 +257,10 @@ def validate_model(MODEL_GENS, MODEL_VALS):
 
         for j, modelVal in enumerate(MODEL_VALS):
             dataProvider = DataProvider(modelGen, modelVal)
+            if len(dataProvider.get_failed_sids()) > count_invalid_max:
+                count_invalid_max = len(dataProvider.get_failed_sids())
+                label_max = f'{modelGen} -> {modelVal}'
+            
             count_invalids += len(dataProvider.get_failed_sids())
             count_valids += len(dataProvider.get_successful_results())
 
@@ -295,7 +301,7 @@ def validate_model(MODEL_GENS, MODEL_VALS):
         tprs.append(tpr)
         tnrs.append(tnr)
 
-    return count_valids, count_invalids, confusion_matrices_gen, tprs, tnrs, GV, dfs
+    return count_valids, count_invalids, confusion_matrices_gen, tprs, tnrs, GV, dfs, label_max
 
 
 def llm_judge_errors(MODEL_GENS, MODEL_VALS, GV_gen: List[List[float]]):
@@ -414,15 +420,16 @@ if __name__ == "__main__":
     ]
 
     # MODEL_VALS = [
-    #     Model.GPT_4_TURBO.value,
+    #     Model.GEMINI_2_5_PRO.value,
+    #     Model.CLAUDE_3_5_HAIKU.value,
         
     # ]
 
     # Route 1
-    count_valids_gen, count_invalids_gen, confusion_matrices_gen, tprs_gen, tnrs_gen, GV_gen, dfs_gen = validate_model(MODEL_GENS, MODEL_VALS)
+    count_valids_gen, count_invalids_gen, confusion_matrices_gen, tprs_gen, tnrs_gen, GV_gen, dfs_gen, label_max = validate_model(MODEL_GENS, MODEL_VALS)
 
     # Round 2 for all gens
-    count_valids_all, count_invalids_all, confusion_matrices_all, tprs_all, tnrs_all, GV_all, dfs_all = validate_model(MODEL_VALS, MODEL_VALS)
+    count_valids_all, count_invalids_all, confusion_matrices_all, tprs_all, tnrs_all, GV_all, dfs_all, label_max = validate_model(MODEL_VALS, MODEL_VALS)
 
     print("\nConfusion Matrices:")
     pprint.pprint(confusion_matrices_gen)
@@ -441,3 +448,4 @@ if __name__ == "__main__":
     ensemble_results = ensemble_prediction(dfs_gen, MODEL_GENS, MODEL_VALS)
 
     print(f'Validation counts: invalid={count_invalids_all}, percentage={count_invalids_all / (count_valids_all + count_invalids_all) * 100:.2f}%')
+    print(f'Worst pair: {label_max}')
