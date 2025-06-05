@@ -295,7 +295,14 @@ def validate_generator_data(data: Dict[str, Any], category_required: bool = True
         # Add category_required to data if not present
         if 'category_required' not in data:
             data['category_required'] = category_required
-        
+
+        # Handle line_number ranges like "1-3"
+        if 'feedback' in data:
+            for line in data['feedback']:
+                if 'line_number' in line and isinstance(line['line_number'], str):
+                    if '-' in line['line_number']:
+                        line['line_number'] = line['line_number'].split('-')[0]
+
         GeneratorData(**data)
         return True
     except ValidationError as e:

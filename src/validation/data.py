@@ -78,6 +78,11 @@ class DataProvider:
                             if isinstance(feedback_line, dict) and 'line_num' in feedback_line and 'line_number' not in feedback_line:
                                 feedback_line['line_number'] = feedback_line.pop('line_num')
 
+                            # Handle line_number ranges like "1-3"
+                            if 'line_number' in feedback_line and isinstance(feedback_line['line_number'], str):
+                                if '-' in feedback_line['line_number']:
+                                    feedback_line['line_number'] = feedback_line['line_number'].split('-')[0]
+
                     try:
                         # Ensure item has required fields and attach it
                         result = ValidationResult(**item)

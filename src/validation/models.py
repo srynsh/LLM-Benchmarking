@@ -71,16 +71,23 @@ class ValidationResult(BaseModel):
         
         return counts    
     
-    @validator('output')
-    def validate_output_against_generator(cls, v, values):
-        """Ensure all generator feedback lines are accounted for in validation output."""
-        if not v or not v.feedback_lines:
-            return v
-            
-        generator_data = values.get('generatorData')
-        if not generator_data or not generator_data.feedback:
-            return v
+    @classmethod
+    def _exact_match(cls, generator_data: GeneratorData, v: ValidationOutput) -> bool:
+        # Create sets of (line_number, feedback) tuples for comparison
+        generator_feedback_items = set()
+        for fb in generator_data.feedback:
+            generator_feedback_items.add((str(fb.line_number), fb.feedback))
         
+        validation_feedback_items = set()
+        for fb_line in v.feedback_lines:
+            validation_feedback_items.add((str(fb_line.line_number), fb_line.feedback))
+        
+        # Check if all generator feedback items are present in validation output
+        missing_items = generator_feedback_items - validation_feedback_items
+        return missing_items
+    
+    @classmethod
+    def _fuzzy_match(cls, generator_data: GeneratorData, v: ValidationOutput) -> bool:
         # Create lists of (line_number, feedback) tuples for comparison
         generator_feedback_items = []
         for fb in generator_data.feedback:
@@ -117,6 +124,20 @@ class ValidationResult(BaseModel):
             else:
                 # If no good match found, mark as missing
                 missing_items.add((gen_line, gen_feedback))
+
+        return missing_items
+    
+    @validator('output')
+    def validate_output_against_generator(cls, v, values):
+        """Ensure all generator feedback lines are accounted for in validation output."""
+        if not v or not v.feedback_lines:
+            return v
+            
+        generator_data = values.get('generatorData')
+        if not generator_data or not generator_data.feedback:
+            return v
+        missing_items = cls._fuzzy_match(generator_data, v)
+        
         if missing_items:
             missing_str = "; ".join([f"Line {ln}: {fb}" for ln, fb in missing_items])
             raise ValueError(f"Missing generator feedback lines in validation output: {missing_str}")

@@ -29,9 +29,6 @@ from src.regressor.config import pGa_CONST
 # GPT_4_TURBO: 17 SIDs
 # GPT_4O: 2 SIDs
 
-# Current selected model
-modelGen = Model.CLAUDE_3_OPUS.value
-modelVal = Model.CLAUDE_3_OPUS.value
 
 def main():
     """Main entry point for validation operations."""
@@ -261,9 +258,6 @@ def validate_model(MODEL_GENS, MODEL_VALS):
             count_invalids += len(dataProvider.get_failed_sids())
             count_valids += len(dataProvider.get_successful_results())
 
-            # if modelGen == modelVal == Model.CLAUDE_3_OPUS.value:
-            #     asdf
-
             # Create DataFrame with specified columns, filtering for successful validations only
             df_yhat = dataProvider.validation_batch.create_dataframe()
             df_y = dataProvider.generation_batch.create_dataframe()
@@ -273,6 +267,9 @@ def validate_model(MODEL_GENS, MODEL_VALS):
             df_merged = merge_df_merged_yhat(df_merged, df_yhat, modelVal)
 
             confusion_matrix = calculate_confusion_matrix(df_y, df_yhat)
+            # print(f"Confusion Matrix for {modelGen} vs {modelVal}: {confusion_matrix}")
+            # df_merged.to_csv(f'./df_merged_{modelGen}_vs_{modelVal}.csv', index=False)
+            # # sys.exit(1)
 
             # Add confusion matrix calculation
             row_gen.append(confusion_matrix)
@@ -330,7 +327,7 @@ def llm_judge_errors(MODEL_GENS, MODEL_VALS, GV_gen: List[List[float]]):
     print(f"Max Error range: ({max_error_min*100}, {max_error_max*100})")
     print(f"Mean Error range: ({mean_error_min*100}, {mean_error_max*100})")
 
-def ensemble_prediction(dfs_gen, MODEL_VALS):
+def ensemble_prediction(dfs_gen, MODEL_GENS, MODEL_VALS):
         """
         Create ensemble predictions and calculate errors for each dataset.
         
@@ -405,6 +402,7 @@ def ensemble_prediction(dfs_gen, MODEL_VALS):
 
 if __name__ == "__main__":
     MODEL_GENS = [Model.GPT_4O.value, Model.GPT_4_TURBO.value, Model.CLAUDE_3_OPUS.value, Model.GEMINI_1_5_PRO.value, Model.QWEN_CODER_PLUS.value, Model.DEEPSEEK_CHAT.value]
+    # MODEL_GENS = [Model.GPT_4O.value]
 
     MODEL_VALS = [
         Model.GPT_4_TURBO.value, Model.GPT_4O_MINI.value, Model.GPT_4O.value,
@@ -414,6 +412,11 @@ if __name__ == "__main__":
         Model.DEEPSEEK_CHAT.value,
         Model.CLAUDE_3_5_HAIKU.value, Model.GEMINI_2_5_FLASH.value, Model.GEMINI_2_5_PRO.value, Model.GPT_4_1.value, Model.GPT_4_1_MINI.value
     ]
+
+    # MODEL_VALS = [
+    #     Model.GPT_4_TURBO.value,
+        
+    # ]
 
     # Route 1
     count_valids_gen, count_invalids_gen, confusion_matrices_gen, tprs_gen, tnrs_gen, GV_gen, dfs_gen = validate_model(MODEL_GENS, MODEL_VALS)
@@ -435,6 +438,6 @@ if __name__ == "__main__":
 
     llm_judge_errors(MODEL_GENS, MODEL_VALS, GV_gen)
 
-    ensemble_results = ensemble_prediction(dfs_gen, MODEL_VALS)
+    ensemble_results = ensemble_prediction(dfs_gen, MODEL_GENS, MODEL_VALS)
 
     print(f'Validation counts: invalid={count_invalids_all}, percentage={count_invalids_all / (count_valids_all + count_invalids_all) * 100:.2f}%')
