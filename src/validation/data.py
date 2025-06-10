@@ -10,7 +10,7 @@ from functools import lru_cache
 
 from jsonschema import ValidationError
 
-from src.config import MODELS_GEN, NUM_SIDS, pathValidator
+from src.config import MODELS_GEN, NUM_SIDS, VALIDATOR_REPAIR, pathValidator
 
 from src.utils import print_warning, print_error
 from src.validation.models import (
@@ -72,16 +72,24 @@ class DataProvider:
                     generatorData = self.generation_batch.getById(sid) if self.generation_batch else None
                     item['generatorData'] = generatorData
 
-                    # Alias 'line_num' to 'line_number' in feedback_lines if needed
+                    # Handle issues in the output structure
                     if 'output' in item and isinstance(item['output'], dict) and 'feedback_lines' in item['output']:
                         for feedback_line in item['output']['feedback_lines']:
-                            if isinstance(feedback_line, dict) and 'line_num' in feedback_line and 'line_number' not in feedback_line:
-                                feedback_line['line_number'] = feedback_line.pop('line_num')
+                            # Ensure 'line_num' is converted to 'line_number'
+                            if VALIDATOR_REPAIR.line_num_number:
+                                if isinstance(feedback_line, dict) and 'line_num' in feedback_line and 'line_number' not in feedback_line:
+                                    feedback_line['line_number'] = feedback_line.pop('line_num')
 
                             # Handle line_number ranges like "1-3"
-                            if 'line_number' in feedback_line and isinstance(feedback_line['line_number'], str):
-                                if '-' in feedback_line['line_number']:
-                                    feedback_line['line_number'] = feedback_line['line_number'].split('-')[0]
+                            if VALIDATOR_REPAIR.line_number_hyphens:
+                                if 'line_number' in feedback_line and isinstance(feedback_line['line_number'], str):
+                                    if '-' in feedback_line['line_number']:
+                                        feedback_line['line_number'] = feedback_line['line_number'].split('-')[0]
+
+                            # If the feedback line has a classification and it's 'partially valid', change it to 'invalid'
+                            if VALIDATOR_REPAIR.partially_valid_label: 
+                                if 'classification' in feedback_line and feedback_line['classification'] == 'partially valid':
+                                    feedback_line['classification'] = 'invalid'
 
                     try:
                         # Ensure item has required fields and attach it
@@ -93,7 +101,7 @@ class DataProvider:
                         error_lines = str(e).splitlines()
                         error_lines_alt = [error_lines[i] for i in range(1, len(error_lines), 3)]
                         error_str = " | ".join(error_lines_alt)
-                        print_warning(f"Error parsing result for SID {item.get('sid', 'unknown')}: {error_str}")
+                        print_warning(f"Error parsing result for SID {item.get('sid', 'unknown')}: {e}")
 
                         # Try to atleast create a minimal result
                         minimal_result = ValidationResult(

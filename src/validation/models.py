@@ -5,6 +5,7 @@ Pydantic models for Validator data validation.
 from typing import List, Dict, Any, Optional, Union
 import pandas as pd
 from pydantic import BaseModel, ValidationError, validator, Field, model_validator
+from src.config import VALIDATOR_REPAIR
 from src.generation.models import GeneratorData
 from src.utils import print_warning, print_error
 import json
@@ -37,6 +38,11 @@ class ValidatedFeedbackLine(BaseModel):
     @validator('classification')
     def validate_classification(cls, v):
         """Ensure classification is either 'valid' or 'invalid'."""
+        if VALIDATOR_REPAIR.partially_valid_label:
+            # If partially valid is allowed, treat it as invalid for consistency
+            if v.lower() == 'partially valid':
+                return 'invalid'
+            
         if v.lower() not in ['valid', 'invalid']:
             raise ValueError("Classification must be either 'valid' or 'invalid'")
         return v.lower()
@@ -109,12 +115,21 @@ class ValidationResult(BaseModel):
             for val_index, (val_line, val_feedback) in enumerate(validation_feedback_items):
                 if val_index in matched_validation_indices:
                     continue  # Skip already matched items
-                    
+
+                # Clip validation feedback if it's shorter than generator feedback. To handle cases where validator got "lazy"
+                if VALIDATOR_REPAIR.clip_feedback_lazy:
+                    if len(val_feedback) < len(gen_feedback):
+                        gen_feedback = gen_feedback[:len(val_feedback)]
+
                 if gen_line == val_line:  # Same line number
                     similarity = fuzz.ratio(gen_feedback, val_feedback)
                     if similarity > best_match_score:
                         best_match_score = similarity
                         best_match_index = val_index
+
+                # if generator_data.sid == 162:
+                #     print_error(f"Generator feedback: {gen_feedback}, Validation feedback: {val_feedback}")
+                #     print_error(f"Similarity score: {similarity}, Best match score: {best_match_score}, Best match index: {best_match_index}")
             
             # If good match found, replace validation feedback with generator feedback
             if best_match_score >= 85:  # 85% similarity threshold
@@ -136,7 +151,11 @@ class ValidationResult(BaseModel):
         generator_data = values.get('generatorData')
         if not generator_data or not generator_data.feedback:
             return v
-        missing_items = cls._fuzzy_match(generator_data, v)
+        
+        if VALIDATOR_REPAIR.feedback_match_fuzzy:
+            missing_items = cls._fuzzy_match(generator_data, v)
+        else:
+            missing_items = cls._exact_match(generator_data, v)
         
         if missing_items:
             missing_str = "; ".join([f"Line {ln}: {fb}" for ln, fb in missing_items])
