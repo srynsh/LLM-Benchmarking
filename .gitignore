@@ -168,4 +168,4 @@ cython_debug/
 
 # Data files
 data/*
-output/logs/*
+**/logs/*

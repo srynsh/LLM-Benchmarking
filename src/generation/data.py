@@ -3,7 +3,7 @@ from jsonschema import ValidationError
 import pandas as pd
 from typing import Dict, List, Union, Any, Optional
 import json
-from src.config import MODELS_GEN, NUM_SIDS
+from src.config import MODELS_GEN, NUM_SIDS, VALIDATOR_REPAIR
 from src.generation.models import GenerationBatch, GeneratorData
 from src.utils import print_warning, print_error
 
@@ -297,11 +297,12 @@ def validate_generator_data(data: Dict[str, Any], category_required: bool = True
             data['category_required'] = category_required
 
         # Handle line_number ranges like "1-3"
-        if 'feedback' in data:
-            for line in data['feedback']:
-                if 'line_number' in line and isinstance(line['line_number'], str):
-                    if '-' in line['line_number']:
-                        line['line_number'] = line['line_number'].split('-')[0]
+        if VALIDATOR_REPAIR.line_number_hyphens:
+            if 'feedback' in data:
+                for line in data['feedback']:
+                    if 'line_number' in line and isinstance(line['line_number'], str):
+                        if '-' in line['line_number']:
+                            line['line_number'] = line['line_number'].split('-')[0]
 
         GeneratorData(**data)
         return True
