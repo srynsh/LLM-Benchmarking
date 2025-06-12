@@ -10,10 +10,10 @@ import datetime
 from typing import List, Optional
 from tqdm import tqdm
 import pandas as pd
-from src.config import NUM_SIDS, Model
 
 sys.path.append("..")
 
+from src.config import NUM_SIDS, Model, pathLogs
 from src.validation.service import ValidationRunner, ValidationService
 from src.validation.data import DataProvider
 from src.validation.models import ValidationBatch, ValidationResult
@@ -162,14 +162,16 @@ def merge_df_y_yhat(df_y: pd.DataFrame, df_yhat: pd.DataFrame) -> pd.DataFrame:
 
 def merge_df_merged_yhat(df_merged: pd.DataFrame, df_yhat: pd.DataFrame, model) -> pd.DataFrame:
     # Convert key columns to string type for consistent merging
+    df_merged['sid'] = df_merged['sid'].astype(str)
+    df_merged['line_number'] = df_merged['line_number'].astype(str)
+    df_merged['feedback'] = df_merged['feedback'].astype(str)
+
     df_yhat = df_yhat.copy()
     df_yhat['sid'] = df_yhat['sid'].astype(str)
     df_yhat['line_number'] = df_yhat['line_number'].astype(str) 
     df_yhat['feedback'] = df_yhat['feedback'].astype(str)
 
-    df_merged['sid'] = df_merged['sid'].astype(str)
-    df_merged['line_number'] = df_merged['line_number'].astype(str)
-    df_merged['feedback'] = df_merged['feedback'].astype(str)
+    
     merged_df = pd.merge(
         df_merged, 
         df_yhat, 
@@ -305,10 +307,12 @@ def validate_model(MODEL_GENS, MODEL_VALS):
 
             tn, fp, fn, tp = confusion_matrix
             percentage_valid = (tp + fp) / (tp + fp + fn + tn) if (tp + fp + fn + tn) > 0 else 0
+
+            print(f"Confusion Matrix for {modelGen} vs {modelVal}: {confusion_matrix}, percentage_valid={percentage_valid:.2f}")
             row_gv.append(percentage_valid)
 
-        df_merged.to_csv(f'./df_merged_{modelGen}.csv', index=False)
-        # sys.exit(1)
+        df_merged.to_csv(f'{pathLogs}/ensemble/df_{modelGen}.csv', index=False)
+        
 
         confusion_matrices_gen.append(row_gen)
         GV.append(row_gv)
@@ -368,10 +372,10 @@ def invalid_voting(df, validation_columns, invalid_count):
     invalid_votes = (df[validation_columns] == 0).sum(axis=1)
     
     # Ensemble rule: predict invalid (0) if at least 4 models predict invalid (0)
-    df[f'ensemble_prediction_i{invalid_count}'] = (invalid_votes >= invalid_count).astype(int)
+    df[f'ensemble_i{invalid_count}'] = (invalid_votes >= invalid_count).astype(int)
     
     # Flip the logic: when enough models say invalid (0), we predict invalid (0)
-    df[f'ensemble_prediction_i{invalid_count}'] = 1 - df[f'ensemble_prediction_i{invalid_count}']
+    df[f'ensemble_i{invalid_count}'] = 1 - df[f'ensemble_i{invalid_count}']
 
     return df
 
@@ -390,7 +394,7 @@ def valid_voting(df, validation_columns, valid_count):
     valid_votes = (df[validation_columns] == 1).sum(axis=1)
     
     # Ensemble rule: predict valid (1) if at least 4 models predict valid (1)
-    df[f'ensemble_prediction_v{valid_count}'] = (valid_votes >= valid_count).astype(int)
+    df[f'ensemble_v{valid_count}'] = (valid_votes >= valid_count).astype(int)
 
     return df
 
@@ -449,8 +453,12 @@ def ensemble_prediction(dfs_gen, MODEL_GENS, MODEL_VALS, valid_count=None, inval
 
         ensemble_max_errors = {f'v{i}': 0 for i in range(1, num_validators + 1)}
         ensemble_mean_errors = {f'v{i}': 0 for i in range(1, num_validators + 1)}
+        ensemble_max_errors_modelGen = {f'v{i}': None for i in range(1, num_validators + 1)}
+
         ensemble_max_errors.update({f'i{i}': 0 for i in range(1, num_validators + 1)})
         ensemble_mean_errors.update({f'i{i}': 0 for i in range(1, num_validators + 1)})
+        ensemble_max_errors_modelGen.update({f'i{i}': None for i in range(1, num_validators + 1)})
+        
 
         for model_gen in MODEL_GENS:
             df = dfs_gen[model_gen].copy()
@@ -458,14 +466,22 @@ def ensemble_prediction(dfs_gen, MODEL_GENS, MODEL_VALS, valid_count=None, inval
             # Perform valid and invalid voting for each validator
             for i in range(1, num_validators + 1):
                 df = valid_voting(df, validation_columns, i)
-                error = calculate_ensemble_accuracy(df, model_gen, f'ensemble_prediction_v{i}')
-                ensemble_max_errors[f'v{i}'] = max(ensemble_max_errors[f'v{i}'], error)
+                error = calculate_ensemble_accuracy(df, model_gen, f'ensemble_v{i}')
+                max_error = max(ensemble_max_errors[f'v{i}'], error)
+                ensemble_max_errors[f'v{i}'] = max_error
+                ensemble_max_errors_modelGen[f'v{i}'] = model_gen if max_error == error else ensemble_max_errors_modelGen[f'v{i}']
                 ensemble_mean_errors[f'v{i}'] += error
 
                 df = invalid_voting(df, validation_columns, i)
-                error = calculate_ensemble_accuracy(df, model_gen, f'ensemble_prediction_i{i}')
-                ensemble_max_errors[f'i{i}'] = max(ensemble_max_errors[f'i{i}'], error)
+                error = calculate_ensemble_accuracy(df, model_gen, f'ensemble_i{i}')
+                max_error = max(ensemble_max_errors[f'i{i}'], error)
+                ensemble_max_errors[f'i{i}'] = max_error
+                ensemble_max_errors_modelGen[f'i{i}'] = model_gen if max_error == error else ensemble_max_errors_modelGen[f'i{i}']
                 ensemble_mean_errors[f'i{i}'] += error
+
+            # Replace column names that start with 'classification' to start with 'y'
+            df.columns = [col.replace('classification', 'y') if col.startswith('classification') else col for col in df.columns]
+            df.to_csv(f'{pathLogs}/ensemble/df_{model_gen}.csv', index=False)
 
         # Calculate mean errors
         for key in ensemble_mean_errors:
@@ -474,7 +490,7 @@ def ensemble_prediction(dfs_gen, MODEL_GENS, MODEL_VALS, valid_count=None, inval
         # Print the max and mean errors for each ensemble
         print("\nEnsemble Max Errors:")
         for key, value in ensemble_max_errors.items():
-            print(f"\t{key}: {value * 100:.2f}%")
+            print(f"\t{key}: {value * 100:.2f}% ({ensemble_max_errors_modelGen[key]})")
         print("\nEnsemble Mean Errors:")
         for key, value in ensemble_mean_errors.items():
             print(f"\t{key}: {value * 100:.2f}%")
@@ -482,7 +498,7 @@ def ensemble_prediction(dfs_gen, MODEL_GENS, MODEL_VALS, valid_count=None, inval
 
 if __name__ == "__main__":
     MODEL_GENS = [Model.GPT_4O.value, Model.GPT_4_TURBO.value, Model.CLAUDE_3_OPUS.value, Model.GEMINI_1_5_PRO.value, Model.QWEN_CODER_PLUS.value, Model.DEEPSEEK_CHAT.value]
-    # MODEL_GENS = [Model.GPT_4O.value]
+    # MODEL_GENS = [Model.GEMINI_1_5_PRO.value]
 
     MODEL_VALS = [
         Model.GPT_4_TURBO.value, Model.GPT_4O_MINI.value, Model.GPT_4O.value,
@@ -494,8 +510,10 @@ if __name__ == "__main__":
     ]
 
     # MODEL_VALS = [
-    #     Model.GEMINI_2_5_PRO.value,
-    #     Model.CLAUDE_3_5_HAIKU.value,
+    #     Model.GPT_4O.value,
+    #     Model.GEMINI_1_5_FLASH.value
+    # #     Model.GEMINI_2_5_PRO.value,
+    # #     Model.CLAUDE_3_5_HAIKU.value,
         
     # ]
 
