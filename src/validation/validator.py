@@ -84,7 +84,8 @@ def validate_model(models_gen, models_val):
                 label_max = f'{modelGen} -> {modelVal}'
 
             failed_sids_row += [len(dataProvider.get_failed_sids())]
-            failed_fids_row += [len(dataProvider.get_failed_fids())]
+            # failed_fids_row += [len(dataProvider.get_failed_fids())]
+            failed_fids_row += [dataProvider.get_failure_count()]
 
             count_invalids += len(dataProvider.get_failed_sids())
             count_valids += len(dataProvider.get_successful_results())

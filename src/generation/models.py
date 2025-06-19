@@ -131,10 +131,10 @@ class GenerationBatch(BaseModel):
         
         return values
     
-    def getById(self, sid: int) -> Optional['GenerationBatch']:
+    def getById(self, sid: int) -> Optional['GeneratorData']:
         """
-        Retrieve a GenerationBatch by student ID.
-        
+        Retrieve a GeneratorData by student ID.
+
         Args:
             sid: Student ID as integer
 

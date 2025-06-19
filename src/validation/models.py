@@ -35,7 +35,6 @@ class ValidatedFeedbackLine(BaseModel):
     feedback: str = Field(..., description="The feedback provided by the TA")
     analysis: str = Field(..., description="Analysis of the feedback's accuracy")
     classification: str = Field(..., description="Feedback validity classification (valid/invalid)")
-    isMatched: bool = Field(False, description="Whether the feedback line matches the ground truth")
     
     @validator('line_number', pre=True)
     def validate_line_number(cls, v):
@@ -69,6 +68,7 @@ class ValidationResult(BaseModel):
     raw_response: str = Field(..., description="Raw LLM response")
     output: Optional[ValidationOutput] = Field(None, description="Parsed validation output")
     success: Optional[bool] = Field(default=True, description="Whether validation was successful")
+    fidFailureCount: int = Field(..., description="Count of failed feedback lines")
     timestamp: Optional[str] = Field(None, description="Timestamp of validation")
 
     @model_validator(mode='before')
@@ -94,6 +94,7 @@ class ValidationResult(BaseModel):
         else:
             matched_items, missing_items = cls._exact_match(generator_data, output)
 
+        value['fidFailureCount'] = len(missing_items)  # Count of missing feedback items
         cls._print_validate_output(value, generator_data, matched_items, missing_items)
 
         return value
@@ -143,29 +144,16 @@ class ValidationResult(BaseModel):
         matched_items = generator_feedback_items & validation_feedback_items
         missing_items = generator_feedback_items - validation_feedback_items
 
-        # Add missing items to validation output
-        for line_number, feedback in missing_items:
-            output['feedback_lines'].append({
-                'line_number': line_number,
-                'feedback': feedback,
-                'analysis': "Missing in validation output",
-                'classification': "invalid",  # Default to invalid if not matched
-                'isMatched': False
-            })
-
-        # Set is Matched flag for matched items
-        for i, fb in enumerate(output['feedback_lines']):
-            if (str(fb['line_number']), fb['feedback']) in matched_items:
-                output['feedback_lines'][i]['isMatched'] = True
-
-        # Remove all validation feedback lines that were not matched
-        output['feedback_lines'] = [fb for fb in output['feedback_lines'] if 'isMatched' in fb]
         return matched_items, missing_items
 
     @classmethod
     def _fuzzy_match(cls, generator_data: dict[str, Any], output: dict[str, Any]) -> bool:
         # Create lists of (line_number, feedback) tuples for comparison
         generator_feedback_items, validation_feedback_items = cls._get_feedback_items(generator_data, output)
+        
+        # Sort feedback items to ensure deterministic processing
+        generator_feedback_items = sorted(generator_feedback_items)
+        validation_feedback_items = sorted(validation_feedback_items)
 
         matched_items = set()
         missing_items = set()
@@ -176,10 +164,14 @@ class ValidationResult(BaseModel):
             # Find best match for this generator feedback
             best_match_score = 0
             best_match_index = -1
-            
+            # print_error(f"Generator feedback: {gen_line}. {gen_feedback}")
+
             for val_index, (val_line, val_feedback) in enumerate(validation_feedback_items):
                 if val_index in matched_validation_indices:
                     continue  # Skip already matched items
+
+                if val_line != gen_line:  # Different line number
+                    continue  # Skip if line numbers don't match
 
                 # Clip validation feedback if it's shorter than generator feedback. To handle cases where validator got "lazy"
                 if VALIDATOR_REPAIR.clip_feedback_lazy:
@@ -193,29 +185,18 @@ class ValidationResult(BaseModel):
                         best_match_index = val_index
 
                 # if generator_data.sid == 162:
-                #     print_error(f"Generator feedback: {gen_feedback}, Validation feedback: {val_feedback}")
-                #     print_error(f"Similarity score: {similarity}, Best match score: {best_match_score}, Best match index: {best_match_index}")
+                # print_error(f"\tValidation feedback: {val_line}. {val_feedback}")
+                # print_error(f"\tSimilarity score: {similarity}, Best match score: {best_match_score}, Best match index: {best_match_index}")
             
             # If good match found, replace validation feedback with generator feedback
             if best_match_score >= 85:  # 85% similarity threshold
                 matched_validation_indices.add(best_match_index)
                 # Replace the feedback text in the validation feedback line
                 output['feedback_lines'][best_match_index]['feedback'] = gen_feedback
-                output['feedback_lines'][best_match_index]['isMatched'] = True
                 matched_items.add((gen_line, gen_feedback))
             else:
                 # If no good match found, mark as missing
                 missing_items.add((gen_line, gen_feedback))
-                output['feedback_lines'].append({
-                    'line_number': gen_line,
-                    'feedback': gen_feedback,
-                    'analysis': "Missing in validation output",
-                    'classification': "invalid",  # Default to invalid if not matched
-                    'isMatched': False
-                })
-
-        # Remove all validation feedback lines that were not matched
-        output['feedback_lines'] = [fb for fb in output['feedback_lines'] if 'isMatched' in fb]
 
         return matched_items, missing_items
 
@@ -230,7 +211,11 @@ class ValidationResult(BaseModel):
             if classification in counts:
                 counts[classification] += 1
         
-        return counts    
+        return counts   
+
+    def get_failure_count(self) -> int:
+        """Get the count of failed to validate feedback lines."""
+        return self.fidFailureCount if self.fidFailureCount is not None else 0
 
 # Contains the list of validator results for a given validator and generator model
 class ValidationBatch(BaseModel):
@@ -250,7 +235,8 @@ class ValidationBatch(BaseModel):
                           for fb in r.output.feedback_lines]
 
         total_fids  = len(fids)
-        successful_fids = len([fb for fb in fids if fb.isMatched])
+        failure_fids = sum([r.fidFailureCount for r in self.results])
+        successful_fids = total_fids - failure_fids
 
         total_valid = 0
         total_invalid = 0

@@ -59,6 +59,9 @@ class DataProvider:
             with open(file_path, 'r') as f:
                 data = json.load(f)
             
+            # Only keep sid=14 data
+            # data = [item for item in data if item.get('sid') == 14]
+
             # If data is a list (old format), convert to new format
             if isinstance(data, list):
                 # Try to extract metadata from filename
@@ -101,6 +104,7 @@ class DataProvider:
                         error_lines = str(e).splitlines()
                         error_lines_alt = [error_lines[i] for i in range(1, len(error_lines), 3)]
                         error_str = " | ".join(error_lines_alt)
+                        fidFailureCount = len(generatorData.feedback) if generatorData else 0
                         print_warning(f"Error parsing result for SID {item.get('sid', 'unknown')}: {e}")
 
                         # Try to atleast create a minimal result
@@ -109,10 +113,10 @@ class DataProvider:
                             sid=item.get('sid', -1),
                             success=False,
                             output=None,
+                            fidFailureCount=fidFailureCount,
                             raw_response=item.get('raw_response', ''),
                             error=error_str
                         )
-
                         results.append(minimal_result)
 
                 self.validation_batch = ValidationBatch(
@@ -179,20 +183,19 @@ class DataProvider:
             return []
 
         return [r.sid for r in self.validation_batch.results if not r.success or not r.output]
+   
     
-    def get_failed_fids(self) -> List[int]:
+    def get_failure_count(self) -> int:
         """
-        Get list of FIDs that failed validation.
-
+        Get the count of failed validation results.
+        
         Returns:
-            List[int]: List of failed FIDs
+            int: Count of failed results
         """
         if self.validation_batch is None:
-            return []
+            return 0
 
-        return [fb for r in self.validation_batch.results 
-                if r.success and r.output
-                for fb in r.output.feedback_lines if fb.isMatched == False]    
+        return sum(validation.fidFailureCount for validation in self.validation_batch.results)
 
     def print_validation_summary(self) -> None:
         """
