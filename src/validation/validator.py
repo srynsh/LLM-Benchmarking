@@ -249,6 +249,21 @@ def tpr_tnr_list(confusion_matrices):
     tpr, tnr = tpr_tnr(tn_cumulative, fp_cumulative, fn_cumulative, tp_cumulative)
     return (tpr, tnr)
 
+def print_failed_matrix(dataProvider):
+    """
+    Print the failed SIDs and FIDs in a formatted matrix.
+    """
+    failed_sids = dataProvider.get_failed_sids()
+    failed_fids = dataProvider.get_failed_fids()
+
+    print("Failed SIDs:")
+    for sid in failed_sids:
+        print(f" - {sid}")
+
+    print("Failed FIDs:")
+    for fid in failed_fids:
+        print(f" - {fid}")
+
 def validate_model(MODEL_GENS, MODEL_VALS):
     """
     Validate a specific model and return the results as a batch.
@@ -267,6 +282,8 @@ def validate_model(MODEL_GENS, MODEL_VALS):
     count_valids = 0
     confusion_matrices_gen = []
     confusion_matrices_val = []
+    failed_sids = []
+    failed_fids = []
     GV = []
     dfs = {}
     
@@ -274,6 +291,8 @@ def validate_model(MODEL_GENS, MODEL_VALS):
     for modelGen in MODEL_GENS:
         row_gen = []
         row_gv = []
+        failed_sids_row = []
+        failed_fids_row = []
         df_merged = pd.DataFrame()
 
         for j, modelVal in enumerate(MODEL_VALS):
@@ -281,7 +300,10 @@ def validate_model(MODEL_GENS, MODEL_VALS):
             if len(dataProvider.get_failed_sids()) > count_invalid_max:
                 count_invalid_max = len(dataProvider.get_failed_sids())
                 label_max = f'{modelGen} -> {modelVal}'
-            
+
+            failed_sids_row += [len(dataProvider.get_failed_sids())]
+            failed_fids_row += [len(dataProvider.get_failed_fids())]
+
             count_invalids += len(dataProvider.get_failed_sids())
             count_valids += len(dataProvider.get_successful_results())
 
@@ -312,12 +334,22 @@ def validate_model(MODEL_GENS, MODEL_VALS):
             row_gv.append(percentage_valid)
 
         df_merged.to_csv(f'{pathLogs}/ensemble/df_{modelGen}.csv', index=False)
-        
+        failed_sids.append(failed_sids_row)
+        failed_fids.append(failed_fids_row)
 
         confusion_matrices_gen.append(row_gen)
         GV.append(row_gv)
         dfs[modelGen] = df_merged
     
+    print(f"\n{'='*60}")
+    print('Failed SIDs Matrix')
+    print(f"\n{'='*60}")
+    pprint.pprint(failed_sids)
+    print(f"\n{'='*60}")
+    print('Failed FIDs Matrix')
+    print(f"\n{'='*60}")
+    pprint.pprint(failed_fids)
+
     tprs = []
     tnrs = []
     for j, modelVal in enumerate(MODEL_VALS):
@@ -494,7 +526,6 @@ def ensemble_prediction(dfs_gen, MODEL_GENS, MODEL_VALS, valid_count=None, inval
         print("\nEnsemble Mean Errors:")
         for key, value in ensemble_mean_errors.items():
             print(f"\t{key}: {value * 100:.2f}%")
-
 
 if __name__ == "__main__":
     MODEL_GENS = [Model.GPT_4O.value, Model.GPT_4_TURBO.value, Model.CLAUDE_3_OPUS.value, Model.GEMINI_1_5_PRO.value, Model.QWEN_CODER_PLUS.value, Model.DEEPSEEK_CHAT.value]

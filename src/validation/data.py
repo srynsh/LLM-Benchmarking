@@ -105,7 +105,7 @@ class DataProvider:
 
                         # Try to atleast create a minimal result
                         minimal_result = ValidationResult(
-                            generatorData=generatorData,
+                            generatorData=None,
                             sid=item.get('sid', -1),
                             success=False,
                             output=None,
@@ -179,6 +179,20 @@ class DataProvider:
             return []
 
         return [r.sid for r in self.validation_batch.results if not r.success or not r.output]
+    
+    def get_failed_fids(self) -> List[int]:
+        """
+        Get list of FIDs that failed validation.
+
+        Returns:
+            List[int]: List of failed FIDs
+        """
+        if self.validation_batch is None:
+            return []
+
+        return [fb for r in self.validation_batch.results 
+                if r.success and r.output
+                for fb in r.output.feedback_lines if fb.isMatched == False]    
 
     def print_validation_summary(self) -> None:
         """
@@ -195,10 +209,9 @@ class DataProvider:
         print(f"{'='*60}")
         print(f"Generator Model: {batch.generator_model}")
         print(f"Validator Model: {batch.validator_model}")
-        print(f"Used Ground Truth: {'Yes' if batch.use_ground_truth else 'No'}")
         print(f"")
-        print(f"Total Results: {stats['total_results']}")
-        print(f"Successful Results: {stats['successful_results']} ({stats['success_rate']:.2%})")
+        print(f"Successful SIDs: {stats['successful_results']} / {stats['total_results']} ({stats['success_rate']:.2%})")
+        print(f"Successful FIDs: {stats['successful_fids']} / {stats['total_fids']} ({stats['successful_fids'] / stats['total_fids']:.2%})")
         print(f"")
         print(f"Classification Results:")
         print(f"  Valid Feedback: {stats['total_valid']}")
@@ -210,6 +223,7 @@ class DataProvider:
         failed_sids = self.get_failed_sids()
         if failed_sids:
             print(f"\nFailed SIDs ({len(failed_sids)}): {failed_sids}")
+            
 
     def analyze_error_patterns(self) -> Dict[str, Any]:
         """
