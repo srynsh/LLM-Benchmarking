@@ -13,14 +13,16 @@ import pandas as pd
 
 sys.path.append("..")
 
-from src.config import NUM_SIDS, Model, pathLogs
+from src.config import NUM_SIDS, Model, pathLogs, fpathLLMAsJudge, fpathValidatorSummary
 from src.validation.service import ValidationRunner, ValidationService
 from src.validation.data import DataProvider
 from src.validation.models import ValidationBatch, ValidationResult
 from src.utils import print_warning, print_error
-from src.validation.utils import merge_df_y_yhat, merge_df_merged_yhat, calculate_confusion_matrix, tpr_tnr_list
+from src.validation.utils import merge_df_y_yhat, merge_df_merged_yhat, calculate_confusion_matrix, tpr_tnr_list, pretty_print_into_file
 from src.validation.ensemble import ensemble_prediction
 from src.regressor.config import pGa_CONST
+
+
 
 ####################
 # Config
@@ -31,24 +33,16 @@ from src.regressor.config import pGa_CONST
 # GPT_4_TURBO: 17 SIDs
 # GPT_4O: 2 SIDs
 
-
 ####################
-# Printing
+# Setup
 ####################
-def print_failed_matrix(dataProvider):
-    """
-    Print the failed SIDs and FIDs in a formatted matrix.
-    """
-    failed_sids = dataProvider.get_failed_sids()
-    failed_fids = dataProvider.get_failed_fids()
 
-    print("Failed SIDs:")
-    for sid in failed_sids:
-        print(f" - {sid}")
+msg = '# AUTO-GENERATED FILE. DO NOT EDIT\n'
+with open(fpathLLMAsJudge, 'w') as f:
+    f.write(msg)  # Clear the file
+with open(fpathValidatorSummary, 'w') as f:
+    f.write(msg)  # Clear the file
 
-    print("Failed FIDs:")
-    for fid in failed_fids:
-        print(f" - {fid}")
 
 ####################
 # LLM-as-a-Judge
@@ -130,15 +124,6 @@ def validate_model(MODEL_GENS, MODEL_VALS):
         confusion_matrices_gen.append(row_gen)
         GV.append(row_gv)
         dfs[modelGen] = df_merged
-    
-    print(f"\n{'='*60}")
-    print('Failed SIDs Matrix')
-    print(f"\n{'='*60}")
-    pprint.pprint(failed_sids)
-    print(f"\n{'='*60}")
-    print('Failed FIDs Matrix')
-    print(f"\n{'='*60}")
-    pprint.pprint(failed_fids)
 
     tprs = []
     tnrs = []
@@ -147,7 +132,7 @@ def validate_model(MODEL_GENS, MODEL_VALS):
         tprs.append(tpr)
         tnrs.append(tnr)
 
-    return count_valids, count_invalids, confusion_matrices_gen, tprs, tnrs, GV, dfs, label_max
+    return failed_sids, failed_fids, count_valids, count_invalids, confusion_matrices_gen, tprs, tnrs, GV, dfs, label_max
 
 
 def llm_judge_errors(MODEL_GENS, MODEL_VALS, GV_gen: List[List[float]]):
@@ -176,8 +161,8 @@ def llm_judge_errors(MODEL_GENS, MODEL_VALS, GV_gen: List[List[float]]):
         mean_error_max = max(mean_error_max, mean_error_val)
         mean_error_min = min(mean_error_min, mean_error_val)
 
-    print(f"Max Error range: ({max_error_min*100}, {max_error_max*100})")
-    print(f"Mean Error range: ({mean_error_min*100}, {mean_error_max*100})")
+    pretty_print_into_file('llm_judge_max_error_range', (max_error_min, max_error_max), fpathLLMAsJudge, comment='Max error range for LLM-as-a-Judge')
+    pretty_print_into_file('llm_judge_mean_error_range', (mean_error_min, mean_error_max), fpathLLMAsJudge, comment='Mean error range for LLM-as-a-Judge')
 
 
 ####################
@@ -206,26 +191,31 @@ if __name__ == "__main__":
     # ]
 
     # Route 1
-    count_valids_gen, count_invalids_gen, confusion_matrices_gen, tprs_gen, tnrs_gen, GV_gen, dfs_gen, label_max = validate_model(MODEL_GENS, MODEL_VALS)
+    failed_sids, failed_fids, count_valids_gen, count_invalids_gen, confusion_matrices_gen, tprs_gen, tnrs_gen, GV_gen, dfs_gen, label_max = validate_model(MODEL_GENS, MODEL_VALS)
 
     # Round 2 for all gens
-    count_valids_all, count_invalids_all, confusion_matrices_all, tprs_all, tnrs_all, GV_all, dfs_all, label_max = validate_model(MODEL_VALS, MODEL_VALS)
+    failed_sids, failed_fids, count_valids_all, count_invalids_all, confusion_matrices_all, tprs_all, tnrs_all, GV_all, dfs_all, label_max = validate_model(MODEL_VALS, MODEL_VALS)
 
-    print("\nConfusion Matrices:")
-    pprint.pprint(confusion_matrices_gen)
+    # Write the stats to files
+    pretty_print_into_file('confusion_matrix_validators', confusion_matrices_gen, fpathLLMAsJudge, comment='Confusion Matrix of Annotated Generators by Validators')
+    pretty_print_into_file('validator_tpr', tprs_gen, fpathLLMAsJudge, comment='Validator TPRs for Annotated Generators')
+    pretty_print_into_file('validator_tnr', tnrs_gen, fpathLLMAsJudge, comment='Validator TNRs for Annotated Generators')
+    pretty_print_into_file('GV', GV_all, fpathLLMAsJudge, comment='GV matrix: predicted precision of generators by validators')
 
-    print("\nValidation TPR:")
-    pprint.pprint(tprs_gen)
-
-    print("\nValidation TNR:")
-    pprint.pprint(tnrs_gen)
-    
-    print("\nGV Array:")
-    pprint.pprint(GV_all)
-
+    # Calculate the range of errors for LLM-as-a-Judge
     llm_judge_errors(MODEL_GENS, MODEL_VALS, GV_gen)
 
+    # Run the ensemble prediction and write the results
     ensemble_results = ensemble_prediction(dfs_gen, MODEL_GENS, MODEL_VALS)
 
-    print(f'Validation counts: invalid={count_invalids_all}, percentage={count_invalids_all / (count_valids_all + count_invalids_all) * 100:.2f}%')
-    print(f'Worst pair: {label_max}')
+    # Final summary
+    percentage_invalids = round(count_invalids_all / (count_valids_all + count_invalids_all) * 100, 2)
+    pretty_print_into_file('failed_sids_matrix', failed_sids, fpathValidatorSummary, comment='Failed SIDs Matrix')
+    pretty_print_into_file('failed_fids_matrix', failed_fids, fpathValidatorSummary, comment='Failed FIDs Matrix')
+    pretty_print_into_file('count_invalids_all', count_invalids_all, fpathValidatorSummary, comment='Invalid FIDs by Validators')
+    pretty_print_into_file('percentage_invalids', percentage_invalids, fpathValidatorSummary, comment='Percentage of Invalid FIDs by Validators')
+    pretty_print_into_file('worst_generator_validator_pair', label_max, fpathValidatorSummary, comment='Worst Generator -> Validator combination')
+
+    # Open and print the contents of the file specified by fpathLLMAsJudge
+    print(open(fpathLLMAsJudge, 'r').read())
+    print(open(fpathValidatorSummary, 'r').read())

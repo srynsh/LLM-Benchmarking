@@ -1,7 +1,10 @@
+import pprint
 from typing import List
 import pandas as pd
 
-
+####################
+# DF mergers
+####################
 def merge_df_y_yhat(df_y: pd.DataFrame, df_yhat: pd.DataFrame) -> pd.DataFrame:
     # Convert key columns to string type for consistent merging
     df_yhat = df_yhat.copy()
@@ -42,6 +45,10 @@ def merge_df_merged_yhat(df_merged: pd.DataFrame, df_yhat: pd.DataFrame, model) 
     )
     return merged_df
 
+
+####################
+# TPR and TNR calculations
+####################
 def calculate_confusion_matrix(df_y: pd.DataFrame, df_yhat: pd.DataFrame) -> List[int]:
     """
     Calculate confusion matrix [TN, FN, FP, TP] from ground truth and predictions.
@@ -66,9 +73,6 @@ def calculate_confusion_matrix(df_y: pd.DataFrame, df_yhat: pd.DataFrame) -> Lis
     tp = ((y_true == 1) & (y_pred == 1)).sum()  # True Positive
     
     return [tn, fp, fn, tp]
-
-
-
 
 def tpr_tnr(tn, fp, fn, tp):
     """
@@ -113,3 +117,20 @@ def tpr_tnr_list(confusion_matrices):
 
     tpr, tnr = tpr_tnr(tn_cumulative, fp_cumulative, fn_cumulative, tp_cumulative)
     return (tpr, tnr)
+
+
+####################
+# Printing
+####################
+
+def pretty_print_into_file(varName, var, fpath, comment = ''):
+    """
+    Pretty print the contents of a variable into a specified path.
+
+    Args:
+        var: The variable to be pretty printed.
+    """
+    with open(fpath, 'a') as f:
+        value = pprint.pformat(var, indent=2, width=80, compact=True)
+        f.write(f"\n# {comment}\n{varName} = {value}\n")
+        
