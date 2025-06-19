@@ -6,13 +6,13 @@ import seaborn as sns
 from tqdm import tqdm
 import pickle
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from precision import   get_pViv_full, get_precision
-from config import COLOR_GREEN_DELTA, COLOR_YELLOW_DELTA, COMPUTE_REFERENCE_VALUES, ENSEMBLE_MAXERR, ENSEMBLE_MEANERR, K_LIST, LLM_VALIDATOR_MAXERR_RANGE, LLM_VALIDATOR_MEANERR_RANGE, LOSS_PRED, NUM_RUNS, MAX_WORKERS, WEIGHTS
-from config import PV_START, PVIV_START, PG_START, ERR_EPSILON_PG, ERR_EPSILON_PIV, ERR_EPSILON_PV, GENS, MODELS, MODEL_NAMES, MODEL_ENUM
-from config import VALIDATOR_COUNTS_CONST, pGa_CONST, GV_CONST, PVVA_CONST, PVIVA_CONST
-from config import PATH_LOGS, PATH_IMAGES, PATH_LATEX, PATH_LOGS_LOSS_ITER
+from src.regression.precision import get_pViv_full, get_precision
+from src.regression.config import COLOR_GREEN_DELTA, COLOR_YELLOW_DELTA, COMPUTE_REFERENCE_VALUES, ENSEMBLE_MAXERR, ENSEMBLE_MEANERR, K_LIST, LLM_VALIDATOR_MAXERR_RANGE, LLM_VALIDATOR_MEANERR_RANGE, LOSS_PRED, NUM_RUNS, MAX_WORKERS, WEIGHTS
+from src.regression.config import PV_START, PVIV_START, PG_START, ERR_EPSILON_PG, ERR_EPSILON_PIV, ERR_EPSILON_PV, GENS, MODELS, MODEL_NAMES, MODEL_ENUM
+from src.regression.config import VALIDATOR_COUNTS_CONST, pGa_CONST, GV_CONST, PVVA_CONST, PVIVA_CONST
+from src.regression.config import PATH_LOGS, PATH_IMAGES, PATH_LATEX, PATH_LOGS_LOSS_ITER
 
-from loss import total_loss, write_loss_to_csv
+from src.regression.loss import total_loss, write_loss_to_csv
 
 import sys
 np.random.seed(42)
@@ -477,8 +477,8 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
 
     ax.errorbar(x_pos, means_vals, yerr=yerrs, fmt='-o', label='Regression', color='black', capsize=5)
     ax.set_xticks(x_pos)
-    ax.fill_between(range(1, len(all_logs)), LLM_VALIDATOR_MAXERR_RANGE[0], LLM_VALIDATOR_MAXERR_RANGE[1], color='blue', alpha=0.1, label='Individual LLM')
-    ax.axhline(y=ENSEMBLE_MAXERR, color='red', label='Ensemble', linestyle='-.')
+    ax.fill_between(range(1, len(all_logs)), LLM_VALIDATOR_MAXERR_RANGE[0]*100, LLM_VALIDATOR_MAXERR_RANGE[1]*100, color='blue', alpha=0.1, label='Individual LLM')
+    ax.axhline(y=ENSEMBLE_MAXERR*100, color='red', label='Ensemble', linestyle='-.')
     ax.axhline(y=base_max[0][0]*100, color='gray', label='Mean Prediction', linestyle='--')
 
     ax.set_xticklabels(range(0, len(all_logs) - 1), fontsize=14)
@@ -547,8 +547,8 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
 
     fig, ax = plt.subplots()
     ax.errorbar(x_pos, means_vals_means, yerr=yerrs_means, fmt='-o', label='Regression', color='black', capsize=5)
-    ax.axhline(y=ENSEMBLE_MEANERR, color='red', label='Ensemble', linestyle='-.')
-    ax.fill_between(range(1, len(all_logs)), LLM_VALIDATOR_MEANERR_RANGE[0], LLM_VALIDATOR_MEANERR_RANGE[1], color='blue', alpha=0.1, label='Individual LLM')
+    ax.axhline(y=ENSEMBLE_MEANERR*100, color='red', label='Ensemble', linestyle='-.')
+    ax.fill_between(range(1, len(all_logs)), LLM_VALIDATOR_MEANERR_RANGE[0]*100, LLM_VALIDATOR_MEANERR_RANGE[1]*100, color='blue', alpha=0.1, label='Individual LLM')
     ax.axhline(y=base_mean[0][0]*100, color='gray', label='Mean Prediction', linestyle='--')
     ax.set_xticks(x_pos)
     ax.set_xticklabels(range(0, len(all_logs) - 1), fontsize=14)

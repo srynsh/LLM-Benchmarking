@@ -1,6 +1,5 @@
 from statistics import mean
-from src.regressor.config import pGa_CONST
-from src.config import NUM_SIDS, Model, pathLogs, fpathLLMAsJudge, fpathValidatorSummary
+from src.config import NUM_SIDS, pGa_CONST, pathLogs, fpathLLMAsJudge, fpathValidatorSummary
 from src.validation.utils import pretty_print_into_file
 
 def invalid_voting(df, validation_columns, invalid_count):

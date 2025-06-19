@@ -15,7 +15,7 @@ from src.validation.service import ValidationRunner, ValidationService
 from src.validation.data import DataProvider
 from src.validation.models import ValidationBatch, ValidationResult
 from src.utils import print_warning, print_error
-from src.regressor.config import pGa_CONST
+from src.config import pGa_CONST
 
 def main():
     """Main entry point for validation operations."""

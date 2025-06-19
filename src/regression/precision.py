@@ -2,7 +2,11 @@ import json
 import os
 import numpy as np
 import sys
-from config import GENS, MODELS, MODEL_NAMES, MODEL_ENUM
+from src.regression.config import GENS, MODELS, MODEL_NAMES, MODEL_ENUM
+
+from src.regression.dataGenerator import get_data, get_row_4o, get_row_4_turbo, get_row_3_opus, get_row_35, get_row_gemini_15_pro, get_row_deepseek_chat, get_row_qwen_coder_plus
+import logging
+
 # from data import *
 # parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 # if parent_dir not in sys.path:
@@ -10,9 +14,6 @@ from config import GENS, MODELS, MODEL_NAMES, MODEL_ENUM
 
 parent_dir = ".."
 sys.path.append(parent_dir)
-
-from dataGenerator import get_data, get_row_4o, get_row_4_turbo, get_row_3_opus, get_row_35, get_row_gemini_15_pro, get_row_deepseek_chat, get_row_qwen_coder_plus
-import logging
 
 
 # Configure logging

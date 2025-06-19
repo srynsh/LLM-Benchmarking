@@ -5,7 +5,9 @@ import numpy as np
 import os
 import sklearn.metrics as skm
 
-DATA_PATH = '../../data/GAIED' # path relative to a folder inside src.
+from src.config import pathDataGAIED
+
+DATA_PATH = pathDataGAIED
 
 gpt_4o_PATH = f'{DATA_PATH}/dataset_4o.xlsx'
 gpt_4N_PATH = f'{DATA_PATH}/dataset.xlsx'

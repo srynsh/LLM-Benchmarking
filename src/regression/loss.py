@@ -1,7 +1,7 @@
 
 
-from config import GENS, GV_CONST, IS_WRITE_LOGS, MODEL_ENUM, MODELS, PATH_LOGS, PATH_LOGS_LOSS_ITER, PATH_LOGS_PREDICTED
-from config import LOSS_PRED, LOSS_REG
+from src.regression.config import GENS, GV_CONST, IS_WRITE_LOGS, MODEL_ENUM, MODELS, PATH_LOGS, PATH_LOGS_LOSS_ITER, PATH_LOGS_PREDICTED
+from src.regression.config import LOSS_PRED, LOSS_REG
 
 import numpy as np
 import os

@@ -13,15 +13,13 @@ import pandas as pd
 
 sys.path.append("..")
 
-from src.config import NUM_SIDS, Model, pathLogs, fpathLLMAsJudge, fpathValidatorSummary
+from src.config import NUM_SIDS, MODELS_GEN, MODELS_VAL, pathLogs, fpathLLMAsJudge, fpathValidatorSummary, pGa_CONST
 from src.validation.service import ValidationRunner, ValidationService
 from src.validation.data import DataProvider
 from src.validation.models import ValidationBatch, ValidationResult
 from src.utils import print_warning, print_error
 from src.validation.utils import merge_df_y_yhat, merge_df_merged_yhat, calculate_confusion_matrix, tpr_tnr_list, pretty_print_into_file
 from src.validation.ensemble import ensemble_prediction
-from src.regressor.config import pGa_CONST
-
 
 
 ####################
@@ -48,7 +46,7 @@ with open(fpathValidatorSummary, 'w') as f:
 # LLM-as-a-Judge
 ####################
 
-def validate_model(MODEL_GENS, MODEL_VALS):
+def validate_model(models_gen, models_val):
     """
     Validate a specific model and return the results as a batch.
     
@@ -72,14 +70,14 @@ def validate_model(MODEL_GENS, MODEL_VALS):
     dfs = {}
     
 
-    for modelGen in MODEL_GENS:
+    for modelGen in models_gen:
         row_gen = []
         row_gv = []
         failed_sids_row = []
         failed_fids_row = []
         df_merged = pd.DataFrame()
 
-        for j, modelVal in enumerate(MODEL_VALS):
+        for j, modelVal in enumerate(models_val):
             dataProvider = DataProvider(modelGen, modelVal)
             if len(dataProvider.get_failed_sids()) > count_invalid_max:
                 count_invalid_max = len(dataProvider.get_failed_sids())
@@ -127,7 +125,7 @@ def validate_model(MODEL_GENS, MODEL_VALS):
 
     tprs = []
     tnrs = []
-    for j, modelVal in enumerate(MODEL_VALS):
+    for j, modelVal in enumerate(models_val):
         tpr, tnr = tpr_tnr_list(confusion_matrices_val[j])
         tprs.append(tpr)
         tnrs.append(tnr)
@@ -135,17 +133,17 @@ def validate_model(MODEL_GENS, MODEL_VALS):
     return failed_sids, failed_fids, count_valids, count_invalids, confusion_matrices_gen, tprs, tnrs, GV, dfs, label_max
 
 
-def llm_judge_errors(MODEL_GENS, MODEL_VALS, GV_gen: List[List[float]]):
+def llm_judge_errors(models_gen, models_val, GV_gen: List[List[float]]):
     max_error_max = 0
     max_error_min = float('inf')
     mean_error_max = 0
     mean_error_min = float('inf')
 
-    for j, modelVal in enumerate(MODEL_VALS):
+    for j, modelVal in enumerate(models_val):
         max_error_val = 0
         mean_error_val = 0
 
-        for i, modelGen in enumerate(MODEL_GENS):
+        for i, modelGen in enumerate(models_gen):
             valueActual = pGa_CONST[modelGen]
             valuePredicted = GV_gen[i][j]
             error = abs(valueActual - valuePredicted)
@@ -154,7 +152,7 @@ def llm_judge_errors(MODEL_GENS, MODEL_VALS, GV_gen: List[List[float]]):
             max_error_val = max(max_error_val, error)
             mean_error_val += error
 
-        mean_error_val /= len(MODEL_GENS)
+        mean_error_val /= len(models_gen)
 
         max_error_max = max(max_error_max, max_error_val)
         max_error_min = min(max_error_min, max_error_val)
@@ -170,31 +168,11 @@ def llm_judge_errors(MODEL_GENS, MODEL_VALS, GV_gen: List[List[float]]):
 ####################
 
 if __name__ == "__main__":
-    MODEL_GENS = [Model.GPT_4O.value, Model.GPT_4_TURBO.value, Model.CLAUDE_3_OPUS.value, Model.GEMINI_1_5_PRO.value, Model.QWEN_CODER_PLUS.value, Model.DEEPSEEK_CHAT.value]
-    # MODEL_GENS = [Model.GEMINI_1_5_PRO.value]
-
-    MODEL_VALS = [
-        Model.GPT_4_TURBO.value, Model.GPT_4O_MINI.value, Model.GPT_4O.value,
-        Model.CLAUDE_3_OPUS.value, Model.CLAUDE_3_5_SONNET.value,
-        Model.GEMINI_1_5_FLASH.value, Model.GEMINI_1_5_PRO.value,
-        Model.QWEN_CODER_PLUS.value,
-        Model.DEEPSEEK_CHAT.value,
-        Model.CLAUDE_3_5_HAIKU.value, Model.GEMINI_2_5_FLASH.value, Model.GEMINI_2_5_PRO.value, Model.GPT_4_1.value, Model.GPT_4_1_MINI.value
-    ]
-
-    # MODEL_VALS = [
-    #     Model.GPT_4O.value,
-    #     Model.GEMINI_1_5_FLASH.value
-    # #     Model.GEMINI_2_5_PRO.value,
-    # #     Model.CLAUDE_3_5_HAIKU.value,
-        
-    # ]
-
     # Route 1
-    failed_sids, failed_fids, count_valids_gen, count_invalids_gen, confusion_matrices_gen, tprs_gen, tnrs_gen, GV_gen, dfs_gen, label_max = validate_model(MODEL_GENS, MODEL_VALS)
+    failed_sids, failed_fids, count_valids_gen, count_invalids_gen, confusion_matrices_gen, tprs_gen, tnrs_gen, GV_gen, dfs_gen, label_max = validate_model(MODELS_GEN, MODELS_VAL)
 
     # Round 2 for all gens
-    failed_sids, failed_fids, count_valids_all, count_invalids_all, confusion_matrices_all, tprs_all, tnrs_all, GV_all, dfs_all, label_max = validate_model(MODEL_VALS, MODEL_VALS)
+    failed_sids, failed_fids, count_valids_all, count_invalids_all, confusion_matrices_all, tprs_all, tnrs_all, GV_all, dfs_all, label_max = validate_model(MODELS_VAL, MODELS_VAL)
 
     # Write the stats to files
     pretty_print_into_file('confusion_matrix_validators', confusion_matrices_gen, fpathLLMAsJudge, comment='Confusion Matrix of Annotated Generators by Validators')
@@ -203,10 +181,10 @@ if __name__ == "__main__":
     pretty_print_into_file('GV', GV_all, fpathLLMAsJudge, comment='GV matrix: predicted precision of generators by validators')
 
     # Calculate the range of errors for LLM-as-a-Judge
-    llm_judge_errors(MODEL_GENS, MODEL_VALS, GV_gen)
+    llm_judge_errors(MODELS_GEN, MODELS_VAL, GV_gen)
 
     # Run the ensemble prediction and write the results
-    ensemble_results = ensemble_prediction(dfs_gen, MODEL_GENS, MODEL_VALS)
+    ensemble_results = ensemble_prediction(dfs_gen, MODELS_GEN, MODELS_VAL)
 
     # Final summary
     percentage_invalids = round(count_invalids_all / (count_valids_all + count_invalids_all) * 100, 2)
