@@ -60,27 +60,8 @@ MAX_RETRY_ATTEMPTS = 3
 RETRY_DELAY = 1.0  # seconds
 
 # =========================
-#   MODEL NAMES (Legacy)
+#   MODELS LIST
 # =========================
-
-class ModelVersion(Enum):
-    GPT_3_5_TURBO = "gpt-3.5-turbo"
-    GPT_4 = "gpt-4-0613"
-    GPT_4_TURBO = "gpt-4-turbo-2024-04-09"
-    GPT_4O_MINI = "gpt-4o-mini-2024-07-18"
-    GPT_4O = "gpt-4o-2024-11-20"
-    GPT_4_1_MINI = "gpt-4.1-mini-2025-04-14"
-    GPT_4_1 = "gpt-4.1-2025-04-14"
-    CLAUDE_3_OPUS = "anthropic.claude-3-opus-20240229-v1:0"
-    CLAUDE_3_5_SONNET = "anthropic.claude-3-5-sonnet-20241022-v2:0"
-    CLAUDE_3_5_HAIKU = "anthropic.claude-3-5-haiku-20241022-v2:0"
-    GEMINI_1_5_FLASH = "gemini-1.5-flash-002"
-    GEMINI_1_5_PRO = "gemini-1.5-pro-002"
-    GEMINI_2_5_FLASH = "gemini-2.5-flash-preview-04-17"
-    GEMINI_2_5_PRO = "gemini-2.5-pro-preview-03-25"
-    QWEN_CODER_PLUS = "qwen-coder-plus-2024-11-06"
-    DEEPSEEK_CHAT = "deepseek-chat"
-
 
 class Model(Enum):
     GPT_3_5_TURBO = "gpt-3.5-turbo"
@@ -120,15 +101,14 @@ MODELS_VAL = [
         Model.GPT_4_1.value, Model.GPT_4_1_MINI.value
     ]
 
+# For testing purposes, only use the first model
+# MODELS_GEN = MODELS_GEN[:2]  
+# MODELS_VAL = MODELS_VAL[:1]
 
-MODELS_NAME = [
-    'GPT-4', 'GPT 4o-M', 'GPT 4o',
-    'Opus 3', 'Sonnet 3.5',
-    'G 1.5 flash', 'G 1.5 pro',
-    'Qwen', 'Deepseek',
-    'Haiku 3.5', 'G 2.5 flash', 'G 2.5 pro', 
-    'GPT 4.1', 'GPT 4.1-M'
-]
+# =========================
+#   MODEL NAMES & Versioning
+# =========================
+
 
 mapping_latex = {
     Model.GPT_3_5_TURBO.value: '\\gptThreeTurbo',
@@ -147,6 +127,34 @@ mapping_latex = {
     Model.GPT_4_1.value: '\\gptFourOne',
     Model.GPT_4_1_MINI.value: '\\gptFourOneMini'
 }
+
+MODELS_NAME = [
+    'GPT-4', 'GPT 4o-M', 'GPT 4o',
+    'Opus 3', 'Sonnet 3.5',
+    'G 1.5 flash', 'G 1.5 pro',
+    'Qwen', 'Deepseek',
+    'Haiku 3.5', 'G 2.5 flash', 'G 2.5 pro', 
+    'GPT 4.1', 'GPT 4.1-M'
+]
+
+class ModelVersion(Enum):
+    GPT_3_5_TURBO = "gpt-3.5-turbo"
+    GPT_4 = "gpt-4-0613"
+    GPT_4_TURBO = "gpt-4-turbo-2024-04-09"
+    GPT_4O_MINI = "gpt-4o-mini-2024-07-18"
+    GPT_4O = "gpt-4o-2024-11-20"
+    GPT_4_1_MINI = "gpt-4.1-mini-2025-04-14"
+    GPT_4_1 = "gpt-4.1-2025-04-14"
+    CLAUDE_3_OPUS = "anthropic.claude-3-opus-20240229-v1:0"
+    CLAUDE_3_5_SONNET = "anthropic.claude-3-5-sonnet-20241022-v2:0"
+    CLAUDE_3_5_HAIKU = "anthropic.claude-3-5-haiku-20241022-v2:0"
+    GEMINI_1_5_FLASH = "gemini-1.5-flash-002"
+    GEMINI_1_5_PRO = "gemini-1.5-pro-002"
+    GEMINI_2_5_FLASH = "gemini-2.5-flash-preview-04-17"
+    GEMINI_2_5_PRO = "gemini-2.5-pro-preview-03-25"
+    QWEN_CODER_PLUS = "qwen-coder-plus-2024-11-06"
+    DEEPSEEK_CHAT = "deepseek-chat"
+
 
 # =========================
 #   GENERATOR CONSTANTS

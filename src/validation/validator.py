@@ -170,10 +170,10 @@ def llm_judge_errors(models_gen, models_val, GV_gen: List[List[float]]):
 
 if __name__ == "__main__":
     # Route 1
-    failed_sids, failed_fids, count_valids_gen, count_invalids_gen, confusion_matrices_gen, tprs_gen, tnrs_gen, GV_gen, dfs_gen, label_max = validate_model(MODELS_GEN, MODELS_VAL)
+    failed_sids_gen, failed_fids_gen, count_valids_gen, count_invalids_gen, confusion_matrices_gen, tprs_gen, tnrs_gen, GV_gen, dfs_gen, label_max = validate_model(MODELS_GEN, MODELS_VAL)
 
     # Round 2 for all gens
-    failed_sids, failed_fids, count_valids_all, count_invalids_all, confusion_matrices_all, tprs_all, tnrs_all, GV_all, dfs_all, label_max = validate_model(MODELS_VAL, MODELS_VAL)
+    failed_sids_all, failed_fids_all, count_valids_all, count_invalids_all, confusion_matrices_all, tprs_all, tnrs_all, GV_all, dfs_all, label_max = validate_model(MODELS_VAL, MODELS_VAL)
 
     # Write the stats to files
     pretty_print_into_file('confusion_matrix_validators', confusion_matrices_gen, fpathLLMAsJudge, comment='Confusion Matrix of Annotated Generators by Validators')
@@ -189,8 +189,8 @@ if __name__ == "__main__":
 
     # Final summary
     percentage_invalids = round(count_invalids_all / (count_valids_all + count_invalids_all) * 100, 2)
-    pretty_print_into_file('failed_sids_matrix', failed_sids, fpathValidatorSummary, comment='Failed SIDs Matrix')
-    pretty_print_into_file('failed_fids_matrix', failed_fids, fpathValidatorSummary, comment='Failed FIDs Matrix')
+    pretty_print_into_file('failed_sids_matrix', failed_sids_all, fpathValidatorSummary, comment='Failed SIDs Matrix')
+    pretty_print_into_file('failed_fids_matrix', failed_fids_all, fpathValidatorSummary, comment='Failed FIDs Matrix')
     pretty_print_into_file('count_invalids_all', count_invalids_all, fpathValidatorSummary, comment='Invalid FIDs by Validators')
     pretty_print_into_file('percentage_invalids', percentage_invalids, fpathValidatorSummary, comment='Percentage of Invalid FIDs by Validators')
     pretty_print_into_file('worst_generator_validator_pair', label_max, fpathValidatorSummary, comment='Worst Generator -> Validator combination')

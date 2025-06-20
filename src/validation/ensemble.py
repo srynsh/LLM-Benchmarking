@@ -1,5 +1,7 @@
 from statistics import mean
-from src.config import NUM_SIDS, pGa_CONST, pathLogs, fpathLLMAsJudge, fpathValidatorSummary
+
+import pandas as pd
+from src.config import NUM_SIDS, pGa_CONST, pathOutput, fpathLLMAsJudge, fpathValidatorSummary
 from src.validation.utils import pretty_print_into_file
 
 def invalid_voting(df, validation_columns, invalid_count):
@@ -95,6 +97,7 @@ def ensemble_prediction(dfs_gen, MODEL_GENS, MODEL_VALS, valid_count=None, inval
         # Get model validation columns (exclude 'classification' which is ground truth)
         validation_columns = [f'classification_{model}' for model in MODEL_VALS]
         num_validators = len(validation_columns)
+        dfs_ensemble = {}
 
         # Initialize vars to store max and mean errors for the majority and best models
         majority_max_error = None
@@ -133,14 +136,22 @@ def ensemble_prediction(dfs_gen, MODEL_GENS, MODEL_VALS, valid_count=None, inval
 
             # Replace column names that start with 'classification' to start with 'y'
             df.columns = [col.replace('classification', 'y') if col.startswith('classification') else col for col in df.columns]
-            df.to_csv(f'{pathLogs}/ensemble/df_{model_gen}.csv', index=False)
+
+            # Store the ensemble results for this model generation
+            dfs_ensemble[model_gen] = df
+            
+        # Save ensemble results to Excel
+        with pd.ExcelWriter(f'{pathOutput}/ensemble/ensemble_results.xlsx') as writer:
+            for model_gen in MODEL_GENS:
+                df = dfs_ensemble[model_gen]
+                df.to_excel(writer, sheet_name=model_gen, index=False)
 
         # Calculate mean errors
         for key in ensemble_mean_errors:
             ensemble_mean_errors[key] /= len(MODEL_GENS)
 
         # Calculate the majority 
-        majority_i = num_validators // 2 + 1 if num_validators % 2 == 1 else num_validators // 2
+        majority_i = num_validators // 2 + 1 # if num_validators % 2 == 1 else num_validators // 2
         majority_max_error = ensemble_max_errors[f'v{majority_i}']
         majority_mean_error = ensemble_mean_errors[f'v{majority_i}']
 
