@@ -11,6 +11,7 @@ from src.generation.models import GeneratorData
 from src.utils import print_warning, print_error
 import json
 from fuzzywuzzy import fuzz
+from collections import OrderedDict
 
 
 ####################
@@ -78,19 +79,19 @@ class ValidationResult(BaseModel):
             raise ValueError("Validation output must contain 'feedback_lines'")
 
         # Create sets of (line_number, feedback) tuples for comparison
-        generator_feedback_items = set()
+        generator_feedback_items = OrderedDict()
         for fb in generator_data.feedback:
             if not fb.line_number or not fb.feedback:
                 raise ValueError("Generator feedback must contain 'line_number' and 'feedback'")
 
-            generator_feedback_items.add((str(fb.line_number), fb.feedback))
+            generator_feedback_items[(str(fb.line_number), fb.feedback)] = None
 
-        validation_feedback_items = set()
+        validation_feedback_items = OrderedDict()
         for fb_line in v['feedback_lines']:
             if 'line_number' not in fb_line or 'feedback' not in fb_line:
                 raise ValueError("Validation feedback lines must contain 'line_number' and 'feedback'")
-            
-            validation_feedback_items.add((str(fb_line['line_number']), fb_line['feedback']))
+
+            validation_feedback_items[(str(fb_line['line_number']), fb_line['feedback'])] = None
 
         return generator_feedback_items, validation_feedback_items
 
@@ -110,13 +111,15 @@ class ValidationResult(BaseModel):
         generator_feedback_items, validation_feedback_items = cls._get_feedback_items(generator_data, output)
         
         # Sort feedback items to ensure deterministic processing
-        generator_feedback_items = sorted(generator_feedback_items)
-        validation_feedback_items = sorted(validation_feedback_items)
+        # generator_feedback_items = sorted(generator_feedback_items)
+        # validation_feedback_items = sorted(validation_feedback_items)
 
         matched_items = set()
         missing_items = set()
         # Track which validation items have been matched to avoid duplicates
         matched_validation_indices = set()
+        # if generator_data.sid == 13:
+        #     print(output['feedback_lines'])
         
         for gen_line, gen_feedback in generator_feedback_items:
             # Find best match for this generator feedback
@@ -132,19 +135,21 @@ class ValidationResult(BaseModel):
                     continue  # Skip if line numbers don't match
 
                 # Clip validation feedback if it's shorter than generator feedback. To handle cases where validator got "lazy"
+                gen_feedback_cmp = gen_feedback
                 if VALIDATOR_REPAIR.clip_feedback_lazy:
                     if len(val_feedback) < len(gen_feedback):
-                        gen_feedback = gen_feedback[:len(val_feedback)]
+                        gen_feedback_cmp = gen_feedback[:len(val_feedback)]
 
                 if gen_line == val_line:  # Same line number
-                    similarity = fuzz.ratio(gen_feedback, val_feedback)
+                    similarity = fuzz.ratio(gen_feedback_cmp, val_feedback)
                     if similarity > best_match_score:
                         best_match_score = similarity
                         best_match_index = val_index
 
-                # if generator_data.sid == 162:
-                # print_error(f"\tValidation feedback: {val_line}. {val_feedback}")
-                # print_error(f"\tSimilarity score: {similarity}, Best match score: {best_match_score}, Best match index: {best_match_index}")
+                # if generator_data.sid == 13:
+                #     print_error(f"\tGeneration feedback: {gen_line}. {gen_feedback_cmp}")
+                #     print_error(f"\tValidation feedback: {val_line}. {val_feedback}")
+                #     print_error(f"\tSimilarity score: {similarity}, Best match score: {best_match_score}, Best match index: {best_match_index}")
             
             # If good match found, replace validation feedback with generator feedback
             if best_match_score >= 85:  # 85% similarity threshold

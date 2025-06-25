@@ -102,6 +102,9 @@ def validate_model(models_gen, models_val):
             df_yhat = dataProvider.validation_batch.create_dataframe()
             df_y = dataProvider.generation_batch.create_dataframe()
 
+            df_y.to_csv(f'{pathLogs}/ensemble/df_y.csv', index=False)
+            df_yhat.to_csv(f'{pathLogs}/ensemble/df_yhat.csv', index=False)
+
             if df_merged.empty:
                 df_merged = df_y.copy()
             df_merged = merge_df_merged_yhat(df_merged, df_yhat, modelVal)
