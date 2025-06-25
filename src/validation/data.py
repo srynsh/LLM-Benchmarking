@@ -160,18 +160,21 @@ class DataProvider:
             print_error(f"Error saving validation batch to {file_path}: {e}")
             return False
 
-    def get_successful_results(self) -> List[ValidationResult]:
+    def get_total_fids_count(self) -> int:
         """
-        Filter results to only include successful validations.
-        
+        Get all FID results from the validation batch.
+
         Returns:
-            List[ValidationResult]: Filtered successful results
+            int: Count of all FID results
         """
         if self.validation_batch is None:
-            return []
+            return 0
 
-        return [r for r in self.validation_batch.results if r.success and r.output]
-    
+        return sum(
+            result.get_failure_count() + result.get_success_count()
+            for result in self.validation_batch.results
+        )
+
     def get_failed_sids(self) -> List[int]:
         """
         Get list of SIDs that failed validation.
@@ -182,20 +185,20 @@ class DataProvider:
         if self.validation_batch is None:
             return []
 
-        return [r.sid for r in self.validation_batch.results if not r.success or not r.output]
-   
-    
-    def get_failure_count(self) -> int:
+        return [result.sid for result in self.validation_batch.results if result.is_failed()]
+
+
+    def get_failed_fids_count(self) -> int:
         """
-        Get the count of failed validation results.
+        Get the count of failed FIDs.
         
         Returns:
-            int: Count of failed results
+            int: Count of failed FIDs
         """
         if self.validation_batch is None:
             return 0
 
-        return sum(validation.fidFailureCount for validation in self.validation_batch.results)
+        return sum(result.fidFailureCount for result in self.validation_batch.results)
 
     def print_validation_summary(self) -> None:
         """

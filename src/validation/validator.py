@@ -58,14 +58,13 @@ def validate_model(models_gen, models_val):
     Returns:
         ValidationBatch: The validation results
     """
-    count_invalids = 0
-    count_invalid_max = 0
+    numFailedFids_max = 0
     label_max = None
-    count_valids = 0
     confusion_matrices_gen = []
     confusion_matrices_val = []
     failed_sids = []
     failed_fids = []
+    total_fids = []
     GV = []
     dfs = {}
     
@@ -75,20 +74,23 @@ def validate_model(models_gen, models_val):
         row_gv = []
         failed_sids_row = []
         failed_fids_row = []
+        total_fids_row = []
         df_merged = pd.DataFrame()
 
         for j, modelVal in enumerate(models_val):
             dataProvider = DataProvider(modelGen, modelVal)
-            if len(dataProvider.get_failed_sids()) > count_invalid_max:
-                count_invalid_max = len(dataProvider.get_failed_sids())
+
+            failedSids = dataProvider.get_failed_sids()
+            numFailedFids = dataProvider.get_failed_fids_count()
+            numTotalFids = dataProvider.get_total_fids_count()
+
+            if numFailedFids > numFailedFids_max:
+                numFailedFids_max = numFailedFids
                 label_max = f'{modelGen} -> {modelVal}'
 
-            failed_sids_row += [len(dataProvider.get_failed_sids())]
-            # failed_fids_row += [len(dataProvider.get_failed_fids())]
-            failed_fids_row += [dataProvider.get_failure_count()]
-
-            count_invalids += len(dataProvider.get_failed_sids())
-            count_valids += len(dataProvider.get_successful_results())
+            failed_sids_row += [len(failedSids)]
+            failed_fids_row += [numFailedFids]
+            total_fids_row += [numTotalFids]
 
             # Create DataFrame with specified columns, filtering for successful validations only
             df_yhat = dataProvider.validation_batch.create_dataframe()
@@ -119,19 +121,17 @@ def validate_model(models_gen, models_val):
         df_merged.to_csv(f'{pathLogs}/ensemble/df_{modelGen}.csv', index=False)
         failed_sids.append(failed_sids_row)
         failed_fids.append(failed_fids_row)
+        total_fids.append(total_fids_row)
 
         confusion_matrices_gen.append(row_gen)
         GV.append(row_gv)
         dfs[modelGen] = df_merged
 
-    tprs = []
-    tnrs = []
-    for j, modelVal in enumerate(models_val):
-        tpr, tnr = tpr_tnr_list(confusion_matrices_val[j])
-        tprs.append(tpr)
-        tnrs.append(tnr)
+    tprs, tnrs = zip(*(tpr_tnr_list(confusion_matrix) for confusion_matrix in confusion_matrices_val))
+    count_total = np.sum(total_fids)
+    count_invalids = np.sum(failed_fids)
 
-    return failed_sids, failed_fids, count_valids, count_invalids, confusion_matrices_gen, tprs, tnrs, GV, dfs, label_max
+    return failed_sids, failed_fids, total_fids, count_total, count_invalids, confusion_matrices_gen, tprs, tnrs, GV, dfs, label_max
 
 
 def llm_judge_errors(models_gen, models_val, GV_gen: List[List[float]]):
@@ -170,10 +170,10 @@ def llm_judge_errors(models_gen, models_val, GV_gen: List[List[float]]):
 
 if __name__ == "__main__":
     # Route 1
-    failed_sids_gen, failed_fids_gen, count_valids_gen, count_invalids_gen, confusion_matrices_gen, tprs_gen, tnrs_gen, GV_gen, dfs_gen, label_max = validate_model(MODELS_GEN, MODELS_VAL)
+    failed_sids_gen, failed_fids_gen, total_fids_gen, count_total_gen, count_invalids_gen, confusion_matrices_gen, tprs_gen, tnrs_gen, GV_gen, dfs_gen, label_max = validate_model(MODELS_GEN, MODELS_VAL)
 
     # Round 2 for all gens
-    failed_sids_all, failed_fids_all, count_valids_all, count_invalids_all, confusion_matrices_all, tprs_all, tnrs_all, GV_all, dfs_all, label_max = validate_model(MODELS_VAL, MODELS_VAL)
+    failed_sids_all, failed_fids_all, total_fids_all, count_total_all, count_invalids_all, confusion_matrices_all, tprs_all, tnrs_all, GV_all, dfs_all, label_max = validate_model(MODELS_VAL, MODELS_VAL)
 
     # Write the stats to files
     pretty_print_into_file('confusion_matrix_validators', confusion_matrices_gen, fpathLLMAsJudge, comment='Confusion Matrix of Annotated Generators by Validators')
@@ -188,9 +188,10 @@ if __name__ == "__main__":
     ensemble_results = ensemble_prediction(dfs_gen, MODELS_GEN, MODELS_VAL)
 
     # Final summary
-    percentage_invalids = round(count_invalids_all / (count_valids_all + count_invalids_all) * 100, 2)
+    percentage_invalids = round(count_invalids_all / count_total_all * 100, 2)
     pretty_print_into_file('failed_sids_matrix', failed_sids_all, fpathValidatorSummary, comment='Failed SIDs Matrix')
     pretty_print_into_file('failed_fids_matrix', failed_fids_all, fpathValidatorSummary, comment='Failed FIDs Matrix')
+    pretty_print_into_file('total_fids_matrix', total_fids_all, fpathValidatorSummary, comment='Total FIDs Matrix')
     pretty_print_into_file('count_invalids_all', count_invalids_all, fpathValidatorSummary, comment='Invalid FIDs by Validators')
     pretty_print_into_file('percentage_invalids', percentage_invalids, fpathValidatorSummary, comment='Percentage of Invalid FIDs by Validators')
     pretty_print_into_file('worst_generator_validator_pair', label_max, fpathValidatorSummary, comment='Worst Generator -> Validator combination')

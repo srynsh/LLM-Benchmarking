@@ -216,6 +216,17 @@ class ValidationResult(BaseModel):
     def get_failure_count(self) -> int:
         """Get the count of failed to validate feedback lines."""
         return self.fidFailureCount if self.fidFailureCount is not None else 0
+    
+    def get_success_count(self) -> int:
+        """Get the total count of feedback lines."""
+        if not self.output or not self.output.feedback_lines:
+            return 0
+    
+        return len(self.output.feedback_lines)
+
+    def is_failed(self) -> bool:
+        """Check if the validation result failed."""
+        return not self.success or not self.output or self.get_failure_count() > 0
 
 # Contains the list of validator results for a given validator and generator model
 class ValidationBatch(BaseModel):
