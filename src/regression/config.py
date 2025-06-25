@@ -525,8 +525,10 @@ IS_WRITE_LOGS = False
 # =========================
 LLM_VALIDATOR_MAXERR_RANGE = llm_judge_max_error_range
 LLM_VALIDATOR_MEANERR_RANGE = llm_judge_mean_error_range
-ENSEMBLE_MAXERR = ensemble_majority_max_error
-ENSEMBLE_MEANERR = ensemble_majority_mean_error
+ENSEMBLE_MAJORITY_MAXERR = ensemble_majority_max_error
+ENSEMBLE_MAJORITY_MEANERR = ensemble_majority_mean_error
+ENSEMBLE_BEST_MAXERR = ensemble_best_max_error
+ENSEMBLE_BEST_MEANERR = ensemble_best_mean_error
 
 # LLM_VALIDATOR_MAXERR_RANGE = (2.2704516880093117, 18.00125925925926)
 # LLM_VALIDATOR_MEANERR_RANGE = (1.2914530870128726, 11.516197498754769)
