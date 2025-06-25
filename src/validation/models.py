@@ -67,50 +67,8 @@ class ValidationResult(BaseModel):
     sid: int = Field(..., description="Student ID")
     raw_response: str = Field(..., description="Raw LLM response")
     output: Optional[ValidationOutput] = Field(None, description="Parsed validation output")
-    success: Optional[bool] = Field(default=True, description="Whether validation was successful")
-    fidFailureCount: int = Field(..., description="Count of failed feedback lines")
+    fidFailureCount: int = Field(0, description="Count of failed feedback lines")
     timestamp: Optional[str] = Field(None, description="Timestamp of validation")
-
-    @model_validator(mode='before')
-    @classmethod
-    def validate_output(cls, value: Dict[str, Any]) -> Dict[str, Any]:
-        """Validate the output field."""
-        # Ensure output is present and has feedback_lines
-        if value is None or 'output' not in value or not value['output']:
-            return value
-        
-        output = value['output']
-        generator_data = value.get('generatorData')
-        if not generator_data or not generator_data.feedback:
-            return value
-        
-        # Check if output is a dict
-        if 'feedback_lines' not in output or not output['feedback_lines']:
-            raise ValueError("Validation output must contain 'output' with 'feedback_lines'")
-
-        # Choose matching strategy
-        if VALIDATOR_REPAIR.feedback_match_fuzzy:
-            matched_items, missing_items = cls._fuzzy_match(generator_data, output)
-        else:
-            matched_items, missing_items = cls._exact_match(generator_data, output)
-
-        value['fidFailureCount'] = len(missing_items)  # Count of missing feedback items
-        cls._print_validate_output(value, generator_data, matched_items, missing_items)
-
-        return value
-    
-    @classmethod
-    def _print_validate_output(cls, value: dict[str, Any], generator_data, matched_items, missing_items) -> None:
-        """Print the validation output for debugging."""
-        # Ensure we have at least one matched item
-        if not matched_items:
-            raise ValueError("No matching feedback lines found in validation output")
-        
-        # If missing items, log a warning and add them as unsuccessful
-        if missing_items:
-            value['success'] = False  # Mark as unsuccessful if there are missing items
-            missing_str = "; ".join([f"Line {ln}: {fb}" for ln, fb in missing_items])
-            print_warning(f"Missing feedback items for SID {value.get('sid', 'unknown')}: {missing_str}")
 
             
     @classmethod
@@ -200,9 +158,49 @@ class ValidationResult(BaseModel):
 
         return matched_items, missing_items
 
+    @classmethod
+    def _print_validate_output(cls, value: dict[str, Any], generator_data, matched_items, missing_items) -> None:
+        """Print the validation output for debugging."""
+        # Ensure we have at least one matched item
+        if not matched_items:
+            raise ValueError("No matching feedback lines found in validation output")
+        
+        # If missing items, log a warning and add them as unsuccessful
+        if missing_items:
+            value['fidFailureCount'] = len(missing_items)  # Count of missing feedback items
+            missing_str = "; ".join([f"Line {ln}: {fb}" for ln, fb in missing_items])
+            print_warning(f"Missing feedback items for SID {value.get('sid', 'unknown')}: {missing_str}")
+
+    @model_validator(mode='before')
+    @classmethod
+    def validate_output(cls, value: Dict[str, Any]) -> Dict[str, Any]:
+        """Validate the output field."""
+        # Ensure output is present and has feedback_lines
+        if value is None or 'output' not in value or not value['output']:
+            return value
+        
+        output = value['output']
+        generator_data = value.get('generatorData')
+        if not generator_data or not generator_data.feedback:
+            return value
+        
+        # Check if output is a dict
+        if 'feedback_lines' not in output or not output['feedback_lines']:
+            raise ValueError("Validation output must contain 'output' with 'feedback_lines'")
+
+        # Choose matching strategy
+        if VALIDATOR_REPAIR.feedback_match_fuzzy:
+            matched_items, missing_items = cls._fuzzy_match(generator_data, output)
+        else:
+            matched_items, missing_items = cls._exact_match(generator_data, output)
+
+        cls._print_validate_output(value, generator_data, matched_items, missing_items)
+
+        return value
+    
     def get_classification_counts(self) -> Dict[str, int]:
         """Get counts of valid/invalid classifications."""
-        if not self.output or not self.output.feedback_lines:
+        if self.is_failed_sid():
             return {"valid": 0, "invalid": 0}
         
         counts = {"valid": 0, "invalid": 0}
@@ -213,20 +211,28 @@ class ValidationResult(BaseModel):
         
         return counts   
 
-    def get_failure_count(self) -> int:
+    def get_countFids_failure(self) -> int:
         """Get the count of failed to validate feedback lines."""
         return self.fidFailureCount if self.fidFailureCount is not None else 0
     
-    def get_success_count(self) -> int:
+    def get_countFids_success(self) -> int:
         """Get the total count of feedback lines."""
-        if not self.output or not self.output.feedback_lines:
+        if self.is_failed_sid():
             return 0
     
         return len(self.output.feedback_lines)
+    
+    def get_countFids_total(self) -> int:
+        """Get the total count of feedback lines."""
+        return self.get_countFids_success() + self.get_countFids_failure()
+    
+    def is_failed_sid(self) -> bool:
+        """Check if the validation failed for all FIDs for this SID."""
+        return not self.output or not self.output.feedback_lines
 
-    def is_failed(self) -> bool:
-        """Check if the validation result failed."""
-        return not self.success or not self.output or self.get_failure_count() > 0
+    def is_failed_fid(self) -> bool:
+        """Check if any of the fid validation failed."""
+        return self.is_failed_sid() or self.get_countFids_failure() > 0
 
 # Contains the list of validator results for a given validator and generator model
 class ValidationBatch(BaseModel):
@@ -239,24 +245,20 @@ class ValidationBatch(BaseModel):
     def get_summary_stats(self) -> Dict[str, Any]:
         """Get summary statistics for the batch."""
         total_results = len(self.results)
-        successful_results = len([r for r in self.results if r.success])
+        failed_results = sum([1 for r in self.results if r.is_failed_sid()])
+        successful_results = total_results - failed_results
 
-        fids = [fb for r in self.results
-                          if r.output and r.output.feedback_lines
-                          for fb in r.output.feedback_lines]
-
-        total_fids  = len(fids)
-        failure_fids = sum([r.fidFailureCount for r in self.results])
-        successful_fids = total_fids - failure_fids
+        failure_fids = sum([r.get_countFids_failure() for r in self.results])
+        successful_fids = sum([r.get_countFids_success() for r in self.results])
+        total_fids = successful_fids + failure_fids
 
         total_valid = 0
         total_invalid = 0
         
         for result in self.results:
-            if result.success and result.output:
-                counts = result.get_classification_counts()
-                total_valid += counts["valid"]
-                total_invalid += counts["invalid"]
+            counts = result.get_classification_counts()
+            total_valid += counts["valid"]
+            total_invalid += counts["invalid"]
         
         precision = total_valid / (total_valid + total_invalid) if (total_valid + total_invalid) > 0 else 0
         
@@ -285,7 +287,7 @@ class ValidationBatch(BaseModel):
         rows = []
 
         # Filter for successful results only
-        successful_results = [r for r in self.results if r.success and r.output]
+        successful_results = [r for r in self.results if not r.is_failed_sid()]
 
         for result in successful_results:
             if result.output and result.output.feedback_lines:

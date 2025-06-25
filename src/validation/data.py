@@ -104,14 +104,13 @@ class DataProvider:
                         error_lines = str(e).splitlines()
                         error_lines_alt = [error_lines[i] for i in range(1, len(error_lines), 3)]
                         error_str = " | ".join(error_lines_alt)
-                        fidFailureCount = len(generatorData.feedback) if generatorData else 0
+                        fidFailureCount = 0 # len(generatorData.feedback) if generatorData else 0
                         print_warning(f"Error parsing result for SID {item.get('sid', 'unknown')}: {e}")
 
                         # Try to atleast create a minimal result
                         minimal_result = ValidationResult(
                             generatorData=None,
                             sid=item.get('sid', -1),
-                            success=False,
                             output=None,
                             fidFailureCount=fidFailureCount,
                             raw_response=item.get('raw_response', ''),
@@ -171,7 +170,7 @@ class DataProvider:
             return 0
 
         return sum(
-            result.get_failure_count() + result.get_success_count()
+            result.get_countFids_failure() + result.get_countFids_success()
             for result in self.validation_batch.results
         )
 
@@ -185,8 +184,19 @@ class DataProvider:
         if self.validation_batch is None:
             return []
 
-        return [result.sid for result in self.validation_batch.results if result.is_failed()]
+        return [result.sid for result in self.validation_batch.results if result.is_failed_sid()]
+    
+    def get_failed_sids_partial(self) -> List[int]:
+        """
+        Get list of SIDs that failed partial validation.
 
+        Returns:
+            List[int]: List of failed SIDs
+        """
+        if self.validation_batch is None:
+            return []
+
+        return [result.sid for result in self.validation_batch.results if result.is_failed_fid()]
 
     def get_failed_fids_count(self) -> int:
         """
@@ -228,8 +238,11 @@ class DataProvider:
         # Print failed SIDs if any
         failed_sids = self.get_failed_sids()
         if failed_sids:
-            print(f"\nFailed SIDs ({len(failed_sids)}): {failed_sids}")
-            
+            print(f"\nSIDs with complete failures ({len(failed_sids)}): {failed_sids}")
+
+        failed_fids = self.get_failed_sids_partial()
+        if failed_fids:
+            print(f"SIDs with partial failures ({len(failed_fids)}): {failed_fids}")
 
     def analyze_error_patterns(self) -> Dict[str, Any]:
         """
@@ -238,7 +251,7 @@ class DataProvider:
         Returns:
             Dict containing error analysis
         """
-        failed_results = [r for r in self.validation_batch.results if not r.success]
+        failed_results = [r for r in self.validation_batch.results if r.is_failed_sid()]
         
         error_patterns = {}
         for result in failed_results:
