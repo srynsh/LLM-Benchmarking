@@ -98,6 +98,8 @@ class ValidationResult(BaseModel):
     @classmethod
     def _exact_match(cls, generator_data: dict[str, Any], output: dict[str, Any]) -> bool:
         generator_feedback_items, validation_feedback_items = cls._get_feedback_items(generator_data, output)
+        generator_feedback_items = set(generator_feedback_items.keys())
+        validation_feedback_items = set(validation_feedback_items.keys())
 
         # Check if all generator feedback items are present in validation output
         matched_items = generator_feedback_items & validation_feedback_items
