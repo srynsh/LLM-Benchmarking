@@ -1,8 +1,8 @@
 import numpy as np
-from src.validation.generated_scripts.llm_as_judge import confusion_matrix_validators, validator_tpr, validator_tnr, GV
-from src.validation.generated_scripts.llm_as_judge import llm_judge_max_error_range, llm_judge_mean_error_range
-from src.validation.generated_scripts.llm_as_judge import ensemble_majority_max_error, ensemble_majority_mean_error
-from src.validation.generated_scripts.llm_as_judge import ensemble_best_max_error, ensemble_best_mean_error
+from src.validation.generated_scripts.afterRepair.llm_as_judge import confusion_matrix_validators, validator_tpr, validator_tnr, GV
+from src.validation.generated_scripts.afterRepair.llm_as_judge import llm_judge_max_error_range, llm_judge_mean_error_range
+from src.validation.generated_scripts.afterRepair.llm_as_judge import ensemble_majority_max_error, ensemble_majority_mean_error
+from src.validation.generated_scripts.afterRepair.llm_as_judge import ensemble_best_max_error, ensemble_best_mean_error
 
 from src.config import pGa_CONST, MODELS_GEN, MODELS_VAL, MODELS_NAME
 from src.config import pathData, pathOutput, pathLogs
@@ -484,7 +484,7 @@ GV_CONST = np.array(GV)
 # =========================
 #   EXPERIMENT CONSTANTS
 # =========================
-NUM_RUNS = 1 # number of runs to min over
+NUM_RUNS = 10 # number of runs to min over
 MAX_WORKERS = 6 # number of workers for parallelization
 K_LIST = range(0, len(GENS)+1) # number of generators to peek at
 # K_LIST = [5] 
