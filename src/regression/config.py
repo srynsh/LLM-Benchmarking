@@ -4,7 +4,7 @@ from src.validation.generated_scripts.afterRepair.llm_as_judge import llm_judge_
 from src.validation.generated_scripts.afterRepair.llm_as_judge import ensemble_majority_max_error, ensemble_majority_mean_error
 from src.validation.generated_scripts.afterRepair.llm_as_judge import ensemble_best_max_error, ensemble_best_mean_error
 
-from src.config import pGa_CONST, MODELS_GEN, MODELS_VAL, MODELS_NAME
+from src.config import pGa_CONST, MODELS_GEN, MODELS_VAL, MODELS_SHORT
 from src.config import pathData, pathOutput, pathLogs
 
 # =========================
@@ -31,7 +31,7 @@ PATH_LOGS_PREDICTED = PATH_LOGS + 'predicted/'
 
 GENS = MODELS_GEN
 MODELS = MODELS_VAL
-MODEL_NAMES = MODELS_NAME
+MODEL_NAMES = MODELS_SHORT.values()
 
 MODEL_ENUM = {model: i for i, model in enumerate(MODELS)}
 

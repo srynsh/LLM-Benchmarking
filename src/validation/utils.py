@@ -49,7 +49,27 @@ def merge_df_merged_yhat(df_merged: pd.DataFrame, df_yhat: pd.DataFrame, model) 
 ####################
 # TPR and TNR calculations
 ####################
-def calculate_confusion_matrix(df_y: pd.DataFrame, df_yhat: pd.DataFrame) -> List[int]:
+def calculate_confusion_matrix(y_true: pd.Series, y_pred: pd.Series) -> List[int]:
+    """
+    Calculate confusion matrix [TN, FN, FP, TP] from ground truth and predictions.
+    
+    Args:
+        y_true: Ground truth labels as a pandas Series
+        y_pred: Predicted labels as a pandas Series
+    
+    Returns:
+        List[int]: [TN, FN, FP, TP] counts
+    """
+    # Calculate confusion matrix components
+    tn = ((y_true == 0) & (y_pred == 0)).sum()  # True Negative
+    fp = ((y_true == 0) & (y_pred == 1)).sum()  # False Positive
+    fn = ((y_true == 1) & (y_pred == 0)).sum()  # False Negative
+    tp = ((y_true == 1) & (y_pred == 1)).sum()  # True Positive
+    
+    return [tn, fp, fn, tp]
+
+
+def calculate_confusion_matrix_merge(df_y: pd.DataFrame, df_yhat: pd.DataFrame) -> List[int]:
     """
     Calculate confusion matrix [TN, FN, FP, TP] from ground truth and predictions.
     
@@ -66,13 +86,7 @@ def calculate_confusion_matrix(df_y: pd.DataFrame, df_yhat: pd.DataFrame) -> Lis
     y_true = merged_df['classification_true']
     y_pred = merged_df['classification_pred']
 
-    # Calculate confusion matrix components
-    tn = ((y_true == 0) & (y_pred == 0)).sum()  # True Negative
-    fp = ((y_true == 0) & (y_pred == 1)).sum()  # False Positive
-    fn = ((y_true == 1) & (y_pred == 0)).sum()  # False Negative
-    tp = ((y_true == 1) & (y_pred == 1)).sum()  # True Positive
-    
-    return [tn, fp, fn, tp]
+    return calculate_confusion_matrix(y_true, y_pred)
 
 def tpr_tnr(tn, fp, fn, tp):
     """

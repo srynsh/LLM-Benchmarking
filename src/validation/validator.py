@@ -18,7 +18,7 @@ from src.validation.service import ValidationRunner, ValidationService
 from src.validation.data import DataProvider
 from src.validation.models import ValidationBatch, ValidationResult
 from src.utils import print_warning, print_error
-from src.validation.utils import merge_df_y_yhat, merge_df_merged_yhat, calculate_confusion_matrix, tpr_tnr_list, pretty_print_into_file
+from src.validation.utils import merge_df_y_yhat, merge_df_merged_yhat, calculate_confusion_matrix_merge, tpr_tnr_list, pretty_print_into_file
 from src.validation.ensemble import ensemble_prediction
 
 
@@ -111,7 +111,7 @@ def validate_model(models_gen, models_val):
             numMergeFailedFids = df_merged[df_merged[f'classification_{modelVal}'].isna()].shape[0]
             merge_failed_fids_row.append(numMergeFailedFids)
 
-            confusion_matrix = calculate_confusion_matrix(df_y, df_yhat)
+            confusion_matrix = calculate_confusion_matrix_merge(df_y, df_yhat)
             # print(f"Confusion Matrix for {modelGen} vs {modelVal}: {confusion_matrix}")
 
             # Add confusion matrix calculation
