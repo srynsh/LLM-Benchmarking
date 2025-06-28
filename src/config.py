@@ -10,7 +10,8 @@ NUM_SIDS = 366
 # =========================
 pathData = './data/'
 pathOutput = './output/'
-pathLatex = './output/latex/'
+pathImages = f'{pathOutput}/images/'
+pathLatex = f'{pathOutput}/latex/'
 pathLogs = './logs/'
 
 pathDataGAIED = f'{pathData}/GAIED/'
@@ -34,15 +35,15 @@ VALIDATION_OUTPUT_DIR = './validation_output'
 class ValidatorRepairConfig:
     def __init__(self):
         # Feedback matching 
-        self.feedback_match_fuzzy = True # Fuzzy match for feedback
-        self.clip_feedback_lazy = True # Validator got lazy and gave short feedback
+        self.feedback_match_fuzzy = False # Fuzzy match for feedback
+        self.clip_feedback_lazy = False # Validator got lazy and gave short feedback
 
         # Line number matching
-        self.line_num_number = True # Replace "line-num" with "line number"
-        self.line_number_hyphens = True # Line numbers contain hyphens "1-3"
+        self.line_num_number = False # Replace "line-num" with "line number"
+        self.line_number_hyphens = False # Line numbers contain hyphens "1-3"
 
         # Classification labeling
-        self.partially_valid_label = True # Validator gave new label "partially valid"
+        self.partially_valid_label = False # Validator gave new label "partially valid"
         
 
 # Global instance
@@ -102,8 +103,9 @@ MODELS_VAL = [
     ]
 
 # For testing purposes, only use the first model
-# MODELS_GEN = MODELS_GEN[:2]  
+# MODELS_GEN = MODELS_GEN[:1]  
 # MODELS_VAL = MODELS_VAL[:1]
+# MODELS_VAL = [Model.GPT_4_1_MINI.value]
 
 # =========================
 #   MODEL NAMES & Versioning
