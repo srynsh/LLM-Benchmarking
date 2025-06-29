@@ -94,7 +94,6 @@ def valid_invalid_error(ensemble_max_errors):
     # Adjust the labels and sizing
     plt.xlabel('Votes', fontsize=14)
     plt.ylabel('Error (%)', fontsize=14)
-    plt.title('Comparison of Valid voting and Invalid voting Errors', fontsize=16)
     plt.legend(fontsize=12)
     plt.grid(True, alpha=0.3)
     plt.xticks(range(1, 15), fontsize=12)
