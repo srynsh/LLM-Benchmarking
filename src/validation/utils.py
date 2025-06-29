@@ -1,6 +1,7 @@
 import pprint
 from typing import List
 import pandas as pd
+import json
 
 ####################
 # DF mergers
@@ -145,6 +146,7 @@ def pretty_print_into_file(varName, var, fpath, comment = ''):
         var: The variable to be pretty printed.
     """
     with open(fpath, 'a') as f:
-        value = pprint.pformat(var, indent=2, width=80, compact=True)
+        value = json.dumps(var, indent=2, default=str)  # Use JSON for serialization
+        value = value.replace('NaN', 'None')  # Replace NaN with None for JSON compatibility
         f.write(f"\n# {comment}\n{varName} = {value}\n")
         

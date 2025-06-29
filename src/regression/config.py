@@ -1,7 +1,7 @@
 import numpy as np
 
 from src.config import pGa_CONST, MODELS_GEN, MODELS_VAL, MODELS_SHORT
-from src.config import pathData, pathOutput, pathLogs, VALIDATOR_REPAIR_NAME
+from src.config import pathData, pathOutput, pathLogs, VALIDATOR_REPAIR_NAME, VALIDATOR_REPAIR_SUFFIX
 
 # =========================
 #   CUSTOM IMPORTS
@@ -11,6 +11,16 @@ if VALIDATOR_REPAIR_NAME == 'fcnhp':
     from src.validation.generated_scripts.llm_as_judge_fcnhp import llm_judge_max_error_range, llm_judge_mean_error_range
     from src.validation.generated_scripts.llm_as_judge_fcnhp import ensemble_majority_max_error, ensemble_majority_mean_error
     from src.validation.generated_scripts.llm_as_judge_fcnhp import ensemble_best_max_error, ensemble_best_mean_error
+elif VALIDATOR_REPAIR_NAME == 'fc':
+    from src.validation.generated_scripts.llm_as_judge_fc import confusion_matrix_validators, validator_tpr, validator_tnr, GV
+    from src.validation.generated_scripts.llm_as_judge_fc import llm_judge_max_error_range, llm_judge_mean_error_range
+    from src.validation.generated_scripts.llm_as_judge_fc import ensemble_majority_max_error, ensemble_majority_mean_error
+    from src.validation.generated_scripts.llm_as_judge_fc import ensemble_best_max_error, ensemble_best_mean_error
+elif VALIDATOR_REPAIR_NAME == 'fcnh':
+    from src.validation.generated_scripts.llm_as_judge_fcnh import confusion_matrix_validators, validator_tpr, validator_tnr, GV
+    from src.validation.generated_scripts.llm_as_judge_fcnh import llm_judge_max_error_range, llm_judge_mean_error_range
+    from src.validation.generated_scripts.llm_as_judge_fcnh import ensemble_majority_max_error, ensemble_majority_mean_error
+    from src.validation.generated_scripts.llm_as_judge_fcnh import ensemble_best_max_error, ensemble_best_mean_error
 elif VALIDATOR_REPAIR_NAME == '':
     from src.validation.generated_scripts.llm_as_judge_noRepair import confusion_matrix_validators, validator_tpr, validator_tnr, GV
     from src.validation.generated_scripts.llm_as_judge_noRepair import llm_judge_max_error_range, llm_judge_mean_error_range
@@ -37,6 +47,9 @@ PATH_LATEX = PATH_OUTPUT + 'latex/'
 PATH_LOGS = pathLogs
 PATH_LOGS_LOSS_ITER = PATH_LOGS + 'loss iteration/'
 PATH_LOGS_PREDICTED = PATH_LOGS + 'predicted/'
+
+pathRegressionGenScripts = f'./src/regression/generated_scripts/'
+fpathRegressionSummary = f'{pathRegressionGenScripts}/summary{VALIDATOR_REPAIR_SUFFIX}.py'
 
 # =========================
 #   MODEL CONSTANTS

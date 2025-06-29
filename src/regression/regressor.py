@@ -10,12 +10,14 @@ from src.regression.precision import get_pViv_full, get_precision
 from src.regression.config import COLOR_GREEN_DELTA, COLOR_YELLOW_DELTA, COMPUTE_REFERENCE_VALUES, ENSEMBLE_MAJORITY_MAXERR, ENSEMBLE_MAJORITY_MEANERR, ENSEMBLE_BEST_MAXERR, ENSEMBLE_BEST_MEANERR, K_LIST, LLM_VALIDATOR_MAXERR_RANGE, LLM_VALIDATOR_MEANERR_RANGE, LOSS_PRED, NUM_RUNS, MAX_WORKERS, WEIGHTS
 from src.regression.config import PV_START, PVIV_START, PG_START, ERR_EPSILON_PG, ERR_EPSILON_PIV, ERR_EPSILON_PV, GENS, MODELS, MODEL_NAMES, MODEL_ENUM
 from src.regression.config import VALIDATOR_COUNTS_CONST, pGa_CONST, GV_CONST, PVVA_CONST, PVIVA_CONST
-from src.regression.config import PATH_LOGS, PATH_LATEX, PATH_REGRESSION, PATH_LOGS_LOSS_ITER
+from src.regression.config import PATH_LOGS, PATH_LATEX, PATH_REGRESSION, PATH_LOGS_LOSS_ITER, fpathRegressionSummary
 from src.config import VALIDATOR_REPAIR_SUFFIX
 
 from src.regression.loss import total_loss, write_loss_to_csv
 
 import sys
+
+from src.validation.utils import pretty_print_into_file
 np.random.seed(42)
 scipy_seed = 42
 
@@ -23,9 +25,18 @@ import warnings
 import os
 warnings.filterwarnings("always", category=UserWarning)
 
+
+####################
+# Setup
+####################
+
 # Create necessary directories if they do not exist
 if not os.path.exists(PATH_REGRESSION):
     os.makedirs(PATH_REGRESSION)
+
+msg = '# AUTO-GENERATED FILE. DO NOT EDIT\n'
+with open(fpathRegressionSummary, 'w') as f:
+    f.write(msg)  # Clear the file
 
 # =========================
 #   READ DATA
@@ -569,7 +580,7 @@ if __name__ == '__main__':
 
     redo = True
     if redo:
-        all_errors = []
+        all_max_errors = []
         all_avg_errors = []
         all_logs = []
 
@@ -586,7 +597,7 @@ if __name__ == '__main__':
         results.sort(key=lambda x: x[0])
 
         for k, (pGs, errors, avg_error, logs) in results:
-            all_errors.append(errors)
+            all_max_errors.append(errors)
             all_logs.append(logs)
             all_avg_errors.append(avg_error)
             print("Done with k =", k)
@@ -601,5 +612,8 @@ if __name__ == '__main__':
     print('============================================')
     plot_data_no_exclude(all_logs, pGa, np.mean(GV, axis=1))
     print('============================================')
+
+    pretty_print_into_file('regression_max_errors', all_max_errors, fpathRegressionSummary, comment='Max errors for all k values')
+    pretty_print_into_file('regression_avg_errors', all_avg_errors, fpathRegressionSummary, comment='Mean errors for all k values')
 
     print('Baseline: ', np.round(100*np.mean(GV, axis=1), 1))
