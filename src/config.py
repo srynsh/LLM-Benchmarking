@@ -32,13 +32,33 @@ class ValidatorRepairConfig:
         stri += 'h' if self.line_number_hyphens else ''
         stri += 'p' if self.partially_valid_label else ''
         return stri
-        
+    
+    def getSuffix(self):
+        stri = self.__str__()
+        return f'_{stri}' if stri else '_noRepair'
+    
+    @classmethod
+    def flags(cls):
+        '''Returns a list of flags in the ValidatorRepairConfig class.'''
+        return [attr for attr in dir(cls()) if not attr.startswith('__') and isinstance(getattr(cls(), attr), bool)]
+    
+    @classmethod
+    def getName(cls, config_str):
+        '''Returns a user-friendly name for a given config string.'''
+        if config_str == '_noRepair':
+            return 'Original'
+        elif config_str == '_fc':
+            return 'Feedback'
+        elif config_str == '_fcnh':
+            return 'Line Number'
+        elif config_str == '_fcnhp':
+            return 'Label'
+        return config_str
 
 # Global instance
 VALIDATOR_REPAIR = ValidatorRepairConfig()
 VALIDATOR_REPAIR_NAME = str(VALIDATOR_REPAIR)
-VALIDATOR_REPAIR_SUFFIX = f'_{VALIDATOR_REPAIR_NAME}' if VALIDATOR_REPAIR_NAME else '_noRepair'
-
+VALIDATOR_REPAIR_SUFFIX = VALIDATOR_REPAIR.getSuffix()
 
 # =========================
 #   PATHS
