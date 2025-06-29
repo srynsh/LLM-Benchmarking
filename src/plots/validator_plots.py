@@ -1,17 +1,15 @@
-from src.validation.generated_scripts.summary import (ensemble_max_errors, ensemble_tpr, ensemble_tnr)
-from src.validation.generated_scripts.llm_as_judge import validator_tpr, validator_tnr
 from src.config import Model, pathImages
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from src.config import MODELS_SHORT, MODELS_VAL
+from src.config import MODELS_SHORT, MODELS_VAL, VALIDATOR_REPAIR_SUFFIX
 
 pathValidator = f'{pathImages}/validator'
 
 ####################
 # True Positive Rate vs True Negative Rate Plot
 ####################
-def get_df_validator_tpr_tnr():
+def get_df_validator_tpr_tnr(validator_tpr, validator_tnr):
     # Create the DF
     df_validator = pd.DataFrame({
         'validator': [model for model in MODELS_VAL],
@@ -62,10 +60,10 @@ def add_offsets(df_validator):
                             alpha=0.8,
                             arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.1', alpha=0.6))
 
-def tpr_tnr_validator():
+def tpr_tnr_validator(validator_tpr, validator_tnr):
     plt.figure(figsize=(8, 4))
 
-    df_validator = get_df_validator_tpr_tnr()
+    df_validator = get_df_validator_tpr_tnr(validator_tpr, validator_tnr)
     sns.scatterplot(data=df_validator, x='tpr', y='tnr', hue='validator', style='validator', palette='deep')
 
     # Add offsets to the annotations
@@ -90,4 +88,4 @@ def tpr_tnr_validator():
     plt.yticks(fontsize=12)
 
     plt.tight_layout()
-    plt.savefig(f'{pathValidator}/tpr_tnr_validator.pdf', bbox_inches='tight')
+    plt.savefig(f'{pathValidator}/tpr_tnr_validator{VALIDATOR_REPAIR_SUFFIX}.pdf', bbox_inches='tight')

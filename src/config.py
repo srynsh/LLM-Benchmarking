@@ -1,32 +1,10 @@
+from collections import OrderedDict
 from enum import Enum
 
 # =========================
 #   NUMBER OF SIDS
 # =========================
 NUM_SIDS = 366
-
-# =========================
-#   PATHS
-# =========================
-pathData = './data/'
-pathOutput = './output/'
-pathImages = f'{pathOutput}/images/'
-pathLatex = f'{pathOutput}/latex/'
-pathLogs = './logs/'
-
-pathDataGAIED = f'{pathData}/GAIED/'
-pathGenerator = f'{pathData}/generator/'
-pathValidator = f'{pathData}/validator/'
-
-pathValidatorOutput = f'./src/validation/generated_scripts'
-fpathLLMAsJudge = f'{pathValidatorOutput}/llm_as_judge.py'
-fpathValidatorSummary = f'{pathValidatorOutput}/summary.py'
-
-# =========================
-#   VALIDATION PATHS
-# =========================
-VALIDATION_LOGS_DIR = './new_logs'
-VALIDATION_OUTPUT_DIR = './validation_output'
 
 # =========================
 #   Validator Repair
@@ -44,11 +22,46 @@ class ValidatorRepairConfig:
 
         # Classification labeling
         self.partially_valid_label = False # Validator gave new label "partially valid"
+
+    def __str__(self):
+        '''Returns a shorthand string representation of the config. Gives an initial for each flag on/off'''
+        stri = ''
+        stri += 'f' if self.feedback_match_fuzzy else ''
+        stri += 'c' if self.clip_feedback_lazy else ''
+        stri += 'n' if self.line_num_number else ''
+        stri += 'h' if self.line_number_hyphens else ''
+        stri += 'p' if self.partially_valid_label else ''
+        return stri
         
 
 # Global instance
 VALIDATOR_REPAIR = ValidatorRepairConfig()
+VALIDATOR_REPAIR_NAME = str(VALIDATOR_REPAIR)
+VALIDATOR_REPAIR_SUFFIX = f'_{VALIDATOR_REPAIR_NAME}' if VALIDATOR_REPAIR_NAME else '_noRepair'
 
+
+# =========================
+#   PATHS
+# =========================
+pathData = './data/'
+pathOutput = './output/'
+pathImages = f'{pathOutput}/images/'
+pathLatex = f'{pathOutput}/latex/'
+pathLogs = './logs/'
+
+pathDataGAIED = f'{pathData}/GAIED/'
+pathGenerator = f'{pathData}/generator/'
+pathValidator = f'{pathData}/validator/'
+
+pathValidatorOutput = f'./src/validation/generated_scripts'
+fpathLLMAsJudge = f'{pathValidatorOutput}/llm_as_judge{VALIDATOR_REPAIR_SUFFIX}.py'
+fpathValidatorSummary = f'{pathValidatorOutput}/summary{VALIDATOR_REPAIR_SUFFIX}.py'
+
+# =========================
+#   VALIDATION PATHS
+# =========================
+VALIDATION_LOGS_DIR = './new_logs'
+VALIDATION_OUTPUT_DIR = './validation_output'
 
 # =========================
 #   MODEL CONFIGURATION
@@ -130,14 +143,22 @@ mapping_latex = {
     Model.GPT_4_1_MINI.value: '\\gptFourOneMini'
 }
 
-MODELS_NAME = [
-    'GPT-4', 'GPT 4o-M', 'GPT 4o',
-    'Opus 3', 'Sonnet 3.5',
-    'G 1.5 flash', 'G 1.5 pro',
-    'Qwen', 'Deepseek',
-    'Haiku 3.5', 'G 2.5 flash', 'G 2.5 pro', 
-    'GPT 4.1', 'GPT 4.1-M'
-]
+MODELS_SHORT = OrderedDict({ 
+    Model.GPT_4_TURBO.value : 'GPT-4', 
+    Model.GPT_4O_MINI.value : 'GPT 4o-M', 
+    Model.GPT_4O.value : 'GPT 4o',
+    Model.CLAUDE_3_OPUS.value : 'Opus 3',
+    Model.CLAUDE_3_5_SONNET.value : 'Sonnet 3.5',
+    Model.GEMINI_1_5_FLASH.value : 'G 1.5 flash',
+    Model.GEMINI_1_5_PRO.value : 'G 1.5 pro',
+    Model.QWEN_CODER_PLUS.value : 'Qwen',
+    Model.DEEPSEEK_CHAT.value : 'Deepseek',
+    Model.CLAUDE_3_5_HAIKU.value : 'Haiku 3.5',
+    Model.GEMINI_2_5_FLASH.value : 'G 2.5 flash',
+    Model.GEMINI_2_5_PRO.value : 'G 2.5 pro',
+    Model.GPT_4_1.value : 'GPT 4.1',
+    Model.GPT_4_1_MINI.value : 'GPT 4.1-M'
+})
 
 class ModelVersion(Enum):
     GPT_3_5_TURBO = "gpt-3.5-turbo"

@@ -1,10 +1,8 @@
-from src.validation.generated_scripts.summary import (ensemble_max_errors, ensemble_tpr, ensemble_tnr)
-from src.validation.generated_scripts.llm_as_judge import validator_tpr, validator_tnr
 from src.config import Model, pathImages
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from src.config import MODELS_SHORT, MODELS_VAL
+from src.config import MODELS_SHORT, MODELS_VAL, VALIDATOR_REPAIR_SUFFIX
 from src.plots.validator_plots import get_df_validator_tpr_tnr
 
 pathEnsemble = f'{pathImages}/ensemble'
@@ -12,7 +10,7 @@ pathEnsemble = f'{pathImages}/ensemble'
 ####################
 # True Positive Rate vs True Negative Rate Plot
 ####################
-def get_df_ensemble_tpr_tnr(match):
+def get_df_ensemble_tpr_tnr(ensemble_tpr, ensemble_tnr, match):
     rows = []
 
     for key in ensemble_tpr.keys():
@@ -26,12 +24,12 @@ def get_df_ensemble_tpr_tnr(match):
     df = pd.DataFrame(rows)
     return df
 
-def tpr_tnr_ensemble():
+def tpr_tnr_ensemble(ensemble_tpr, ensemble_tnr, validator_tpr, validator_tnr):
     '''Plot the TPR and TNR for the ensemble models.'''
     # Parse the data
-    df_v = get_df_ensemble_tpr_tnr('v')
-    df_i = get_df_ensemble_tpr_tnr('i')
-    df_validator = get_df_validator_tpr_tnr()
+    df_v = get_df_ensemble_tpr_tnr(ensemble_tpr, ensemble_tnr, 'v')
+    df_i = get_df_ensemble_tpr_tnr(ensemble_tpr, ensemble_tnr, 'i')
+    df_validator = get_df_validator_tpr_tnr(validator_tpr, validator_tnr)
 
     # Create the plot
     plt.figure(figsize=(8, 4))
@@ -58,14 +56,13 @@ def tpr_tnr_ensemble():
     plt.yticks(fontsize=12)
 
     plt.tight_layout()
-    plt.savefig(f'{pathEnsemble}/tpr_tnr_ensemble.pdf', bbox_inches='tight')
-    
+    plt.savefig(f'{pathEnsemble}/tpr_tnr_ensemble{VALIDATOR_REPAIR_SUFFIX}.pdf', bbox_inches='tight')
 
 
 ####################
 # Valid and Invalid Voting Errors
 ####################
-def valid_invalid_error():
+def valid_invalid_error(ensemble_max_errors):
     '''Plot the valid and invalid voting errors from the ensemble summary data.'''
 
     # Parse the data
@@ -104,4 +101,4 @@ def valid_invalid_error():
     plt.yticks(fontsize=12)
     plt.ylim(0, 50)  # Set y-axis limit to 0-50% for better visibility
     plt.tight_layout()
-    plt.savefig(f'{pathEnsemble}/valid_invalid_error.pdf')
+    plt.savefig(f'{pathEnsemble}/valid_invalid_error{VALIDATOR_REPAIR_SUFFIX}.pdf')

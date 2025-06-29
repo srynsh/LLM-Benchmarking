@@ -10,7 +10,8 @@ from src.regression.precision import get_pViv_full, get_precision
 from src.regression.config import COLOR_GREEN_DELTA, COLOR_YELLOW_DELTA, COMPUTE_REFERENCE_VALUES, ENSEMBLE_MAJORITY_MAXERR, ENSEMBLE_MAJORITY_MEANERR, ENSEMBLE_BEST_MAXERR, ENSEMBLE_BEST_MEANERR, K_LIST, LLM_VALIDATOR_MAXERR_RANGE, LLM_VALIDATOR_MEANERR_RANGE, LOSS_PRED, NUM_RUNS, MAX_WORKERS, WEIGHTS
 from src.regression.config import PV_START, PVIV_START, PG_START, ERR_EPSILON_PG, ERR_EPSILON_PIV, ERR_EPSILON_PV, GENS, MODELS, MODEL_NAMES, MODEL_ENUM
 from src.regression.config import VALIDATOR_COUNTS_CONST, pGa_CONST, GV_CONST, PVVA_CONST, PVIVA_CONST
-from src.regression.config import PATH_LOGS, PATH_IMAGES, PATH_LATEX, PATH_LOGS_LOSS_ITER
+from src.regression.config import PATH_LOGS, PATH_LATEX, PATH_REGRESSION, PATH_LOGS_LOSS_ITER
+from src.config import VALIDATOR_REPAIR_SUFFIX
 
 from src.regression.loss import total_loss, write_loss_to_csv
 
@@ -22,6 +23,9 @@ import warnings
 import os
 warnings.filterwarnings("always", category=UserWarning)
 
+# Create necessary directories if they do not exist
+if not os.path.exists(PATH_REGRESSION):
+    os.makedirs(PATH_REGRESSION)
 
 # =========================
 #   READ DATA
@@ -354,8 +358,7 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
 
     ax.legend()
     plt.tight_layout()
-    plt.savefig(f'{PATH_IMAGES}pngs/all_regressor.png')
-    plt.savefig(f'{PATH_IMAGES}pdfs/all_regressor.pdf', format='pdf')
+    plt.savefig(f'{PATH_REGRESSION}/all_regressor{VALIDATOR_REPAIR_SUFFIX}.pdf', format='pdf')
 
 
     fig, ax = plt.subplots()
@@ -380,8 +383,7 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
 
     ax.legend()
     plt.tight_layout()
-    plt.savefig(f'{PATH_IMAGES}pngs/all_regressor_min.png')
-    plt.savefig(f'{PATH_IMAGES}pdfs/all_regressor_min.pdf', format='pdf')
+    plt.savefig(f'{PATH_REGRESSION}/all_regressor_min{VALIDATOR_REPAIR_SUFFIX}.pdf', format='pdf')
 
 
     fig, ax = plt.subplots()
@@ -406,8 +408,7 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
 
     ax.legend()
     plt.tight_layout()
-    plt.savefig(f'{PATH_IMAGES}pngs/all_regressor_max.png')
-    plt.savefig(f'{PATH_IMAGES}pdfs/all_regressor_max.pdf', format='pdf')
+    plt.savefig(f'{PATH_REGRESSION}/all_regressor_max{VALIDATOR_REPAIR_SUFFIX}.pdf', format='pdf')
 
 
     for k, log in enumerate(all_logs):
@@ -463,8 +464,7 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
             ax.scatter(MODEL_ENUM[key], pGa[key]*100, color='black')
 
         plt.tight_layout()
-        plt.savefig(f'{PATH_IMAGES}pngs/regressor_{k}.png')
-        plt.savefig(f'{PATH_IMAGES}pdfs/regressor_{k}.pdf', format='pdf')
+        plt.savefig(f'{PATH_REGRESSION}/regressor_{k}{VALIDATOR_REPAIR_SUFFIX}.pdf', format='pdf')
 
 
     fig, ax = plt.subplots()
@@ -492,8 +492,7 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
     order = [0,4,1,3,2]
     plt.legend([handles[idx] for idx in order],[labels[idx] for idx in order], fontsize=16, loc='upper right')
 
-    plt.savefig(f'{PATH_IMAGES}pngs/regressor_max_comparison.png')
-    plt.savefig(f'{PATH_IMAGES}pdfs/regressor_max_comparison.pdf', format='pdf')
+    plt.savefig(f'{PATH_REGRESSION}/regressor_max_comparison{VALIDATOR_REPAIR_SUFFIX}.pdf', format='pdf')
 
     
     fig, ax = plt.subplots()
@@ -505,9 +504,8 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
     ax.set_ylabel('Maximum Error')
     plt.tight_layout()
     plt.legend()
-    plt.savefig(f'{PATH_IMAGES}pngs/regressor_max_comparison_boxplot.png')
-    plt.savefig(f'{PATH_IMAGES}pdfs/regressor_max_comparison_boxplot.pdf', format='pdf')
-    
+    plt.savefig(f'{PATH_REGRESSION}/regressor_max_comparison_boxplot{VALIDATOR_REPAIR_SUFFIX}.pdf', format='pdf')
+
 
     print(base_max[0][0]*100, end=' ')
     # for m in means_vals:
@@ -561,8 +559,7 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
     handles, labels = plt.gca().get_legend_handles_labels()
     order = [0,4,1,3,2]
     plt.legend([handles[idx] for idx in order],[labels[idx] for idx in order], fontsize=16, loc='upper right')
-    plt.savefig(f'{PATH_IMAGES}pngs/regressor_mean_comparison.png')
-    plt.savefig(f'{PATH_IMAGES}pdfs/regressor_mean_comparison.pdf', format='pdf')
+    plt.savefig(f'{PATH_REGRESSION}/regressor_mean_comparison{VALIDATOR_REPAIR_SUFFIX}.pdf', format='pdf')
 
 # =========================
 #   MAIN
