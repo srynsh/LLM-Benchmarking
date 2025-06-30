@@ -2,7 +2,7 @@ from src.config import Model, pathImages
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from src.config import MODELS_SHORT, MODELS_VAL, VALIDATOR_REPAIR_SUFFIX
+from src.config import MODELS_SHORT, MODELS_GEN, MODELS_VAL, VALIDATOR_REPAIR_SUFFIX, fpathEnsembleResultsNoSuffix, ValidatorRepairConfig
 
 pathValidator = f'{pathImages}/validator'
 
@@ -89,3 +89,104 @@ def tpr_tnr_validator(validator_tpr, validator_tnr):
 
     plt.tight_layout()
     plt.savefig(f'{pathValidator}/tpr_tnr_validator{VALIDATOR_REPAIR_SUFFIX}.pdf', bbox_inches='tight')
+
+
+####################
+# Counting plot
+####################
+def get_df_ensemble_merged(suffix):
+    fpathEnsembleResults = f'{fpathEnsembleResultsNoSuffix}{suffix}.xlsx'
+    df_merged = pd.DataFrame()
+
+    for model in MODELS_GEN:
+        df = pd.read_excel(fpathEnsembleResults, sheet_name=model)
+        df['generator'] = model  # Add a column for the model name
+        df_merged = pd.concat([df_merged, df], ignore_index=True)
+
+    return df_merged
+
+
+def count_validator(df, label):
+    '''Count the number of validator models that got the valid label right'''
+    df_filter = df[df['y'] == label]  # Filter for valid labels
+    cols = [f'y_{model}' for model in MODELS_VAL] # Columns for validator models
+
+    # If label is 1, sum the columns; if label is 0, count the number of zeros
+    if label == 1:
+        series_sum = df_filter[cols].sum(axis=1)
+    else:
+        series_sum = df_filter[cols].apply(lambda x: (x == 0).sum(), axis=1)
+
+    # Convert this into a dictionary {1: count, 2: count, ...}
+    count_dict = series_sum.value_counts().to_dict()
+
+    # Convert to DF
+    df_count_dict = pd.DataFrame(list(count_dict.items()), columns=['count', 'num_validators'])
+    df_count_dict['count'] = df_count_dict['count'].astype(int)
+    df_count_dict = df_count_dict.sort_values(by='count')
+
+    return df_count_dict
+
+
+def plot_validator_valid():
+    '''Plot the number of validator models that got the valid label right'''
+    suffixTrue = ValidatorRepairConfig(default=True).getSuffix()
+    suffixFalse = ValidatorRepairConfig(default=False).getSuffix()
+
+    df_repair = get_df_ensemble_merged(suffixTrue)
+    df_noRepair = get_df_ensemble_merged(suffixFalse)
+
+    df_repair_valid = count_validator(df_repair, 1)
+    df_noRepair_valid = count_validator(df_noRepair, 1)
+
+    # Combine the dataframes for side-by-side bar plots
+    df_noRepair_valid['type'] = 'Original'
+    df_repair_valid['type'] = 'Repaired'
+    df_combined = pd.concat([df_noRepair_valid, df_repair_valid])
+
+    # Plot
+    plt.figure(figsize=(8, 4))
+
+    # Create side-by-side bar plots
+    sns.barplot(x='count', y='num_validators', hue='type', data=df_combined, alpha=0.8)
+    plt.xlabel('Number of Validator Models that Got Valid Label Right', fontsize=14)
+    plt.ylabel('Number of Valid Labels', fontsize=14)
+    plt.legend()
+
+    # Font size adjustments
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.legend(fontsize=12)
+    
+    plt.savefig(f'{pathValidator}/validator_validCount.pdf', bbox_inches='tight')
+
+def plot_validator_invalid():
+    '''Plot the number of validator models that got the invalid label right'''
+    suffixTrue = ValidatorRepairConfig(default=True).getSuffix()
+    suffixFalse = ValidatorRepairConfig(default=False).getSuffix()
+
+    df_repair = get_df_ensemble_merged(suffixTrue)
+    df_noRepair = get_df_ensemble_merged(suffixFalse)
+
+    # Combine the dataframes for side-by-side bar plots
+    df_repair_invalid = count_validator(df_repair, 0)
+    df_noRepair_invalid = count_validator(df_noRepair, 0)
+
+    # Combine the dataframes for side-by-side bar plots
+    df_noRepair_invalid['type'] = 'Original'
+    df_repair_invalid['type'] = 'Repaired'
+    df_combined_invalid = pd.concat([df_noRepair_invalid, df_repair_invalid])
+
+    # Plot
+    plt.figure(figsize=(8, 4))
+    sns.barplot(x='count', y='num_validators', hue='type', data=df_combined_invalid, alpha=0.8)
+    plt.xlabel('Number of Validator Models that Got Invalid Label Right', fontsize=14)
+    plt.ylabel('Number of Invalid Labels', fontsize=14)
+    plt.legend()
+
+    # Font size adjustments
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.legend(fontsize=12)
+
+    plt.savefig(f'{pathValidator}/validator_invalidCount.pdf', bbox_inches='tight')

@@ -1,6 +1,7 @@
 from src.config import VALIDATOR_REPAIR_NAME
-from src.plots.ensemble_plots import valid_invalid_error, tpr_tnr_ensemble, repair_vs_ensemble_error
-from src.plots.validator_plots import tpr_tnr_validator
+from src.plots.ensemble_plots import valid_invalid_error, tpr_tnr_ensemble
+from src.plots.validator_plots import tpr_tnr_validator, plot_validator_valid, plot_validator_invalid
+from src.plots.repair_plots import repair_vs_error
 
 # =========================
 #   CUSTOM IMPORTS
@@ -20,8 +21,12 @@ else:
 if __name__ == "__main__":
     # Validator plots
     tpr_tnr_validator(validator_tpr, validator_tnr)
+    plot_validator_valid()
+    plot_validator_invalid()
 
     # Ensemble plots
     tpr_tnr_ensemble(ensemble_tpr, ensemble_tnr, validator_tpr, validator_tnr)
     valid_invalid_error(ensemble_max_errors)
-    repair_vs_ensemble_error()
+
+    # Repair plots
+    repair_vs_error()

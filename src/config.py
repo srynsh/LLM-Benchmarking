@@ -11,17 +11,25 @@ NUM_SIDS = 366
 # =========================
 # Feature toggle configuration
 class ValidatorRepairConfig:
-    def __init__(self):
-        # Feedback matching 
-        self.feedback_match_fuzzy = True # Fuzzy match for feedback
-        self.clip_feedback_lazy = True # Validator got lazy and gave short feedback
+    def __init__(self, default=None):
+        if default is None:
+            # Feedback matching 
+            self.feedback_match_fuzzy = False # Fuzzy match for feedback
+            self.clip_feedback_lazy = False # Validator got lazy and gave short feedback
 
-        # Line number matching
-        self.line_num_number = True # Replace "line-num" with "line number"
-        self.line_number_hyphens = True # Line numbers contain hyphens "1-3"
+            # Line number matching
+            self.line_num_number = False # Replace "line-num" with "line number"
+            self.line_number_hyphens = False # Line numbers contain hyphens "1-3"
 
-        # Classification labeling
-        self.partially_valid_label = True # Validator gave new label "partially valid"
+            # Classification labeling
+            self.partially_valid_label = False # Validator gave new label "partially valid"
+        else:
+            # Set all flags to True if default is provided
+            self.feedback_match_fuzzy = default
+            self.clip_feedback_lazy = default
+            self.line_num_number = default
+            self.line_number_hyphens = default
+            self.partially_valid_label = default
 
     def __str__(self):
         '''Returns a shorthand string representation of the config. Gives an initial for each flag on/off'''
@@ -76,6 +84,9 @@ pathValidator = f'{pathData}/validator/'
 pathValidatorOutput = f'./src/validation/generated_scripts'
 fpathLLMAsJudge = f'{pathValidatorOutput}/llm_as_judge{VALIDATOR_REPAIR_SUFFIX}.py'
 fpathValidatorSummary = f'{pathValidatorOutput}/summary{VALIDATOR_REPAIR_SUFFIX}.py'
+
+fpathEnsembleResultsNoSuffix = f'{pathOutput}/ensemble/ensemble_results'
+fpathEnsembleResults = f'{fpathEnsembleResultsNoSuffix}{VALIDATOR_REPAIR_SUFFIX}.xlsx'
 
 # =========================
 #   VALIDATION PATHS

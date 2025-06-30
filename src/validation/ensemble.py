@@ -1,7 +1,7 @@
 from statistics import mean
 
 import pandas as pd
-from src.config import NUM_SIDS, MODELS_VAL, pGa_CONST, pathOutput, fpathLLMAsJudge, fpathValidatorSummary, VALIDATOR_REPAIR_SUFFIX
+from src.config import NUM_SIDS, MODELS_VAL, pGa_CONST, pathOutput, fpathLLMAsJudge, fpathValidatorSummary, fpathEnsembleResults
 from src.validation.utils import pretty_print_into_file, calculate_confusion_matrix, tpr_tnr
 
 ####################
@@ -178,7 +178,7 @@ def ensemble_prediction(dfs_gen, MODEL_GENS, MODEL_VALS, valid_count=None, inval
             dfs_ensemble[model_gen] = df
             
         # Save ensemble results to Excel
-        with pd.ExcelWriter(f'{pathOutput}/ensemble/ensemble_results{VALIDATOR_REPAIR_SUFFIX}.xlsx') as writer:
+        with pd.ExcelWriter(fpathEnsembleResults) as writer:
             for model_gen in MODEL_GENS:
                 df = dfs_ensemble[model_gen]
                 df.to_excel(writer, sheet_name=model_gen, index=False)
