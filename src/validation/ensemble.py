@@ -126,86 +126,86 @@ def write_tpr_tnr_to_file(dfs_ensemble):
 ####################
 
 def ensemble_prediction(dfs_gen, MODEL_GENS, MODEL_VALS, valid_count=None, invalid_count=None):
-        """
-        Create ensemble predictions and calculate errors for each dataset.
-        
-        Args:
-            dfs_gen: Dictionary of dataframes for different generator models
-        
-        Returns:
-            Dictionary containing ensemble results and errors for each model
-        """
-        # Get model validation columns (exclude 'classification' which is ground truth)
-        validation_columns = [f'classification_{model}' for model in MODEL_VALS]
-        num_validators = len(validation_columns)
-        dfs_ensemble = {}
+    """
+    Create ensemble predictions and calculate errors for each dataset.
+    
+    Args:
+        dfs_gen: Dictionary of dataframes for different generator models
+    
+    Returns:
+        Dictionary containing ensemble results and errors for each model
+    """
+    # Get model validation columns (exclude 'classification' which is ground truth)
+    validation_columns = [f'classification_{model}' for model in MODEL_VALS]
+    num_validators = len(validation_columns)
+    dfs_ensemble = {}
 
-        # Initialize vars to store max and mean errors for the majority and best models
-        majority_max_error = None
-        majority_mean_error = None
-        best_max_error = None
-        best_mean_error = None
+    # Initialize vars to store max and mean errors for the majority and best models
+    majority_max_error = None
+    majority_mean_error = None
+    best_max_error = None
+    best_mean_error = None
+    
+    # Initialize max and mean errors for each ensemble
+    ensemble_max_errors = get_ensemble_dictionary(length=num_validators + 1)
+    ensemble_mean_errors = get_ensemble_dictionary(length=num_validators + 1)
+    ensemble_max_errors_modelGen = get_ensemble_dictionary(length=num_validators + 1, defaultValue=None)
+    
+    # Compute max and mean errors for the majority and best models
+    for model_gen in MODEL_GENS:
+        df = dfs_gen[model_gen].copy()
+
+        # Perform valid and invalid voting for each validator
+        for i in range(1, num_validators + 1):
+            df = valid_voting(df, validation_columns, i)
+            error_v = calculate_ensemble_accuracy(df, model_gen, f'ensemble_v{i}')
+            max_error_v = max(ensemble_max_errors[f'v{i}'], error_v)
+            ensemble_max_errors[f'v{i}'] = max_error_v
+            ensemble_max_errors_modelGen[f'v{i}'] = model_gen if max_error_v == error_v else ensemble_max_errors_modelGen[f'v{i}']
+            ensemble_mean_errors[f'v{i}'] += error_v
+
+            df = invalid_voting(df, validation_columns, i)
+            error_i = calculate_ensemble_accuracy(df, model_gen, f'ensemble_i{i}')
+            max_error_i = max(ensemble_max_errors[f'i{i}'], error_i)
+            ensemble_max_errors[f'i{i}'] = max_error_i
+            ensemble_max_errors_modelGen[f'i{i}'] = model_gen if max_error_i == error_i else ensemble_max_errors_modelGen[f'i{i}']
+            ensemble_mean_errors[f'i{i}'] += error_i
+
+        # Replace column names that start with 'classification' to start with 'y'
+        df.columns = [col.replace('classification', 'y') if col.startswith('classification') else col for col in df.columns]
+
+        # Store the ensemble results for this model generation
+        dfs_ensemble[model_gen] = df
         
-        # Initialize max and mean errors for each ensemble
-        ensemble_max_errors = get_ensemble_dictionary(length=num_validators + 1)
-        ensemble_mean_errors = get_ensemble_dictionary(length=num_validators + 1)
-        ensemble_max_errors_modelGen = get_ensemble_dictionary(length=num_validators + 1, defaultValue=None)
-        
-        # Compute max and mean errors for the majority and best models
+    # Save ensemble results to Excel
+    with pd.ExcelWriter(fpathEnsembleResults) as writer:
         for model_gen in MODEL_GENS:
-            df = dfs_gen[model_gen].copy()
+            df = dfs_ensemble[model_gen]
+            df.to_excel(writer, sheet_name=model_gen, index=False)
 
-            # Perform valid and invalid voting for each validator
-            for i in range(1, num_validators + 1):
-                df = valid_voting(df, validation_columns, i)
-                error_v = calculate_ensemble_accuracy(df, model_gen, f'ensemble_v{i}')
-                max_error_v = max(ensemble_max_errors[f'v{i}'], error_v)
-                ensemble_max_errors[f'v{i}'] = max_error_v
-                ensemble_max_errors_modelGen[f'v{i}'] = model_gen if max_error_v == error_v else ensemble_max_errors_modelGen[f'v{i}']
-                ensemble_mean_errors[f'v{i}'] += error_v
+    # Calculate mean errors
+    for key in ensemble_mean_errors:
+        ensemble_mean_errors[key] /= len(MODEL_GENS)
 
-                df = invalid_voting(df, validation_columns, i)
-                error_i = calculate_ensemble_accuracy(df, model_gen, f'ensemble_i{i}')
-                max_error_i = max(ensemble_max_errors[f'i{i}'], error_i)
-                ensemble_max_errors[f'i{i}'] = max_error_i
-                ensemble_max_errors_modelGen[f'i{i}'] = model_gen if max_error_i == error_i else ensemble_max_errors_modelGen[f'i{i}']
-                ensemble_mean_errors[f'i{i}'] += error_i
+    # Calculate the majority 
+    majority_i = num_validators // 2 + 1 # if num_validators % 2 == 1 else num_validators // 2
+    majority_max_error = ensemble_max_errors[f'v{majority_i}']
+    majority_mean_error = ensemble_mean_errors[f'v{majority_i}']
 
-            # Replace column names that start with 'classification' to start with 'y'
-            df.columns = [col.replace('classification', 'y') if col.startswith('classification') else col for col in df.columns]
+    # Calculate the best (least) max and mean error among all models
+    best_i = min(ensemble_max_errors, key=ensemble_max_errors.get)
+    best_max_error = ensemble_max_errors[best_i]
+    best_mean_error = ensemble_mean_errors[best_i]
 
-            # Store the ensemble results for this model generation
-            dfs_ensemble[model_gen] = df
-            
-        # Save ensemble results to Excel
-        with pd.ExcelWriter(fpathEnsembleResults) as writer:
-            for model_gen in MODEL_GENS:
-                df = dfs_ensemble[model_gen]
-                df.to_excel(writer, sheet_name=model_gen, index=False)
+    # Write TPR and TNR to file
+    write_tpr_tnr_to_file(dfs_ensemble)
+    
+    # Print results to file
+    pretty_print_into_file('ensemble_majority_max_error', majority_max_error, fpathLLMAsJudge, comment='Max error range for the ensemble majority')
+    pretty_print_into_file('ensemble_majority_mean_error', majority_mean_error, fpathLLMAsJudge, comment='Mean error range for the ensemble majority')
+    pretty_print_into_file('ensemble_best_max_error', best_max_error, fpathLLMAsJudge, comment='Max error range for the best model')
+    pretty_print_into_file('ensemble_best_mean_error', best_mean_error, fpathLLMAsJudge, comment='Mean error range for the best model')
 
-        # Calculate mean errors
-        for key in ensemble_mean_errors:
-            ensemble_mean_errors[key] /= len(MODEL_GENS)
-
-        # Calculate the majority 
-        majority_i = num_validators // 2 + 1 # if num_validators % 2 == 1 else num_validators // 2
-        majority_max_error = ensemble_max_errors[f'v{majority_i}']
-        majority_mean_error = ensemble_mean_errors[f'v{majority_i}']
-
-        # Calculate the best (least) max and mean error among all models
-        best_i = min(ensemble_max_errors, key=ensemble_max_errors.get)
-        best_max_error = ensemble_max_errors[best_i]
-        best_mean_error = ensemble_mean_errors[best_i]
-
-        # Write TPR and TNR to file
-        write_tpr_tnr_to_file(dfs_ensemble)
-        
-        # Print results to file
-        pretty_print_into_file('ensemble_majority_max_error', majority_max_error, fpathLLMAsJudge, comment='Max error range for the ensemble majority')
-        pretty_print_into_file('ensemble_majority_mean_error', majority_mean_error, fpathLLMAsJudge, comment='Mean error range for the ensemble majority')
-        pretty_print_into_file('ensemble_best_max_error', best_max_error, fpathLLMAsJudge, comment='Max error range for the best model')
-        pretty_print_into_file('ensemble_best_mean_error', best_mean_error, fpathLLMAsJudge, comment='Mean error range for the best model')
-
-        # Print the summary for checks
-        pretty_print_into_file('ensemble_max_errors', ensemble_max_errors, fpathValidatorSummary, comment='Ensemble Max Errors')
-        pretty_print_into_file('ensemble_mean_errors', ensemble_mean_errors, fpathValidatorSummary, comment='Ensemble Mean Errors')
+    # Print the summary for checks
+    pretty_print_into_file('ensemble_max_errors', ensemble_max_errors, fpathValidatorSummary, comment='Ensemble Max Errors')
+    pretty_print_into_file('ensemble_mean_errors', ensemble_mean_errors, fpathValidatorSummary, comment='Ensemble Mean Errors')
