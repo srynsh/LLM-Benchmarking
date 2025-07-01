@@ -120,10 +120,20 @@ def count_validator(df, label):
     # Convert this into a dictionary {1: count, 2: count, ...}
     count_dict = series_sum.value_counts().to_dict()
 
+    # Convert count dicts to percentage of total
+    num_labels = sum(count_dict.values())
+    # If there are no labels, return an empty DataFrame
+    if num_labels == 0:
+        return pd.DataFrame(columns=['count', 'label_percentage', 'cumulative_percentage'])
+    count_dict = {k: v / num_labels * 100 for k, v in count_dict.items()}
+
     # Convert to DF
-    df_count_dict = pd.DataFrame(list(count_dict.items()), columns=['count', 'num_validators'])
+    df_count_dict = pd.DataFrame(list(count_dict.items()), columns=['count', 'label_percentage'])
     df_count_dict['count'] = df_count_dict['count'].astype(int)
-    df_count_dict = df_count_dict.sort_values(by='count')
+    df_count_dict = df_count_dict.sort_values(by='count', ascending=False).reset_index(drop=True)
+
+    # Add a cumulative percentage column
+    df_count_dict['cumulative_percentage'] = df_count_dict['label_percentage'].cumsum()
 
     return df_count_dict
 
@@ -148,9 +158,9 @@ def plot_validator_valid():
     plt.figure(figsize=(8, 4))
 
     # Create side-by-side bar plots
-    sns.barplot(x='count', y='num_validators', hue='type', data=df_combined, alpha=0.8)
+    sns.barplot(x='count', y='cumulative_percentage', hue='type', data=df_combined, alpha=0.8)
     plt.xlabel('Number of Validator Models that Got Valid Label Right', fontsize=14)
-    plt.ylabel('Number of Valid Labels', fontsize=14)
+    plt.ylabel('Percentage of Valid Labels', fontsize=14)
     plt.legend()
 
     # Font size adjustments
@@ -179,9 +189,9 @@ def plot_validator_invalid():
 
     # Plot
     plt.figure(figsize=(8, 4))
-    sns.barplot(x='count', y='num_validators', hue='type', data=df_combined_invalid, alpha=0.8)
+    sns.barplot(x='count', y='label_percentage', hue='type', data=df_combined_invalid, alpha=0.8)
     plt.xlabel('Number of Validator Models that Got Invalid Label Right', fontsize=14)
-    plt.ylabel('Number of Invalid Labels', fontsize=14)
+    plt.ylabel('Percentage of Invalid Labels', fontsize=14)
     plt.legend()
 
     # Font size adjustments
@@ -190,3 +200,44 @@ def plot_validator_invalid():
     plt.legend(fontsize=12)
 
     plt.savefig(f'{pathValidator}/validator_invalidCount.pdf', bbox_inches='tight')
+
+def plot_validator_valid_invalid_cumsum():
+    '''Plot the cumulative sum of valid and invalid labels for validator models.'''
+    suffixTrue = ValidatorRepairConfig(default=True).getSuffix()
+    suffixFalse = ValidatorRepairConfig(default=False).getSuffix()
+
+    df_repair = get_df_ensemble_merged(suffixTrue)
+
+    # Count valid and invalid labels
+    df_repair_valid = count_validator(df_repair, 1)
+    df_repair_invalid = count_validator(df_repair, 0)
+
+    # Combine the dataframes for side-by-side bar plots
+    df_repair_valid['type'] = 'Valid Label (Repaired)'
+    df_repair_invalid['type'] = 'Invalid Label (Repaired)'
+
+    df_combined_cumsum = pd.concat([df_repair_valid, df_repair_invalid])
+
+    # Plot
+    plt.figure(figsize=(8, 4))
+    sns.lineplot(
+        x='count', 
+        y='cumulative_percentage', 
+        hue='type', 
+        data=df_combined_cumsum, 
+        alpha=0.8, 
+        marker='o', 
+        palette={'Valid Label (Repaired)': 'blue', 'Invalid Label (Repaired)': 'red'}
+    )
+    plt.gca().invert_xaxis()
+
+    plt.xlabel('Minimum Number of Validators that Got Label Right', fontsize=14)
+    plt.ylabel('Cumulative Number of Labels (%)', fontsize=14)
+    
+    # Font size adjustments
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.legend(fontsize=12)
+    plt.grid(True, linestyle='--', alpha=0.5)
+
+    plt.savefig(f'{pathValidator}/validator_valid_invalidCount.pdf', bbox_inches='tight')
