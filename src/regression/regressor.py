@@ -489,8 +489,8 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
     ax.errorbar(x_pos, means_vals, yerr=yerrs, fmt='-o', label='Regression', color='black', capsize=5)
     ax.set_xticks(x_pos)
     ax.fill_between(range(1, len(all_logs)), LLM_VALIDATOR_MAXERR_RANGE[0]*100, LLM_VALIDATOR_MAXERR_RANGE[1]*100, color='blue', alpha=0.1, label='Individual LLM')
-    ax.axhline(y=ENSEMBLE_MAJORITY_MAXERR*100, color='red', label='Ensemble Majority', linestyle='-.')
-    ax.axhline(y=ENSEMBLE_BEST_MAXERR*100, color='green', label='Ensemble Best', linestyle=':')
+    ax.axhline(y=ENSEMBLE_MAJORITY_MAXERR*100, color='red', label='Majority Ensemble', linestyle='-.')
+    ax.axhline(y=ENSEMBLE_BEST_MAXERR*100, color='green', label='Best Ensemble', linestyle=':')
     ax.axhline(y=base_max[0][0]*100, color='gray', label='Mean Prediction', linestyle='--')
 
     ax.set_xticklabels(range(0, len(all_logs) - 1), fontsize=14)
@@ -557,8 +557,8 @@ def plot_data_no_exclude(all_logs, pGa, pG_mean):
 
     fig, ax = plt.subplots()
     ax.errorbar(x_pos, means_vals_means, yerr=yerrs_means, fmt='-o', label='Regression', color='black', capsize=5)
-    ax.axhline(y=ENSEMBLE_MAJORITY_MEANERR*100, color='red', label='Ensemble Majority', linestyle='-.')
-    ax.axhline(y=ENSEMBLE_BEST_MEANERR*100, color='green', label='Ensemble Best', linestyle=':')
+    ax.axhline(y=ENSEMBLE_MAJORITY_MEANERR*100, color='red', label='Majority Ensemble', linestyle='-.')
+    ax.axhline(y=ENSEMBLE_BEST_MEANERR*100, color='green', label='Best Ensemble', linestyle=':')
     ax.fill_between(range(1, len(all_logs)), LLM_VALIDATOR_MEANERR_RANGE[0]*100, LLM_VALIDATOR_MEANERR_RANGE[1]*100, color='blue', alpha=0.1, label='Individual LLM')
     ax.axhline(y=base_mean[0][0]*100, color='gray', label='Mean Prediction', linestyle='--')
     ax.set_xticks(x_pos)

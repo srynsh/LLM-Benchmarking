@@ -122,9 +122,9 @@ def plot_repair_vs_ensemble(df):
 
     # Add a legend with a grey box for the barplot
     legend_elements = [
-        plt.Line2D([0], [0], color='blue', marker='s', label='Ensemble Majority Error', linestyle='--'),
+        plt.Line2D([0], [0], color='blue', marker='s', label='Majority Ensemble Error', linestyle='--'),
         Patch(facecolor='lightgray', edgecolor='black', label='Missing Values'),
-        plt.Line2D([0], [0], color='red', marker='o', label='Ensemble Best Error', linestyle=':'),
+        plt.Line2D([0], [0], color='red', marker='o', label='Best Ensemble Error', linestyle=':'),
         plt.Line2D([0], [0], color='green', marker='x', label='Regression Error @ k=1', linestyle='--'),
         plt.Line2D([0], [0], color='orange', marker='^', label='Regression Error @ k=3', linestyle='--'),
         plt.Line2D([0], [0], color='purple', marker='d', label='Regression Error @ k=5', linestyle='--')
