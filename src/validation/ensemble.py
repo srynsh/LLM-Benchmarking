@@ -2,7 +2,7 @@ from statistics import mean
 
 import pandas as pd
 from src.config import NUM_SIDS, MODELS_VAL, pGa_CONST, pathOutput, fpathLLMAsJudge, fpathValidatorSummary, fpathEnsembleResults
-from src.validation.utils import pretty_print_into_file, calculate_confusion_matrix, tpr_tnr
+from src.validation.utils import ppv_npv, pretty_print_into_file, calculate_confusion_matrix, tpr_tnr
 
 ####################
 # Voting ensemble
@@ -89,15 +89,17 @@ def calculate_ensemble_accuracy(df, model_gen, ensemble_label):
 ####################
 # Ensemble TPR and TNR
 ####################
-def get_ensemble_dictionary(length=len(MODELS_VAL) + 1, defaultValue=0):
+def init_ensemble_dictionary(length=len(MODELS_VAL) + 1, defaultValue=0):
     hash = {f'v{i}': defaultValue for i in range(1, length)}
     hash.update({f'i{i}': defaultValue for i in range(1, length)})
 
     return hash
 
 def write_tpr_tnr_to_file(dfs_ensemble):
-    ensemble_tpr = get_ensemble_dictionary()
-    ensemble_tnr = get_ensemble_dictionary()
+    ensemble_tpr = init_ensemble_dictionary()
+    ensemble_tnr = init_ensemble_dictionary()
+    ensemble_ppv = init_ensemble_dictionary()
+    ensemble_npv = init_ensemble_dictionary()
 
     # Unify the df
     df = pd.concat(dfs_ensemble.values(), ignore_index=True)
@@ -112,14 +114,19 @@ def write_tpr_tnr_to_file(dfs_ensemble):
         # Calculate TPR and TNR
         tn, fp, fn, tp = confusion_matrix
         tpr, tnr = tpr_tnr(tn, fp, fn, tp)
+        ppv, npv = ppv_npv(tn, fp, fn, tp)
 
         # Store TPR and TNR in the dictionary
-        ensemble_tpr[ensembleModel] = tpr 
-        ensemble_tnr[ensembleModel] = tnr 
+        ensemble_tpr[ensembleModel] = tpr
+        ensemble_tnr[ensembleModel] = tnr
+        ensemble_ppv[ensembleModel] = ppv
+        ensemble_npv[ensembleModel] = npv
 
     # Write to summary file
     pretty_print_into_file('ensemble_tpr', ensemble_tpr, fpathValidatorSummary, comment='Ensemble TPR')
     pretty_print_into_file('ensemble_tnr', ensemble_tnr, fpathValidatorSummary, comment='Ensemble TNR')
+    pretty_print_into_file('ensemble_ppv', ensemble_ppv, fpathValidatorSummary, comment='Ensemble PPV')
+    pretty_print_into_file('ensemble_npv', ensemble_npv, fpathValidatorSummary, comment='Ensemble NPV')
 
 ####################
 # Ensemble Prediction
@@ -147,9 +154,9 @@ def ensemble_prediction(dfs_gen, MODEL_GENS, MODEL_VALS, valid_count=None, inval
     best_mean_error = None
     
     # Initialize max and mean errors for each ensemble
-    ensemble_max_errors = get_ensemble_dictionary(length=num_validators + 1)
-    ensemble_mean_errors = get_ensemble_dictionary(length=num_validators + 1)
-    ensemble_max_errors_modelGen = get_ensemble_dictionary(length=num_validators + 1, defaultValue=None)
+    ensemble_max_errors = init_ensemble_dictionary(length=num_validators + 1)
+    ensemble_mean_errors = init_ensemble_dictionary(length=num_validators + 1)
+    ensemble_max_errors_modelGen = init_ensemble_dictionary(length=num_validators + 1, defaultValue=None)
     
     # Compute max and mean errors for the majority and best models
     for model_gen in MODEL_GENS:
@@ -201,8 +208,8 @@ def ensemble_prediction(dfs_gen, MODEL_GENS, MODEL_VALS, valid_count=None, inval
     write_tpr_tnr_to_file(dfs_ensemble)
     
     # Print results to file
-    pretty_print_into_file('ensemble_majority_max_error', majority_max_error, fpathLLMAsJudge, comment='Max error range for the ensemble majority')
-    pretty_print_into_file('ensemble_majority_mean_error', majority_mean_error, fpathLLMAsJudge, comment='Mean error range for the ensemble majority')
+    pretty_print_into_file('ensemble_majority_max_error', majority_max_error, fpathLLMAsJudge, comment='Max error range for the majority ensemble')
+    pretty_print_into_file('ensemble_majority_mean_error', majority_mean_error, fpathLLMAsJudge, comment='Mean error range for the majority ensemble')
     pretty_print_into_file('ensemble_best_max_error', best_max_error, fpathLLMAsJudge, comment='Max error range for the best model')
     pretty_print_into_file('ensemble_best_mean_error', best_mean_error, fpathLLMAsJudge, comment='Mean error range for the best model')
 

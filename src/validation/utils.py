@@ -106,6 +106,23 @@ def tpr_tnr(tn, fp, fn, tp):
     tnr = tn / (tn + fp) if (tn + fp) > 0 else 0
     return tpr, tnr
 
+def ppv_npv(tn, fp, fn, tp):
+    """
+    Calculate Positive Predictive Value (PPV) and Negative Predictive Value (NPV).
+    
+    Args:
+        tn: True Negatives
+        fp: False Positives
+        fn: False Negatives
+        tp: True Positives
+
+    Returns:
+        Tuple[float, float]: (PPV, NPV)
+    """
+    ppv = tp / (tp + fp) if (tp + fp) > 0 else 0
+    npv = tn / (tn + fn) if (tn + fn) > 0 else 0
+    return ppv, npv
+
 def tpr_tnr_list(confusion_matrices):
 
     """
