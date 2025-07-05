@@ -76,7 +76,7 @@ class ValidationResult(BaseModel):
     def _get_feedback_items(cls, generator_data: GeneratorData, v: dict[str, Any]) -> List[tuple[str, str]]:
         """Extract feedback items from generator data."""
         if 'feedback_lines' not in v or not v['feedback_lines']:
-            raise ValueError("[ID=missing_feedback_lines] Validation output must contain 'feedback_lines'")
+            raise ValueError("[ID=missing_output] Validation output must contain 'feedback_lines'")
 
         # Create sets of (line_number, feedback) tuples for comparison
         generator_feedback_items = OrderedDict()
@@ -201,7 +201,7 @@ class ValidationResult(BaseModel):
         
         # Check if output is a dict
         if 'feedback_lines' not in output or not output['feedback_lines']:
-            raise ValueError("[ID=missing_feedback_lines] Validation output must contain 'output' with 'feedback_lines'")
+            raise ValueError("[ID=missing_output] Validation output must contain 'output' with 'feedback_lines'")
 
         # Choose matching strategy
         if VALIDATOR_REPAIR.feedback_match_fuzzy:

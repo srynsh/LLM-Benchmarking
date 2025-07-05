@@ -195,9 +195,8 @@ ensemble_mean_errors = {
 # Error message counts during validation
 error_message_counts = {
   "unmatched_feedback": 1706,
-  "missing_output": 2555,
+  "missing_output": 3975,
   "missing_label": 144,
-  "missing_feedback_lines": 1420,
   "missing_line_number": 3,
   "missing_generator_line_number": 305
 }
@@ -206,96 +205,82 @@ error_message_counts = {
 error_message_counts_validator = {
   "gpt-4-turbo": {
     "unmatched_feedback": 310,
-    "missing_output": 23,
+    "missing_output": 83,
     "missing_label": 5,
-    "missing_feedback_lines": 60,
     "missing_generator_line_number": 22
   },
   "gpt-4o-mini": {
     "unmatched_feedback": 74,
-    "missing_feedback_lines": 126,
-    "missing_output": 671,
+    "missing_output": 797,
     "missing_label": 8,
     "missing_generator_line_number": 22
   },
   "gpt-4o": {
     "unmatched_feedback": 55,
-    "missing_feedback_lines": 120,
+    "missing_output": 127,
     "missing_label": 14,
-    "missing_generator_line_number": 22,
-    "missing_output": 7
+    "missing_generator_line_number": 22
   },
   "claude_3_opus": {
     "unmatched_feedback": 102,
-    "missing_feedback_lines": 130,
-    "missing_generator_line_number": 22,
-    "missing_output": 5
+    "missing_output": 135,
+    "missing_generator_line_number": 22
   },
   "claude_3.5_sonnet": {
     "unmatched_feedback": 93,
-    "missing_output": 9,
-    "missing_feedback_lines": 126,
+    "missing_output": 135,
     "missing_generator_line_number": 22
   },
   "gemini-1.5-flash": {
     "unmatched_feedback": 42,
-    "missing_feedback_lines": 119,
-    "missing_output": 96,
+    "missing_output": 215,
     "missing_generator_line_number": 22,
     "missing_label": 8
   },
   "gemini-1.5-pro": {
     "unmatched_feedback": 8,
-    "missing_output": 508,
-    "missing_feedback_lines": 119,
+    "missing_output": 627,
     "missing_generator_line_number": 19,
     "missing_label": 2
   },
   "qwen-coder-plus": {
     "unmatched_feedback": 45,
     "missing_label": 95,
-    "missing_output": 284,
-    "missing_feedback_lines": 11,
+    "missing_output": 295,
     "missing_generator_line_number": 22
   },
   "deepseek-chat": {
     "unmatched_feedback": 74,
-    "missing_feedback_lines": 73,
-    "missing_output": 19,
+    "missing_output": 92,
     "missing_generator_line_number": 22,
     "missing_label": 1
   },
   "claude_3.5_haiku": {
     "unmatched_feedback": 412,
-    "missing_output": 87,
+    "missing_output": 120,
     "missing_label": 7,
-    "missing_feedback_lines": 33,
     "missing_generator_line_number": 22
   },
   "gemini-2.5-flash": {
     "unmatched_feedback": 114,
-    "missing_output": 246,
-    "missing_feedback_lines": 128,
+    "missing_output": 374,
     "missing_generator_line_number": 22
   },
   "gemini-2.5-pro": {
     "unmatched_feedback": 234,
-    "missing_output": 96,
-    "missing_feedback_lines": 119,
+    "missing_output": 215,
     "missing_line_number": 3,
     "missing_generator_line_number": 22
   },
   "gpt-4.1": {
     "unmatched_feedback": 68,
-    "missing_feedback_lines": 128,
+    "missing_output": 135,
     "missing_label": 4,
-    "missing_output": 7,
     "missing_generator_line_number": 22
   },
   "gpt-4.1-mini": {
     "unmatched_feedback": 75,
-    "missing_output": 497,
-    "missing_feedback_lines": 128,
+    "missing_output": 625,
     "missing_generator_line_number": 22
   }
 }

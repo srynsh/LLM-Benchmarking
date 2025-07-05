@@ -64,7 +64,7 @@ class ValidatorRepairConfig:
         return config_str
 
 # Global instance
-VALIDATOR_REPAIR = ValidatorRepairConfig(True)
+VALIDATOR_REPAIR = ValidatorRepairConfig(False)
 VALIDATOR_REPAIR_NAME = str(VALIDATOR_REPAIR)
 VALIDATOR_REPAIR_SUFFIX = VALIDATOR_REPAIR.getSuffix()
 

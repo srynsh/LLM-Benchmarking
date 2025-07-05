@@ -18,12 +18,11 @@ def plot_failure_counts(error_message_counts_validator):
     """
     # Error short hand
     error_shorthand = {
+        # "missing_generator_line_number": "Others",
         "missing_output": "Missing Output",
-        "missing_feedback_lines": "Missing Feedback",
-        "missing_line_number": "Missing Line Number",
         "missing_label": "Missing Label",
-        "missing_generator_line_number": "Others",
-        "unmatched_feedback": "Unmatched Feedback"
+        "missing_line_number": "Missing Line Number",
+        "unmatched_feedback": "Missing Feedback"
     }
     
     # Convert the nested dictionary into a DataFrame
@@ -54,7 +53,7 @@ def plot_failure_counts(error_message_counts_validator):
     plt.ylabel('Count of Errors')
     plt.xticks(rotation=45, ha='right')
     handles, labels = plt.gca().get_legend_handles_labels()
-    plt.legend(handles[::-1], labels[::-1], title='Error Type', bbox_to_anchor=(0.5, 1.05), loc='lower center', ncol=3)
+    plt.legend(handles[::-1], labels[::-1], title='Error Type', bbox_to_anchor=(0.5, 1.05), loc='lower center', ncol=2)
     plt.tight_layout()
     plt.savefig(f'{pathValidator}/failure_counts{VALIDATOR_REPAIR_SUFFIX}.pdf', bbox_inches='tight')
     
