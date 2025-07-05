@@ -2,6 +2,7 @@
 Data access utilities for validation.
 """
 
+from collections import defaultdict
 from typing import Tuple, Dict, Any, List, Optional
 import json
 import os
@@ -25,12 +26,13 @@ from src.generation.data import (load_existing_results, get_processed_results)
 class DataProvider:
     """Centralized data provider for validation operations."""
     
-    def __init__(self, modelGen: str, modelVal: str, error_message_counts: dict) -> None:
+    def __init__(self, modelGen: str, modelVal: str) -> None:
         self.validation_batch: Optional[ValidationBatch] = None
         self.generation_batch: Optional[GenerationBatch] = None
+        self.error_message_counts = defaultdict(int)
         
         self.load_generation_batch(modelGen)
-        self.load_validation_batch(modelGen, modelVal, error_message_counts)
+        self.load_validation_batch(modelGen, modelVal)
         
         # Print summary
         self.print_validation_summary()
@@ -43,7 +45,7 @@ class DataProvider:
             for error_type, count in error_analysis['error_counts'].items():
                 print(f"  {error_type}: {count} SIDs")
 
-    def load_validation_batch(self, modelGen: str, modelVal: str, error_message_counts: dict[str, int]) -> Optional[ValidationBatch]:
+    def load_validation_batch(self, modelGen: str, modelVal: str) -> Optional[ValidationBatch]:
         """
         Load a validation batch from a JSON file.
         
@@ -99,7 +101,7 @@ class DataProvider:
                         # Ensure item has required fields and attach it
                         result = ValidationResult(**item)
                         results.append(result)
-                        error_message_counts['unmatched_feedback'] += result.get_countFids_failure()
+                        self.error_message_counts['unmatched_feedback'] += result.get_countFids_failure()
 
                     except Exception as e:
                         # Handle parsing errors gracefully
@@ -125,7 +127,7 @@ class DataProvider:
                         if 'generatorData' in item and item['generatorData'] is not None:
                             numGenLines = len(item['generatorData'].feedback)
                             if numGenLines > 0:
-                                error_message_counts[error_message] += numGenLines
+                                self.error_message_counts[error_message] += numGenLines
 
                         # Try to atleast create a minimal result
                         minimal_result = ValidationResult(

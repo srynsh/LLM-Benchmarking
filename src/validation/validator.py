@@ -60,6 +60,7 @@ def validate_model(models_gen, models_val):
         ValidationBatch: The validation results
     """
     error_message_counts = defaultdict(int)
+    error_message_counts_validator = defaultdict(lambda: defaultdict(int))
     numFailedFids_max = 0
     label_max = None
     confusion_matrices_gen = []
@@ -84,7 +85,7 @@ def validate_model(models_gen, models_val):
         df_merged = pd.DataFrame()
 
         for j, modelVal in enumerate(models_val):
-            dataProvider = DataProvider(modelGen, modelVal, error_message_counts)
+            dataProvider = DataProvider(modelGen, modelVal)
 
             failedSids = dataProvider.get_failed_sids()
             failedSids_partial = dataProvider.get_failed_sids_partial()
@@ -99,6 +100,11 @@ def validate_model(models_gen, models_val):
             failed_sids_partial_row += [len(failedSids_partial)]
             failed_fids_row += [numFailedFids]
             total_fids_row += [numTotalFids]
+
+            # Append error_message_counts
+            for key, value in dataProvider.error_message_counts.items():
+                error_message_counts[key] += value
+                error_message_counts_validator[modelVal][key] += value
 
             # Create DataFrame with specified columns, filtering for successful validations only
             df_yhat = dataProvider.validation_batch.create_dataframe()
@@ -144,7 +150,7 @@ def validate_model(models_gen, models_val):
     count_total = np.sum(total_fids)
     count_invalids = np.sum(merge_failed_fids)
 
-    return error_message_counts, failed_sids, failed_sids_partial, failed_fids, total_fids, merge_failed_fids, count_total, count_invalids, confusion_matrices_gen, tprs, tnrs, GV, dfs, label_max
+    return error_message_counts, error_message_counts_validator, failed_sids, failed_sids_partial, failed_fids, total_fids, merge_failed_fids, count_total, count_invalids, confusion_matrices_gen, tprs, tnrs, GV, dfs, label_max
 
 
 def llm_judge_errors(models_gen, models_val, GV_gen: List[List[float]]):
@@ -183,10 +189,10 @@ def llm_judge_errors(models_gen, models_val, GV_gen: List[List[float]]):
 
 if __name__ == "__main__":
     # Route 1
-    error_message_counts_gen, failed_sids_gen, failed_sids_partial_gen, failed_fids_gen, total_fids_gen, merge_failed_fids_gen, count_total_gen, count_invalids_gen, confusion_matrices_gen, tprs_gen, tnrs_gen, GV_gen, dfs_gen, label_max = validate_model(MODELS_GEN, MODELS_VAL)
+    error_message_counts_gen, error_message_counts_validator_gen, failed_sids_gen, failed_sids_partial_gen, failed_fids_gen, total_fids_gen, merge_failed_fids_gen, count_total_gen, count_invalids_gen, confusion_matrices_gen, tprs_gen, tnrs_gen, GV_gen, dfs_gen, label_max = validate_model(MODELS_GEN, MODELS_VAL)
 
     # Round 2 for all gens
-    error_message_counts_all, failed_sids_all, failed_sids_partial_all, failed_fids_all, total_fids_all, merge_failed_fids_all, count_total_all, count_invalids_all, confusion_matrices_all, tprs_all, tnrs_all, GV_all, dfs_all, label_max = validate_model(MODELS_VAL, MODELS_VAL)
+    error_message_counts_all, error_message_counts_validator_all, failed_sids_all, failed_sids_partial_all, failed_fids_all, total_fids_all, merge_failed_fids_all, count_total_all, count_invalids_all, confusion_matrices_all, tprs_all, tnrs_all, GV_all, dfs_all, label_max = validate_model(MODELS_VAL, MODELS_VAL)
 
     # Write the stats to files
     pretty_print_into_file('confusion_matrix_validators', confusion_matrices_gen, fpathLLMAsJudge, comment='Confusion Matrix of Annotated Generators by Validators')
@@ -203,6 +209,7 @@ if __name__ == "__main__":
     # Final summary
     percentage_invalids = round(count_invalids_all / count_total_all * 100, 2)
     pretty_print_into_file('error_message_counts', error_message_counts_all, fpathValidatorSummary, comment='Error message counts during validation')
+    pretty_print_into_file('error_message_counts_validator', error_message_counts_validator_all, fpathValidatorSummary, comment='Error message counts per Validator')
     pretty_print_into_file('complete_failed_sids', failed_sids_all, fpathValidatorSummary, comment='SIDs that completely failed validation')
     pretty_print_into_file('partial_failed_sids', failed_sids_partial_all, fpathValidatorSummary, comment='SIDs that partially failed validation')
     pretty_print_into_file('validation_total_fids', total_fids_all, fpathValidatorSummary, comment='Total FIDs after validation')
