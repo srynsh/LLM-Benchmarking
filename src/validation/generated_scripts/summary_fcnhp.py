@@ -11,10 +11,10 @@ ensemble_tpr = {
   "v7": 0.9764898851831602,
   "v8": 0.9706579187169674,
   "v9": 0.963914707490432,
-  "v10": 0.9498815381811555,
+  "v10": 0.950063787133224,
   "v11": 0.9278294149808639,
   "v12": 0.896664844177146,
-  "v13": 0.8237652633497358,
+  "v13": 0.8239475123018043,
   "v14": 0.5941315837433935,
   "i1": 0.7043921997448515,
   "i2": 0.8735192272644432,
@@ -75,10 +75,10 @@ ensemble_ppv = {
   "v7": 0.9349153725353342,
   "v8": 0.9356992269852424,
   "v9": 0.9384315117104329,
-  "v10": 0.9411339833875045,
+  "v10": 0.941144610940603,
   "v11": 0.9452283698477534,
   "v12": 0.9509083880943178,
-  "v13": 0.9625212947189097,
+  "v13": 0.9625292740046838,
   "v14": 0.9702380952380952,
   "i1": 0.9706177800100452,
   "i2": 0.9612916165262736,
@@ -107,10 +107,10 @@ ensemble_npv = {
   "v7": 0.35175879396984927,
   "v8": 0.3235294117647059,
   "v9": 0.32653061224489793,
-  "v10": 0.29846938775510207,
+  "v10": 0.29923273657289,
   "v11": 0.27205882352941174,
   "v12": 0.25,
-  "v13": 0.21636952998379255,
+  "v13": 0.21654501216545013,
   "v14": 0.13346303501945525,
   "i1": 0.1673511293634497,
   "i2": 0.2648305084745763,
@@ -171,10 +171,10 @@ ensemble_mean_errors = {
   "v7": 0.04069239050741552,
   "v8": 0.034088057314655563,
   "v9": 0.024742682956964985,
-  "v10": 0.013688328966715365,
+  "v10": 0.01387815432738354,
   "v11": 0.02281183140959131,
   "v12": 0.055222773788692815,
-  "v13": 0.13640015402605793,
+  "v13": 0.13621032866538973,
   "v14": 0.3608114946986117,
   "i1": 0.2556488537370906,
   "i2": 0.08631722413372721,
@@ -192,13 +192,121 @@ ensemble_mean_errors = {
   "i14": 0.07293171193992644
 }
 
+# Error message counts during validation
+error_message_counts = {
+  "unmatched_feedback": 1706,
+  "missing_output": 2555,
+  "missing_label": 144,
+  "missing_feedback_lines": 1420,
+  "missing_line_number": 3,
+  "missing_generator_line_number": 305
+}
+
+# Error message counts per Validator
+error_message_counts_validator = {
+  "gpt-4-turbo": {
+    "unmatched_feedback": 310,
+    "missing_output": 23,
+    "missing_label": 5,
+    "missing_feedback_lines": 60,
+    "missing_generator_line_number": 22
+  },
+  "gpt-4o-mini": {
+    "unmatched_feedback": 74,
+    "missing_feedback_lines": 126,
+    "missing_output": 671,
+    "missing_label": 8,
+    "missing_generator_line_number": 22
+  },
+  "gpt-4o": {
+    "unmatched_feedback": 55,
+    "missing_feedback_lines": 120,
+    "missing_label": 14,
+    "missing_generator_line_number": 22,
+    "missing_output": 7
+  },
+  "claude_3_opus": {
+    "unmatched_feedback": 102,
+    "missing_feedback_lines": 130,
+    "missing_generator_line_number": 22,
+    "missing_output": 5
+  },
+  "claude_3.5_sonnet": {
+    "unmatched_feedback": 93,
+    "missing_output": 9,
+    "missing_feedback_lines": 126,
+    "missing_generator_line_number": 22
+  },
+  "gemini-1.5-flash": {
+    "unmatched_feedback": 42,
+    "missing_feedback_lines": 119,
+    "missing_output": 96,
+    "missing_generator_line_number": 22,
+    "missing_label": 8
+  },
+  "gemini-1.5-pro": {
+    "unmatched_feedback": 8,
+    "missing_output": 508,
+    "missing_feedback_lines": 119,
+    "missing_generator_line_number": 19,
+    "missing_label": 2
+  },
+  "qwen-coder-plus": {
+    "unmatched_feedback": 45,
+    "missing_label": 95,
+    "missing_output": 284,
+    "missing_feedback_lines": 11,
+    "missing_generator_line_number": 22
+  },
+  "deepseek-chat": {
+    "unmatched_feedback": 74,
+    "missing_feedback_lines": 73,
+    "missing_output": 19,
+    "missing_generator_line_number": 22,
+    "missing_label": 1
+  },
+  "claude_3.5_haiku": {
+    "unmatched_feedback": 412,
+    "missing_output": 87,
+    "missing_label": 7,
+    "missing_feedback_lines": 33,
+    "missing_generator_line_number": 22
+  },
+  "gemini-2.5-flash": {
+    "unmatched_feedback": 114,
+    "missing_output": 246,
+    "missing_feedback_lines": 128,
+    "missing_generator_line_number": 22
+  },
+  "gemini-2.5-pro": {
+    "unmatched_feedback": 234,
+    "missing_output": 96,
+    "missing_feedback_lines": 119,
+    "missing_line_number": 3,
+    "missing_generator_line_number": 22
+  },
+  "gpt-4.1": {
+    "unmatched_feedback": 68,
+    "missing_feedback_lines": 128,
+    "missing_label": 4,
+    "missing_output": 7,
+    "missing_generator_line_number": 22
+  },
+  "gpt-4.1-mini": {
+    "unmatched_feedback": 75,
+    "missing_output": 497,
+    "missing_feedback_lines": 128,
+    "missing_generator_line_number": 22
+  }
+}
+
 # SIDs that completely failed validation
 complete_failed_sids = [
   [
     23,
     20,
     17,
-    13,
+    12,
     17,
     20,
     25,
@@ -250,7 +358,7 @@ complete_failed_sids = [
     0,
     6,
     11,
-    3,
+    2,
     3,
     3,
     7,
@@ -374,7 +482,7 @@ complete_failed_sids = [
     18,
     26,
     14,
-    13,
+    12,
     12,
     22,
     51,
@@ -390,7 +498,7 @@ complete_failed_sids = [
     5,
     44,
     2,
-    2,
+    1,
     2,
     3,
     23,
@@ -426,7 +534,7 @@ partial_failed_sids = [
     42,
     39,
     23,
-    15,
+    14,
     17,
     25,
     27,
@@ -478,7 +586,7 @@ partial_failed_sids = [
     0,
     8,
     11,
-    3,
+    2,
     3,
     15,
     18,
@@ -602,7 +710,7 @@ partial_failed_sids = [
     24,
     28,
     14,
-    14,
+    13,
     12,
     23,
     51,
@@ -618,7 +726,7 @@ partial_failed_sids = [
     8,
     44,
     2,
-    2,
+    1,
     2,
     3,
     23,
@@ -654,7 +762,7 @@ validation_total_fids = [
     900,
     900,
     885,
-    890,
+    892,
     876,
     882,
     856,
@@ -706,7 +814,7 @@ validation_total_fids = [
     965,
     874,
     858,
-    875,
+    880,
     872,
     873,
     865,
@@ -830,7 +938,7 @@ validation_total_fids = [
     1083,
     1044,
     1082,
-    1088,
+    1093,
     1091,
     1055,
     959,
@@ -846,7 +954,7 @@ validation_total_fids = [
     853,
     738,
     859,
-    858,
+    862,
     861,
     859,
     811,
@@ -1110,7 +1218,7 @@ merge_failed_fids = [
     44,
     30,
     8,
-    7,
+    5,
     3,
     13,
     27,
@@ -1286,7 +1394,7 @@ merge_failed_fids = [
     72,
     94,
     48,
-    45,
+    40,
     39,
     81,
     171,
@@ -1302,7 +1410,7 @@ merge_failed_fids = [
     17,
     126,
     5,
-    6,
+    2,
     3,
     6,
     53,
@@ -1333,7 +1441,7 @@ merge_failed_fids = [
 ]
 
 # Invalid FIDs by Validators
-count_invalids_all = "6150"
+count_invalids_all = "6139"
 
 # Percentage of Invalid FIDs by Validators
 percentage_invalids = 3.2

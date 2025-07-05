@@ -2,9 +2,62 @@ from src.config import Model, pathImages
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from src.config import MODELS_SHORT, MODELS_GEN, MODELS_VAL, VALIDATOR_REPAIR_SUFFIX, fpathEnsembleResultsNoSuffix, ValidatorRepairConfig
+from src.config import MODELS_SHORT, MODELS_SHORT_ORDERED_PRECISION, MODELS_GEN, MODELS_VAL, VALIDATOR_REPAIR_SUFFIX, fpathEnsembleResultsNoSuffix, ValidatorRepairConfig
 
 pathValidator = f'{pathImages}/validator'
+
+####################
+# Validation failures
+####################
+def plot_failure_counts(error_message_counts_validator):
+    """
+    Plot the counts of validation failures for each model.
+    
+    Args:
+        error_message_counts_validator (dict): Dictionary containing {validator_model: {reason_failure: count}}.
+    """
+    # Error short hand
+    error_shorthand = {
+        "missing_output": "Missing Output",
+        "missing_feedback_lines": "Missing Feedback",
+        "missing_line_number": "Missing Line Number",
+        "missing_label": "Missing Label",
+        "missing_generator_line_number": "Others",
+        "unmatched_feedback": "Unmatched Feedback"
+    }
+    
+    # Convert the nested dictionary into a DataFrame
+    data = []
+    for model, errors in error_message_counts_validator.items():
+        for error, count in errors.items():
+            error = error_shorthand.get(error, error)  # Use shorthand for the error message
+            model = MODELS_SHORT.get(model, model)  # Use shorthand for the model name
+            data.append({'model': model, 'error': error, 'count': count})
+
+    df_errors = pd.DataFrame(data)
+    
+    # Pivot the DataFrame for stacked bar plot
+    df_pivot = df_errors.pivot(index='model', columns='error', values='count').fillna(0)
+    
+    # Ensure the order of error types matches error_shorthand.values()
+    error_order = list(error_shorthand.values())
+    df_pivot = df_pivot.reindex(columns=[col for col in error_order if col in df_pivot.columns])
+
+    # Reorder the DataFrame based on MODELS_ORDERED_PRECISION
+    df_pivot = df_pivot.reindex(index=[model for model in MODELS_SHORT_ORDERED_PRECISION if model in df_pivot.index])
+    
+    # Stacked bar plot
+    plt.figure(figsize=(6.5, 3.5))
+    df_pivot.plot(kind='bar', stacked=True)
+    # plt.yscale('log')
+    plt.xlabel('LLM Validator')
+    plt.ylabel('Count of Errors')
+    plt.xticks(rotation=45, ha='right')
+    handles, labels = plt.gca().get_legend_handles_labels()
+    plt.legend(handles[::-1], labels[::-1], title='Error Type', bbox_to_anchor=(0.5, 1.05), loc='lower center', ncol=3)
+    plt.tight_layout()
+    plt.savefig(f'{pathValidator}/failure_counts{VALIDATOR_REPAIR_SUFFIX}.pdf', bbox_inches='tight')
+    
 
 ####################
 # True Positive Rate vs True Negative Rate Plot

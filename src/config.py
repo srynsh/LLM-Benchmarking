@@ -64,7 +64,7 @@ class ValidatorRepairConfig:
         return config_str
 
 # Global instance
-VALIDATOR_REPAIR = ValidatorRepairConfig()
+VALIDATOR_REPAIR = ValidatorRepairConfig(True)
 VALIDATOR_REPAIR_NAME = str(VALIDATOR_REPAIR)
 VALIDATOR_REPAIR_SUFFIX = VALIDATOR_REPAIR.getSuffix()
 
@@ -190,6 +190,25 @@ MODELS_SHORT = OrderedDict({
     Model.GPT_4_1.value : 'GPT 4.1',
     Model.GPT_4_1_MINI.value : 'GPT 4.1-M'
 })
+
+
+MODELS_ORDERED_PRECISION = [
+    Model.GPT_4_TURBO.value,
+    Model.GPT_4O_MINI.value,
+    Model.DEEPSEEK_CHAT.value,
+    Model.QWEN_CODER_PLUS.value,
+    Model.GEMINI_1_5_FLASH.value,
+    Model.CLAUDE_3_5_HAIKU.value,
+    Model.GEMINI_1_5_PRO.value,
+    Model.CLAUDE_3_OPUS.value,
+    Model.GPT_4O.value,
+    Model.CLAUDE_3_5_SONNET.value,
+    Model.GPT_4_1_MINI.value,
+    Model.GPT_4_1.value,
+    Model.GEMINI_2_5_FLASH.value,
+    Model.GEMINI_2_5_PRO.value
+]
+MODELS_SHORT_ORDERED_PRECISION = [MODELS_SHORT[item] for item in MODELS_ORDERED_PRECISION]
 
 class ModelVersion(Enum):
     GPT_3_5_TURBO = "gpt-3.5-turbo"
