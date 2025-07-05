@@ -6,6 +6,7 @@ from typing import Tuple, Dict, Any, List, Optional
 import json
 import os
 import sys
+import re
 from functools import lru_cache
 
 from jsonschema import ValidationError
@@ -24,12 +25,12 @@ from src.generation.data import (load_existing_results, get_processed_results)
 class DataProvider:
     """Centralized data provider for validation operations."""
     
-    def __init__(self, modelGen: str, modelVal: str) -> None:
+    def __init__(self, modelGen: str, modelVal: str, error_message_counts: dict) -> None:
         self.validation_batch: Optional[ValidationBatch] = None
         self.generation_batch: Optional[GenerationBatch] = None
         
         self.load_generation_batch(modelGen)
-        self.load_validation_batch(modelGen, modelVal)
+        self.load_validation_batch(modelGen, modelVal, error_message_counts)
         
         # Print summary
         self.print_validation_summary()
@@ -42,7 +43,7 @@ class DataProvider:
             for error_type, count in error_analysis['error_counts'].items():
                 print(f"  {error_type}: {count} SIDs")
 
-    def load_validation_batch(self, modelGen: str, modelVal: str) -> Optional[ValidationBatch]:
+    def load_validation_batch(self, modelGen: str, modelVal: str, error_message_counts: dict[str, int]) -> Optional[ValidationBatch]:
         """
         Load a validation batch from a JSON file.
         
@@ -98,6 +99,7 @@ class DataProvider:
                         # Ensure item has required fields and attach it
                         result = ValidationResult(**item)
                         results.append(result)
+                        error_message_counts['unmatched_feedback'] += result.get_countFids_failure()
 
                     except Exception as e:
                         # Handle parsing errors gracefully
@@ -106,6 +108,24 @@ class DataProvider:
                         error_str = " | ".join(error_lines_alt)
                         fidFailureCount = 0 # len(generatorData.feedback) if generatorData else 0
                         print_warning(f"Error parsing result for SID {item.get('sid', 'unknown')}: {e}")
+
+                        # Maintain a count of error messages
+                        error_str = str(e)
+                        match = re.search(r"\[ID=(.*?)\]", error_str)
+                        error_message = match.group(1) if match else error_str
+
+                        # If missing output
+                        if error_message.startswith('1 validation error for ValidationResult\noutput\n'):
+                            error_message = 'missing_output'
+
+                        if re.search(r"output\.feedback_lines\.\d+\.classification", error_str):
+                            error_message = 'missing_label'
+
+                        # For each generator line, increment the error message count
+                        if 'generatorData' in item and item['generatorData'] is not None:
+                            numGenLines = len(item['generatorData'].feedback)
+                            if numGenLines > 0:
+                                error_message_counts[error_message] += numGenLines
 
                         # Try to atleast create a minimal result
                         minimal_result = ValidationResult(

@@ -127,7 +127,7 @@ class GenerationBatch(BaseModel):
             try:
                 GeneratorData(**item)
             except ValidationError as e:
-                raise ValueError(f"Invalid GeneratorData entry: {e}")
+                raise ValueError(f"Invalid GeneratorData entry")
         
         return values
     

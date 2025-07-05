@@ -51,14 +51,14 @@ class ValidatedFeedbackLine(BaseModel):
                 return 'invalid'
             
         if v.lower() not in ['valid', 'invalid']:
-            raise ValueError("Classification must be either 'valid' or 'invalid'")
+            raise ValueError("[ID=invalid_label] Classification must be either 'valid' or 'invalid'")
         return v.lower()
 
 
 class ValidationOutput(BaseModel):
     """Model for LLM validation output format."""
-    mistakes: Optional[List[str]] = Field(..., description="List of mistakes found in the student's code")
-    fixes: Optional[List[str]] = Field(..., description="List of corrections proposed in the fixed code")
+    mistakes: Optional[List[str]] = Field([], description="List of mistakes found in the student's code")
+    fixes: Optional[List[str]] = Field([], description="List of corrections proposed in the fixed code")
     feedback_lines: List[ValidatedFeedbackLine] = Field(..., description="List of validated feedback lines")
 
 # Contains one validation result for a given submission ID (sid)
@@ -76,20 +76,24 @@ class ValidationResult(BaseModel):
     def _get_feedback_items(cls, generator_data: GeneratorData, v: dict[str, Any]) -> List[tuple[str, str]]:
         """Extract feedback items from generator data."""
         if 'feedback_lines' not in v or not v['feedback_lines']:
-            raise ValueError("Validation output must contain 'feedback_lines'")
+            raise ValueError("[ID=missing_feedback_lines] Validation output must contain 'feedback_lines'")
 
         # Create sets of (line_number, feedback) tuples for comparison
         generator_feedback_items = OrderedDict()
         for fb in generator_data.feedback:
-            if not fb.line_number or not fb.feedback:
-                raise ValueError("Generator feedback must contain 'line_number' and 'feedback'")
+            if not fb.line_number:
+                raise ValueError("[ID=missing_generator_line_number] Generator feedback must contain 'line_number'")
+            elif not fb.feedback:
+                raise ValueError("[ID=missing_generator_feedback] Generator feedback must contain 'feedback'")
 
             generator_feedback_items[(str(fb.line_number), fb.feedback)] = None
 
         validation_feedback_items = OrderedDict()
         for fb_line in v['feedback_lines']:
-            if 'line_number' not in fb_line or 'feedback' not in fb_line:
-                raise ValueError("Validation feedback lines must contain 'line_number' and 'feedback'")
+            if 'line_number' not in fb_line:
+                raise ValueError("[ID=missing_line_number] Validation feedback lines must contain 'line_number'")
+            if 'feedback' not in fb_line:
+                raise ValueError("[ID=missing_feedback] Validation feedback lines must contain 'feedback'")
 
             validation_feedback_items[(str(fb_line['line_number']), fb_line['feedback'])] = None
 
@@ -170,8 +174,8 @@ class ValidationResult(BaseModel):
         """Print the validation output for debugging."""
         # Ensure we have at least one matched item
         if not matched_items:
-            raise ValueError("No matching feedback lines found in validation output")
-        
+            raise ValueError("[ID=unmatched_feedback] No matching feedback lines found in validation output")
+
         # If missing items, log a warning and add them as unsuccessful
         if missing_items:
             value['fidFailureCount'] = len(missing_items)  # Count of missing feedback items
@@ -186,6 +190,10 @@ class ValidationResult(BaseModel):
         if value is None or 'output' not in value or not value['output']:
             return value
         
+        # Ensure output is a dict
+        if not isinstance(value['output'], dict):
+            raise ValueError("[ID=missing_output] Validation output must be a dictionary")
+        
         output = value['output']
         generator_data = value.get('generatorData')
         if not generator_data or not generator_data.feedback:
@@ -193,7 +201,7 @@ class ValidationResult(BaseModel):
         
         # Check if output is a dict
         if 'feedback_lines' not in output or not output['feedback_lines']:
-            raise ValueError("Validation output must contain 'output' with 'feedback_lines'")
+            raise ValueError("[ID=missing_feedback_lines] Validation output must contain 'output' with 'feedback_lines'")
 
         # Choose matching strategy
         if VALIDATOR_REPAIR.feedback_match_fuzzy:
