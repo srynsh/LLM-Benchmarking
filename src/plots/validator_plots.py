@@ -50,6 +50,7 @@ def plot_failure_counts(error_message_counts_validator):
     df_pivot.plot(kind='bar', stacked=True)
     # plt.yscale('log')
     plt.xlabel('LLM Validator')
+    plt.ylim(0, 2500)  # Set y-axis limit to 2500
     plt.ylabel('Count of Errors')
     plt.xticks(rotation=45, ha='right')
     handles, labels = plt.gca().get_legend_handles_labels()
