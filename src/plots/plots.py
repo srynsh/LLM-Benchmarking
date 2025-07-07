@@ -21,7 +21,7 @@ else:
 if __name__ == "__main__":
     # Validator plots
     plot_failure_counts(error_message_counts_validator)
-    tpr_tnr_validator(validator_tpr, validator_tnr)
+    tpr_tnr_validator(validator_tpr, validator_tnr, ensemble_tpr, ensemble_tnr)
     plot_validator_valid()
     plot_validator_invalid()
     plot_validator_valid_invalid_cumsum()

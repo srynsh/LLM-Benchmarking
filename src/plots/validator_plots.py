@@ -19,7 +19,7 @@ def plot_failure_counts(error_message_counts_validator):
     # Error short hand
     error_shorthand = {
         # "missing_generator_line_number": "Others",
-        "missing_output": "Missing Output",
+        "missing_output": "Incorrect Output",
         "missing_label": "Missing Label",
         "missing_line_number": "Missing Line Number",
         "unmatched_feedback": "Missing Feedback"
@@ -51,7 +51,7 @@ def plot_failure_counts(error_message_counts_validator):
     # plt.yscale('log')
     plt.xlabel('LLM Validator')
     plt.ylim(0, 2500)  # Set y-axis limit to 2500
-    plt.ylabel('Count of Errors')
+    plt.ylabel('Count')
     plt.xticks(rotation=45, ha='right')
     handles, labels = plt.gca().get_legend_handles_labels()
     plt.legend(handles[::-1], labels[::-1], title='Error Type', bbox_to_anchor=(0.5, 1.05), loc='lower center', ncol=2)
@@ -76,7 +76,7 @@ def add_offsets(df_validator):
     # Improved annotation positioning to avoid overlaps in the 10-30 TNR range and 1200-1300 Elo range
     model_offsets = {
         Model.GPT_4_TURBO.value: (-30, 10),       # Move up and right
-        Model.GEMINI_1_5_FLASH.value: (15, -5), # Move down and right
+        Model.GEMINI_1_5_FLASH.value: (-90, -5), # Move down and right
 
         Model.GPT_4O_MINI.value: (10, -5),      # Move down and right
         Model.GPT_4O.value: (30, 10),          # Move down and left
@@ -101,8 +101,7 @@ def add_offsets(df_validator):
         
         if shorthand in [MODELS_SHORT[Model.GEMINI_1_5_FLASH.value], 
                         MODELS_SHORT[Model.GEMINI_2_5_PRO.value], 
-                        MODELS_SHORT[Model.GEMINI_2_5_FLASH.value], 
-                        MODELS_SHORT[Model.QWEN_CODER_PLUS.value]]: 
+                        MODELS_SHORT[Model.GEMINI_2_5_FLASH.value]]: 
             
             # Add arrow pointing to the marker
             plt.annotate(shorthand,
@@ -113,11 +112,11 @@ def add_offsets(df_validator):
                             alpha=0.8,
                             arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.1', alpha=0.6))
 
-def tpr_tnr_validator(validator_tpr, validator_tnr):
-    plt.figure(figsize=(8, 4))
+def tpr_tnr_validator(validator_tpr, validator_tnr, ensemble_tpr, ensemble_tnr):
+    plt.figure(figsize=(7, 5))
 
     df_validator = get_df_validator_tpr_tnr(validator_tpr, validator_tnr)
-    sns.scatterplot(data=df_validator, x='tpr', y='tnr', hue='validator', style='validator', palette='deep')
+    sns.scatterplot(data=df_validator, x='tpr', y='tnr', hue='validator', style='validator', palette='deep', s=100)
 
     # Add offsets to the annotations
     add_offsets(df_validator)
@@ -125,7 +124,7 @@ def tpr_tnr_validator(validator_tpr, validator_tnr):
     # Use shorthand names for the legend instead of full model names
     handles, labels = plt.gca().get_legend_handles_labels()
     shorthand_labels = [MODELS_SHORT.get(label, label) for label in labels]
-    plt.legend(handles, shorthand_labels,  bbox_to_anchor=(0.5, 1.05), loc='lower center', ncol=6)
+    plt.legend(handles, shorthand_labels, bbox_to_anchor=(0.5, 1.05), loc='lower center', ncol=4, fontsize=12)
 
     plt.ylim(0,60)
     plt.xlim(82,100)
@@ -134,8 +133,34 @@ def tpr_tnr_validator(validator_tpr, validator_tnr):
     plt.xlabel('True Positive Rate %', fontsize=14)
     plt.ylabel('True Negative Rate %', fontsize=14)
 
-    plt.axhline(y=25, color='gray', linestyle='--', alpha=0.2)
-    plt.axvline(x=96, color='gray', linestyle='--', alpha=0.2)
+    # Add dotted line for the ensemble
+    rows_valid = []
+    rows_invalid = []
+    for i in range(1, len(MODELS_VAL)+1):
+        modelName = f'v{i}'
+        rows_valid.append({
+            'validator': 'valid-voting',
+            'tpr': ensemble_tpr[modelName] * 100,
+            'tnr': ensemble_tnr[modelName] * 100
+        })
+
+        modelName = f'i{i}'
+        rows_invalid.append({
+            'validator': 'invalid-voting',
+            'tpr': ensemble_tpr[modelName] * 100,
+            'tnr': ensemble_tnr[modelName] * 100
+        })
+    df_valid = pd.DataFrame(rows_valid )
+    df_invalid = pd.DataFrame(rows_invalid)
+
+    # Scatter plot with connected lines for valid and invalid voting
+    # sns.lineplot(data=df_valid, x='tpr', y='tnr', marker='o', label='Valid Voting', color='blue', alpha=0.8)
+    # sns.lineplot(data=df_invalid, x='tpr', y='tnr', marker='o', label='Invalid Voting', color='red', alpha=0.8)
+
+    plt.grid(True, linestyle='--', alpha=0.5)
+
+    # plt.axhline(y=25, color='gray', linestyle='--', alpha=0.2)
+    # plt.axvline(x=94, color='gray', linestyle='--', alpha=0.2)
 
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)

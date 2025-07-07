@@ -39,7 +39,7 @@ def tpr_tnr_ensemble(ensemble_tpr, ensemble_tnr, validator_tpr, validator_tnr):
     plt.plot(df_i['tpr'], df_i['tnr'], marker='v', linewidth=2, label='invalid voting', color='red')
     plt.scatter(df_validator['tpr'], df_validator['tnr'], marker='o', color='green', s=20, label='validator models')
 
-    plt.legend(['valid voting', 'invalid voting', 'LLM as judge'], fontsize=12)
+    plt.legend(['Valid Voting', 'Invalid Voting', 'LLM as Judge'], fontsize=12)
 
     # Add small labels for valid and invalid voting next to markers.
     for i, row in df_v.iterrows():
@@ -88,13 +88,13 @@ def valid_invalid_error(ensemble_max_errors):
 
     # Create the plot
     plt.figure(figsize=(8, 4))
-    plt.plot(df_i['index'], df_i['value'], marker='s', linewidth=2, label='invalid voting', color='red')
-    plt.plot(df_v['index'], df_v['value'], marker='o', linewidth=2, label='valid voting', color='blue')
+    plt.plot(df_i['index'], df_i['value'], marker='s', linewidth=2, label='Invalid Voting', color='red')
+    plt.plot(df_v['index'], df_v['value'], marker='o', linewidth=2, label='Valid Voting', color='blue')
 
-    plt.legend(['invalid voting', 'valid voting'], fontsize=12)
+    plt.legend(['Invalid Voting', 'Valid Voting'], fontsize=12)
 
     # Adjust the labels and sizing
-    plt.xlabel('Votes', fontsize=14)
+    plt.xlabel('Number of Votes Required to Cross Threshold', fontsize=14)
     plt.ylabel('Error (%)', fontsize=14)
     plt.legend(fontsize=12)
     plt.grid(True, alpha=0.3)
