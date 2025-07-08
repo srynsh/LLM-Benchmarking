@@ -787,23 +787,23 @@ GV = [
 # Max error range for LLM-as-a-Judge
 llm_judge_max_error_range = [
   0.028071405622489887,
-  0.17909408066429422
+  0.17633408066429412
 ]
 
 # Mean error range for LLM-as-a-Judge
 llm_judge_mean_error_range = [
-  0.015318776977125617,
-  0.11613607248471242
+  0.016522110310458988,
+  0.11585273915137907
 ]
 
 # Max error range for the majority ensemble
-ensemble_majority_max_error = 0.12228441410693969
+ensemble_majority_max_error = 0.12058441410693965
 
 # Mean error range for the majority ensemble
-ensemble_majority_mean_error = 0.04379954861034909
+ensemble_majority_mean_error = 0.04351621527701575
 
 # Max error range for the best model
-ensemble_best_max_error = 0.030722572706935125
+ensemble_best_max_error = 0.02796257270693503
 
 # Mean error range for the best model
-ensemble_best_mean_error = 0.01534204438600358
+ensemble_best_mean_error = 0.01544031894042149

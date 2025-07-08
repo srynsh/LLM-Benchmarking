@@ -15,12 +15,12 @@ class ValidatorRepairConfig:
     def __init__(self, default=None):
         if default is None:
             # Feedback matching 
-            self.feedback_match_fuzzy = False # Fuzzy match for feedback
-            self.clip_feedback_lazy = False # Validator got lazy and gave short feedback
+            self.feedback_match_fuzzy = True # Fuzzy match for feedback
+            self.clip_feedback_lazy = True # Validator got lazy and gave short feedback
 
             # Line number matching
-            self.line_num_number = False # Replace "line-num" with "line number"
-            self.line_number_hyphens = False # Line numbers contain hyphens "1-3"
+            self.line_num_number = True # Replace "line-num" with "line number"
+            self.line_number_hyphens = True # Line numbers contain hyphens "1-3"
 
             # Classification labeling
             self.partially_valid_label = False # Validator gave new label "partially valid"

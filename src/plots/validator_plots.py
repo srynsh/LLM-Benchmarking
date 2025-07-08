@@ -29,9 +29,6 @@ def get_df_pg():
 def gv_plot(GV):
     df_pg = get_df_pg()
     df_gv = get_df_gv(GV)
-    print(df_gv)
-    print(df_pg)
-    # df_pgv = pd.concat([df_gv, df_pg], ignore_index=True)
 
     # Create a figure
     plt.figure(figsize=(14, 5))
