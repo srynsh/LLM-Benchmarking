@@ -2,7 +2,7 @@ from src.config import Model, pathImages
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from src.config import MODELS_SHORT, MODELS_SHORT_ORDERED_PRECISION, MODELS_GEN, MODELS_VAL, VALIDATOR_REPAIR_SUFFIX, fpathEnsembleResultsNoSuffix, ValidatorRepairConfig
+from src.config import MODELS_SHORT, MODELS_SHORT_ORDERED_RELEASE, MODELS_GEN, MODELS_VAL, VALIDATOR_REPAIR_SUFFIX, fpathEnsembleResultsNoSuffix, ValidatorRepairConfig
 
 pathValidator = f'{pathImages}/validator'
 
@@ -42,8 +42,8 @@ def plot_failure_counts(error_message_counts_validator):
     error_order = list(error_shorthand.values())
     df_pivot = df_pivot.reindex(columns=[col for col in error_order if col in df_pivot.columns])
 
-    # Reorder the DataFrame based on MODELS_ORDERED_PRECISION
-    df_pivot = df_pivot.reindex(index=[model for model in MODELS_SHORT_ORDERED_PRECISION if model in df_pivot.index])
+    # Reorder the DataFrame based on MODELS_SHORT_ORDERED_RELEASE
+    df_pivot = df_pivot.reindex(index=[model for model in MODELS_SHORT_ORDERED_RELEASE if model in df_pivot.index])
     
     # Stacked bar plot
     plt.figure(figsize=(6.5, 3.5))
@@ -75,23 +75,23 @@ def get_df_validator_tpr_tnr(validator_tpr, validator_tnr):
 def add_offsets(df_validator):
     # Improved annotation positioning to avoid overlaps in the 10-30 TNR range and 1200-1300 Elo range
     model_offsets = {
-        Model.GPT_4_TURBO.value: (-30, 10),       # Move up and right
-        Model.GEMINI_1_5_FLASH.value: (-90, -5), # Move down and right
+        MODELS_SHORT[Model.GPT_4_TURBO.value]: (-30, 10),       # Move up and right
+        MODELS_SHORT[Model.GEMINI_1_5_FLASH.value]: (-90, -5), # Move down and right
 
-        Model.GPT_4O_MINI.value: (10, -5),      # Move down and right
-        Model.GPT_4O.value: (30, 10),          # Move down and left
-        Model.CLAUDE_3_OPUS.value: (-20, -65),    # Move up and left
-        Model.CLAUDE_3_5_SONNET.value: (40, -65),   # Move right
+        MODELS_SHORT[Model.GPT_4O_MINI.value]: (10, -5),      # Move down and right
+        MODELS_SHORT[Model.GPT_4O.value]: (30, 10),          # Move down and left
+        MODELS_SHORT[Model.CLAUDE_3_OPUS.value]: (-20, -65),    # Move up and left
+        MODELS_SHORT[Model.CLAUDE_3_5_SONNET.value]: (40, -65),   # Move right
 
-        Model.GEMINI_1_5_PRO.value: (-10, -30),  # Move down and left
-        Model.QWEN_CODER_PLUS.value: (-90, -25),  # Move up and left
-        Model.DEEPSEEK_CHAT.value: (-45, -60),   # Move down and left
-        Model.CLAUDE_3_5_HAIKU.value: (-45, -30), # Move down and right
-        Model.GPT_4_1.value: (-256, -15),  # Move up and left
-        Model.GPT_4_1_MINI.value: (-250, -10), # Move up and right
+        MODELS_SHORT[Model.GEMINI_1_5_PRO.value]: (-10, -30),  # Move down and left
+        MODELS_SHORT[Model.QWEN_CODER_PLUS.value]: (-90, -25),  # Move up and left
+        MODELS_SHORT[Model.DEEPSEEK_CHAT.value]: (-45, -60),   # Move down and left
+        MODELS_SHORT[Model.CLAUDE_3_5_HAIKU.value]: (-45, -30), # Move down and right
+        MODELS_SHORT[Model.GPT_4_1.value]: (-256, -15),  # Move up and left
+        MODELS_SHORT[Model.GPT_4_1_MINI.value]: (-250, -10), # Move up and right
 
-        Model.GEMINI_2_5_FLASH.value: (-25, -25), # Keep default
-        Model.GEMINI_2_5_PRO.value: (-25, -25),   # Keep default
+        MODELS_SHORT[Model.GEMINI_2_5_FLASH.value]: (-25, -25), # Keep default
+        MODELS_SHORT[Model.GEMINI_2_5_PRO.value]: (-25, -25),   # Keep default
     }
 
     # Add annotations for each point
@@ -113,9 +113,18 @@ def add_offsets(df_validator):
                             arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.1', alpha=0.6))
 
 def tpr_tnr_validator(validator_tpr, validator_tnr, ensemble_tpr, ensemble_tnr):
-    plt.figure(figsize=(7, 5))
+    plt.figure(figsize=(8, 5))
 
     df_validator = get_df_validator_tpr_tnr(validator_tpr, validator_tnr)
+
+    # Replace the validator names with shorthand names
+    df_validator['validator'] = df_validator['validator'].apply(lambda x: MODELS_SHORT.get(x, x))
+
+    # Sort the df based on reverse order of release date
+    df_validator = df_validator.sort_values(by='validator', ascending=False, 
+                                            key=lambda x: [MODELS_SHORT_ORDERED_RELEASE.index(model) if model in MODELS_SHORT_ORDERED_RELEASE else float('inf') for model in x])
+
+    # Scatter plot for TPR vs TNR
     sns.scatterplot(data=df_validator, x='tpr', y='tnr', hue='validator', style='validator', palette='deep', s=100)
 
     # Add offsets to the annotations
@@ -123,8 +132,10 @@ def tpr_tnr_validator(validator_tpr, validator_tnr, ensemble_tpr, ensemble_tnr):
 
     # Use shorthand names for the legend instead of full model names
     handles, labels = plt.gca().get_legend_handles_labels()
-    shorthand_labels = [MODELS_SHORT.get(label, label) for label in labels]
-    plt.legend(handles, shorthand_labels, bbox_to_anchor=(0.5, 1.05), loc='lower center', ncol=4, fontsize=12)
+    # Sort the handles and labels based on the order of MODELS_SHORT_ORDERED_RELEASE
+    # sorted_labels = [MODELS_SHORT[model] for model in MODELS_SHORT_ORDERED_RELEASE if model in MODELS_SHORT]
+    # sorted_handles = [handles[labels.index(label)] for label in sorted_labels if label in labels]
+    plt.legend(handles, labels, bbox_to_anchor=(0.5, 1.05), loc='lower center', ncol=4, fontsize=12)
 
     plt.ylim(0,60)
     plt.xlim(82,100)

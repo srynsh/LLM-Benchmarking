@@ -110,7 +110,7 @@ RETRY_DELAY = 1.0  # seconds
 # =========================
 
 class Model(Enum):
-    GPT_3_5_TURBO = "gpt-3.5-turbo"
+    # GPT_3_5_TURBO = "gpt-3.5-turbo"
     GPT_4_TURBO = "gpt-4-turbo"
     GPT_4O_MINI = "gpt-4o-mini"
     GPT_4O = "gpt-4o"
@@ -158,7 +158,7 @@ MODELS_VAL = [
 
 
 mapping_latex = {
-    Model.GPT_3_5_TURBO.value: '\\gptThreeTurbo',
+    # Model.GPT_3_5_TURBO.value: '\\gptThreeTurbo',
     Model.GPT_4_TURBO.value: '\\gptFour',
     Model.GPT_4O_MINI.value: '\\gptFourOMini',
     Model.GPT_4O.value: '\\gptFourO',
@@ -176,7 +176,8 @@ mapping_latex = {
 }
 
 MODELS_SHORT = OrderedDict({ 
-    Model.GPT_4_TURBO.value : 'GPT 4-T', 
+    # Model.GPT_3_5_TURBO.value : 'GPT 3.5t',
+    Model.GPT_4_TURBO.value : 'GPT 4t', 
     Model.GPT_4O_MINI.value : 'GPT 4o-M', 
     Model.GPT_4O.value : 'GPT 4o',
     Model.CLAUDE_3_OPUS.value : 'Opus 3',
@@ -212,7 +213,7 @@ MODELS_ORDERED_PRECISION = [
 MODELS_SHORT_ORDERED_PRECISION = [MODELS_SHORT[item] for item in MODELS_ORDERED_PRECISION]
 
 MODELS_RELEASE_DATE = {
-    Model.GPT_3_5_TURBO.value: '2022-03-15',
+    # Model.GPT_3_5_TURBO.value: '2022-03-15',
     Model.GPT_4_TURBO.value: '2023-11-06',
     Model.GPT_4O_MINI.value: '2024-07-18',
     Model.GPT_4O.value: '2024-05-13',
@@ -232,7 +233,7 @@ MODELS_ORDERED_RELEASE = [item[0] for item in sorted(MODELS_RELEASE_DATE.items()
 MODELS_SHORT_ORDERED_RELEASE = [MODELS_SHORT[key] for key in MODELS_ORDERED_RELEASE]
 
 MODELS_VERSION_NUMBER = {
-    Model.GPT_3_5_TURBO.value: "gpt-3.5-turbo",
+    # Model.GPT_3_5_TURBO.value: "gpt-3.5-turbo",
     # Model.GPT_4.value: "gpt-4-0613",
     Model.GPT_4_TURBO.value: "gpt-4-turbo-2024-04-09",
     Model.GPT_4O_MINI.value: "gpt-4o-mini-2024-07-18",
