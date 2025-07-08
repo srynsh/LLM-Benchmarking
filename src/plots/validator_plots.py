@@ -2,7 +2,7 @@ from src.config import Model, pathImages
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from src.config import MODELS_SHORT, MODELS_SHORT_ORDERED_RELEASE, MODELS_GEN, MODELS_VAL, VALIDATOR_REPAIR_SUFFIX, fpathEnsembleResultsNoSuffix, ValidatorRepairConfig
+from src.config import pGa_CONST, MODELS_SHORT, MODELS_SHORT_ORDERED_RELEASE, MODELS_GEN, MODELS_VAL, VALIDATOR_REPAIR_SUFFIX
 
 pathValidator = f'{pathImages}/validator'
 
@@ -21,8 +21,17 @@ def get_df_gv(GV):
     
     return df_gv
 
+def get_df_pg():
+    rows = [(MODELS_SHORT[model], pGa_CONST[model] * 100, 'human') for model in pGa_CONST.keys()]
+    df_pg = pd.DataFrame(rows, columns=['generator', 'precision', 'validator'])
+    return df_pg
+
 def gv_plot(GV):
+    df_pg = get_df_pg()
     df_gv = get_df_gv(GV)
+    print(df_gv)
+    print(df_pg)
+    # df_pgv = pd.concat([df_gv, df_pg], ignore_index=True)
 
     # Create a figure
     plt.figure(figsize=(14, 5))
@@ -34,16 +43,20 @@ def gv_plot(GV):
     stats = stats.reset_index()
 
     # Sort by mean precision for better visualization
-    stats = stats.sort_values('mean', ascending=True)
+    # stats = stats.sort_values('mean', ascending=True)
+
+    # Sort the stats dataframe based on MODELS_SHORT_ORDERED_RELEASE
+    stats['generator'] = stats['generator'].apply(lambda x: MODELS_SHORT.get(x, x))
+    stats = stats.sort_values(by='generator', 
+                                key=lambda x: [MODELS_SHORT_ORDERED_RELEASE.index(model) if model in MODELS_SHORT_ORDERED_RELEASE else float('inf') for model in x])
 
     # Plot vertical lines from min to max
     for i, row in enumerate(stats.itertuples()):
         plt.plot([i, i], [row.min, row.max], 'k-', linewidth=1.5)
         
-    # Plot mean markers
-    plt.scatter(range(len(stats)), stats['mean'], color='blue', s=100, zorder=3, label='Validator Mean')
-    plt.scatter(range(len(stats)), stats['min'], color='red', s=70, zorder=3, marker='v', label='Validator Min')
+    # Plot max and mean markers
     plt.scatter(range(len(stats)), stats['max'], color='green', s=70, zorder=3, marker='^', label='Validator Max')
+    plt.scatter(range(len(stats)), stats['mean'], color='blue', s=100, zorder=3, label='Validator Mean')
 
     # Add a scatter for human ground truth evaluations from df_pg
     for i, row in df_pg.iterrows():
@@ -63,6 +76,9 @@ def gv_plot(GV):
                         color='darkgoldenrod',
                         fontweight='bold',
                         fontsize=12)
+    
+    # Add scatter for min precision (after Gold)
+    plt.scatter(range(len(stats)), stats['min'], color='red', s=70, zorder=3, marker='v', label='Validator Min')
 
     # Set x-tick labels to model names, using shorthand for readability
     plt.xticks(range(len(stats)), [MODELS_SHORT.get(model, model) for model in stats['generator']], 
@@ -79,7 +95,7 @@ def gv_plot(GV):
     plt.yticks(fontsize=13)
 
     # Save with high DPI for crisp text
-    plt.savefig(f'{pathValidator}/gv.pdf', bbox_inches='tight')
+    plt.savefig(f'{pathValidator}/gv{VALIDATOR_REPAIR_SUFFIX}.pdf', bbox_inches='tight')
 
 
 ####################
