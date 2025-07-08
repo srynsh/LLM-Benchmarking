@@ -2,6 +2,8 @@ from src.config import VALIDATOR_REPAIR_NAME
 from src.plots.ensemble_plots import valid_invalid_error, tpr_tnr_ensemble
 from src.plots.validator_plots import plot_failure_counts, tpr_tnr_validator, plot_validator_valid, plot_validator_invalid, plot_validator_valid_invalid_cumsum
 from src.plots.repair_plots import repair_vs_error
+from src.plots.slide_plots import llm_release_plot, llm_release_plot_trendline, llm_release_plot_area
+import sys
 
 # =========================
 #   CUSTOM IMPORTS
@@ -19,6 +21,11 @@ else:
 #   MAIN
 # =========================
 if __name__ == "__main__":
+    # Plots for AI4X slides
+    llm_release_plot()
+    llm_release_plot_trendline()
+    llm_release_plot_area()
+
     # Validator plots
     plot_failure_counts(error_message_counts_validator)
     tpr_tnr_validator(validator_tpr, validator_tnr, ensemble_tpr, ensemble_tnr)
