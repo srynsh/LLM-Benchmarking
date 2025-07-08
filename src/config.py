@@ -177,7 +177,7 @@ mapping_latex = {
 
 MODELS_SHORT = OrderedDict({ 
     # Model.GPT_3_5_TURBO.value : 'GPT 3.5t',
-    Model.GPT_4_TURBO.value : 'GPT 4t', 
+    Model.GPT_4_TURBO.value : 'GPT 4T', 
     Model.GPT_4O_MINI.value : 'GPT 4o-M', 
     Model.GPT_4O.value : 'GPT 4o',
     Model.CLAUDE_3_OPUS.value : 'Opus 3',
@@ -258,7 +258,7 @@ MODELS_VERSION_NUMBER = {
 # TODO: Update all the numbers below
 pGa_CONST = {
     'gpt-4o': 0.93478,
-    'gpt-4-turbo': 0.8703,
+    'gpt-4-turbo': 0.872,
     'claude_3_opus': 0.95402,
     'gemini-1.5-pro': 0.92846,
     'qwen-coder-plus': 0.92841,
