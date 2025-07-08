@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from enum import Enum
+from datetime import datetime
 
 # =========================
 #   NUMBER OF SIDS
@@ -175,18 +176,18 @@ mapping_latex = {
 }
 
 MODELS_SHORT = OrderedDict({ 
-    Model.GPT_4_TURBO.value : 'GPT-4', 
+    Model.GPT_4_TURBO.value : 'GPT 4-T', 
     Model.GPT_4O_MINI.value : 'GPT 4o-M', 
     Model.GPT_4O.value : 'GPT 4o',
     Model.CLAUDE_3_OPUS.value : 'Opus 3',
     Model.CLAUDE_3_5_SONNET.value : 'Sonnet 3.5',
-    Model.GEMINI_1_5_FLASH.value : 'G 1.5 flash',
-    Model.GEMINI_1_5_PRO.value : 'G 1.5 pro',
-    Model.QWEN_CODER_PLUS.value : 'Qwen',
-    Model.DEEPSEEK_CHAT.value : 'Deepseek',
+    Model.GEMINI_1_5_FLASH.value : 'Gemini 1.5-F',
+    Model.GEMINI_1_5_PRO.value : 'Gemini 1.5-P',
+    Model.QWEN_CODER_PLUS.value : 'Qwen Coder-P',
+    Model.DEEPSEEK_CHAT.value : 'DeepSeek 2.5',
     Model.CLAUDE_3_5_HAIKU.value : 'Haiku 3.5',
-    Model.GEMINI_2_5_FLASH.value : 'G 2.5 flash',
-    Model.GEMINI_2_5_PRO.value : 'G 2.5 pro',
+    Model.GEMINI_2_5_FLASH.value : 'Gemini 2.5-F',
+    Model.GEMINI_2_5_PRO.value : 'Gemini 2.5-P',
     Model.GPT_4_1.value : 'GPT 4.1',
     Model.GPT_4_1_MINI.value : 'GPT 4.1-M'
 })
@@ -210,24 +211,44 @@ MODELS_ORDERED_PRECISION = [
 ]
 MODELS_SHORT_ORDERED_PRECISION = [MODELS_SHORT[item] for item in MODELS_ORDERED_PRECISION]
 
-class ModelVersion(Enum):
-    GPT_3_5_TURBO = "gpt-3.5-turbo"
-    GPT_4 = "gpt-4-0613"
-    GPT_4_TURBO = "gpt-4-turbo-2024-04-09"
-    GPT_4O_MINI = "gpt-4o-mini-2024-07-18"
-    GPT_4O = "gpt-4o-2024-11-20"
-    GPT_4_1_MINI = "gpt-4.1-mini-2025-04-14"
-    GPT_4_1 = "gpt-4.1-2025-04-14"
-    CLAUDE_3_OPUS = "anthropic.claude-3-opus-20240229-v1:0"
-    CLAUDE_3_5_SONNET = "anthropic.claude-3-5-sonnet-20241022-v2:0"
-    CLAUDE_3_5_HAIKU = "anthropic.claude-3-5-haiku-20241022-v2:0"
-    GEMINI_1_5_FLASH = "gemini-1.5-flash-002"
-    GEMINI_1_5_PRO = "gemini-1.5-pro-002"
-    GEMINI_2_5_FLASH = "gemini-2.5-flash-preview-04-17"
-    GEMINI_2_5_PRO = "gemini-2.5-pro-preview-03-25"
-    QWEN_CODER_PLUS = "qwen-coder-plus-2024-11-06"
-    DEEPSEEK_CHAT = "deepseek-chat"
+MODELS_RELEASE_DATE = {
+    Model.GPT_3_5_TURBO.value: '2022-03-15',
+    Model.GPT_4_TURBO.value: '2023-11-06',
+    Model.GPT_4O_MINI.value: '2024-07-18',
+    Model.GPT_4O.value: '2024-05-13',
+    Model.GPT_4_1_MINI.value: '2025-04-14',
+    Model.GPT_4_1.value: '2025-04-14',
+    Model.CLAUDE_3_OPUS.value: '2024-03-04',
+    Model.CLAUDE_3_5_SONNET.value: '2024-06-20',
+    Model.CLAUDE_3_5_HAIKU.value: '2024-10-22',
+    Model.GEMINI_1_5_FLASH.value: '2024-05-14',
+    Model.GEMINI_1_5_PRO.value: '2024-02-15',
+    Model.GEMINI_2_5_FLASH.value: '2025-04-17',
+    Model.GEMINI_2_5_PRO.value: '2025-03-25',
+    Model.QWEN_CODER_PLUS.value: '2024-11-06',
+    Model.DEEPSEEK_CHAT.value: '2024-12-10'
+}
+MODELS_ORDERED_RELEASE = [item[0] for item in sorted(MODELS_RELEASE_DATE.items(), key=lambda x: datetime.strptime(x[1], '%Y-%m-%d'))]
+MODELS_SHORT_ORDERED_RELEASE = [MODELS_SHORT[key] for key in MODELS_ORDERED_RELEASE]
 
+MODELS_VERSION_NUMBER = {
+    Model.GPT_3_5_TURBO.value: "gpt-3.5-turbo",
+    # Model.GPT_4.value: "gpt-4-0613",
+    Model.GPT_4_TURBO.value: "gpt-4-turbo-2024-04-09",
+    Model.GPT_4O_MINI.value: "gpt-4o-mini-2024-07-18",
+    Model.GPT_4O.value: "gpt-4o-2024-11-20",
+    Model.GPT_4_1_MINI.value: "gpt-4.1-mini-2025-04-14",
+    Model.GPT_4_1.value: "gpt-4.1-2025-04-14",
+    Model.CLAUDE_3_OPUS.value: "anthropic.claude-3-opus-20240229-v1:0",
+    Model.CLAUDE_3_5_SONNET.value: "anthropic.claude-3-5-sonnet-20241022-v2:0",
+    Model.CLAUDE_3_5_HAIKU.value: "anthropic.claude-3-5-haiku-20241022-v2:0",
+    Model.GEMINI_1_5_FLASH.value: "gemini-1.5-flash-002",
+    Model.GEMINI_1_5_PRO.value: "gemini-1.5-pro-002",
+    Model.GEMINI_2_5_FLASH.value: "gemini-2.5-flash-preview-04-17",
+    Model.GEMINI_2_5_PRO.value: "gemini-2.5-pro-preview-03-25",
+    Model.QWEN_CODER_PLUS.value: "qwen-coder-plus-2024-11-06",
+    Model.DEEPSEEK_CHAT.value: "deepseek-chat"
+}
 
 # =========================
 #   GENERATOR CONSTANTS

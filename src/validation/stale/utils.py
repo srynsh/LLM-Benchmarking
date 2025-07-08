@@ -130,6 +130,7 @@ def get_openai_response(messages, model):
         raise e
 
 def get_qwen_response(messages, model):
+    '''Docs: https://help.aliyun.com/zh/model-studio/qwen-coder'''
     try:
         client = OpenAI(api_key=DASHSCOPE_API_KEY, base_url="https://dashscope.aliyuncs.com/compatible-mode/v1")
         response = client.chat.completions.create(
