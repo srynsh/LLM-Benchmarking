@@ -1,8 +1,9 @@
 from src.config import VALIDATOR_REPAIR_NAME
-from src.plots.ensemble_plots import valid_invalid_error, tpr_tnr_ensemble
-from src.plots.validator_plots import plot_failure_counts, tpr_tnr_validator, plot_validator_valid, plot_validator_invalid, plot_validator_valid_invalid_cumsum
-from src.plots.repair_plots import repair_vs_error
-from src.plots.slide_plots import llm_release_plot, llm_release_plot_trendline, llm_release_plot_area
+import src.plots.ensemble_plots as ensemble_plots
+import src.plots.validator_plots as validator_plots
+import src.plots.validator_failure_plots as validator_failure_plots
+import src.plots.repair_plots as repair_plots
+import src.plots.slide_plots as slide_plots
 import sys
 
 # =========================
@@ -10,10 +11,10 @@ import sys
 # =========================
 if VALIDATOR_REPAIR_NAME == 'fcnhp':
     from src.validation.generated_scripts.summary_fcnhp import (ensemble_max_errors, ensemble_tpr, ensemble_tnr, error_message_counts_validator)
-    from src.validation.generated_scripts.llm_as_judge_fcnhp import validator_tpr, validator_tnr
+    from src.validation.generated_scripts.llm_as_judge_fcnhp import validator_tpr, validator_tnr, GV
 elif VALIDATOR_REPAIR_NAME == '':
     from src.validation.generated_scripts.summary_noRepair import (ensemble_max_errors, ensemble_tpr, ensemble_tnr, error_message_counts_validator)
-    from src.validation.generated_scripts.llm_as_judge_noRepair import validator_tpr, validator_tnr
+    from src.validation.generated_scripts.llm_as_judge_noRepair import validator_tpr, validator_tnr, GV
 else:
     raise ValueError(f"Unknown VALIDATOR_REPAIR_STR: {VALIDATOR_REPAIR_NAME}. Please check the configuration.")
 
@@ -22,20 +23,23 @@ else:
 # =========================
 if __name__ == "__main__":
     # Plots for AI4X slides
-    llm_release_plot()
-    llm_release_plot_trendline()
-    llm_release_plot_area()
+    slide_plots.llm_release_plot()
+    slide_plots.llm_release_plot_trendline()
+    slide_plots.llm_release_plot_area()
 
-    # Validator plots
-    plot_failure_counts(error_message_counts_validator)
-    tpr_tnr_validator(validator_tpr, validator_tnr, ensemble_tpr, ensemble_tnr)
-    plot_validator_valid()
-    plot_validator_invalid()
-    plot_validator_valid_invalid_cumsum()
+    # Validator TPR vs TNR plot
+    validator_plots.tpr_tnr_validator(validator_tpr, validator_tnr, ensemble_tpr, ensemble_tnr)
+    validator_plots.gv_plot(GV)
+
+    # Validator failure plots
+    validator_failure_plots.plot_failure_counts(error_message_counts_validator)
+    validator_failure_plots.plot_validator_valid()
+    validator_failure_plots.plot_validator_invalid()
+    validator_failure_plots.plot_validator_valid_invalid_cumsum()
 
     # Ensemble plots
-    tpr_tnr_ensemble(ensemble_tpr, ensemble_tnr, validator_tpr, validator_tnr)
-    valid_invalid_error(ensemble_max_errors)
+    ensemble_plots.tpr_tnr_ensemble(ensemble_tpr, ensemble_tnr, validator_tpr, validator_tnr)
+    ensemble_plots.valid_invalid_error(ensemble_max_errors)
 
     # Repair plots
-    repair_vs_error()
+    repair_plots.repair_vs_error()
