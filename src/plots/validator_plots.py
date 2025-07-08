@@ -94,6 +94,61 @@ def gv_plot(GV):
     # Save with high DPI for crisp text
     plt.savefig(f'{pathValidator}/gv{VALIDATOR_REPAIR_SUFFIX}.pdf', bbox_inches='tight')
 
+def gv_boxplot(GV):
+    df_pg = get_df_pg()
+    df_gv = get_df_gv(GV)
+
+    # Create a figure
+    plt.figure(figsize=(14, 5))
+
+    # Create box plot data grouped by generator
+    # Sort generators based on MODELS_SHORT_ORDERED_RELEASE
+    df_gv['generator'] = df_gv['generator'].apply(lambda x: MODELS_SHORT.get(x, x))
+    df_gv = df_gv.sort_values(by='generator', 
+                             key=lambda x: [MODELS_SHORT_ORDERED_RELEASE.index(model) if model in MODELS_SHORT_ORDERED_RELEASE else float('inf') for model in x])
+    
+    # Create box plot
+    sns.boxplot(data=df_gv, x='generator', y='precision', fill=False, linecolor='black')
+    
+    # Get stats for ground truth positioning
+    stats = df_gv.groupby('generator').agg({'precision': ['mean']}).reset_index()
+    stats.columns = ['generator', 'mean']
+
+    # Add a scatter for human ground truth evaluations from df_pg
+    for i, row in df_pg.iterrows():
+        # Find the position in stats dataframe
+        gen_idx = stats[stats['generator'] == row['generator']].index
+        if len(gen_idx) > 0:
+            idx = stats.index.get_loc(gen_idx[0])
+            plt.scatter([idx], [row['precision']], color='gold', marker='*', s=250, zorder=4, 
+                        label='Ground Truth' if i == 0 else "")
+            
+            # Add annotation for the human evaluation with precision multiplied by 100
+            plt.annotate(f"{row['precision']:.1f}", 
+                        xy=(idx, row['precision']), 
+                        xytext=(20, -15),  # Offset below the point
+                        textcoords='offset points', 
+                        ha='center', 
+                        color='darkgoldenrod',
+                        fontweight='bold',
+                        fontsize=12)
+
+
+    # Set x-tick labels to model names, using shorthand for readability
+    plt.xticks(rotation=45, ha='right', fontsize=13)
+
+    plt.ylabel('Precision', fontsize=16)
+    plt.xlabel('Generator', fontsize=16)
+    plt.grid(True, axis='y', alpha=0.3)
+    # plt.title('Generator Precision by Different Validators', fontsize=18, pad=15)
+    plt.legend(fontsize=13)
+    plt.tight_layout()
+
+    # Increase the size of tick labels
+    plt.yticks(fontsize=13)
+
+    # Save with high DPI for crisp text
+    plt.savefig(f'{pathValidator}/gv_box{VALIDATOR_REPAIR_SUFFIX}.pdf', bbox_inches='tight')
 
 ####################
 # True Positive Rate vs True Negative Rate Plot

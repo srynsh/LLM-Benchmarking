@@ -30,6 +30,7 @@ if __name__ == "__main__":
     # Validator TPR vs TNR plot
     validator_plots.tpr_tnr_validator(validator_tpr, validator_tnr, ensemble_tpr, ensemble_tnr)
     validator_plots.gv_plot(GV)
+    validator_plots.gv_boxplot(GV)
 
     # Validator failure plots
     validator_failure_plots.plot_failure_counts(error_message_counts_validator)
