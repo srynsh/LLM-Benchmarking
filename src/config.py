@@ -258,7 +258,7 @@ MODELS_VERSION_NUMBER = {
 # TODO: Update all the numbers below
 pGa_CONST = {
     'gpt-4o': 0.93478,
-    'gpt-4-turbo': 0.872,
+    'gpt-4-turbo': 0.871,
     'claude_3_opus': 0.95402,
     'gemini-1.5-pro': 0.92846,
     'qwen-coder-plus': 0.92841,

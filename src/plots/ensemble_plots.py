@@ -95,7 +95,7 @@ def valid_invalid_error(ensemble_max_errors):
 
     # Adjust the labels and sizing
     plt.xlabel('Number of Votes Required to Cross Threshold', fontsize=14)
-    plt.ylabel('Error (%)', fontsize=14)
+    plt.ylabel('Maximum Absolute Error (%)', fontsize=14)
     plt.legend(fontsize=12)
     plt.grid(True, alpha=0.3)
     plt.xticks(range(1, 15), fontsize=12)

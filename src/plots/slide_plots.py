@@ -94,7 +94,7 @@ def llm_release_plot_trendline():# Path to the Excel file
     plt.figure(figsize=(12, 6))
     
     # Plot original data points
-    plt.plot(monthly_counts.index, monthly_counts.values, 'o', color='lightblue', alpha=0.8, label='Data Points')
+    plt.plot(monthly_counts.index, monthly_counts.values, 'x', color='black', alpha=1.0, markersize=1, label='Data Points')
     
     # Create smooth trend line using polynomial fit
     x_numeric = np.arange(len(monthly_counts))

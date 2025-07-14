@@ -68,7 +68,7 @@ def get_repair_regression_data(suffix):
 
             # Get the max error for the regression @ k=1, 3 and 5 
             for k, v in enumerate(regression_max_errors):
-                if k in [1, 3, 5]:
+                if k in [0, 1, 3, 5]:
                     meanMaxError = np.mean(v)
                     row.append(meanMaxError)
 
@@ -87,7 +87,8 @@ def get_repair_df(suffixes):
         if rowEnsemble and rowRegression:
             rows.append(rowEnsemble + rowRegression)
 
-    df = pd.DataFrame(rows, columns=['repair', 'count_invalids_all', 'percentage_invalids', 'error_majority', 'error_best', 'regression_error_1', 'regression_error_3', 'regression_error_5'])
+    df = pd.DataFrame(rows, columns=['repair', 'count_invalids_all', 'percentage_invalids', 'error_majority', 'error_best', 
+                                     'regression_error_0', 'regression_error_1', 'regression_error_3', 'regression_error_5'])
     return df
 
 ####################
@@ -96,7 +97,7 @@ def get_repair_df(suffixes):
 def plot_repair_vs_ensemble(df):
     '''Plot the repair vs ensemble errors. On x-axis, we have the repair configurations, and on y1-axis, we have the count of invalids, and on y2-axis, we have the error percentages.'''
     # Set the figure size
-    plt.figure(figsize=(8, 4))
+    plt.figure(figsize=(8, 6))
 
     # Create a twin axis for the count of invalids
     ax1 = plt.gca()
@@ -109,27 +110,31 @@ def plot_repair_vs_ensemble(df):
     ax1.tick_params(axis='y', labelsize=12)
 
     # Plot the error percentages on the second y-axis
-    sns.lineplot(x='repair', y='error_majority', data=df, ax=ax2, marker='s', color='blue', dashes=(2, 2))
-    sns.lineplot(x='repair', y='error_best', data=df, ax=ax2, marker='o', color='red', dashes=(4, 4), linestyle=':')
+    sns.lineplot(x='repair', y='error_majority', data=df, ax=ax2, marker='v', color='brown')
+    sns.lineplot(x='repair', y='error_best', data=df, ax=ax2, marker='o', color='blue', dashes=(4, 4), linestyle=':')
 
     # Plot the regression errors
-    sns.lineplot(x='repair', y='regression_error_1', data=df, ax=ax2, marker='x', color='green', dashes=(1, 1), linestyle='--')
-    sns.lineplot(x='repair', y='regression_error_3', data=df, ax=ax2, marker='^', color='orange', dashes=(1, 1), linestyle='--')
-    sns.lineplot(x='repair', y='regression_error_5', data=df, ax=ax2, marker='d', color='purple', dashes=(1, 1), linestyle='--')
+    sns.lineplot(x='repair', y='regression_error_0', data=df, ax=ax2, marker='.', color='black', dashes=(1, 1), linestyle='-')
+    sns.lineplot(x='repair', y='regression_error_1', data=df, ax=ax2, marker='s', color='green', dashes=(3, 1), linestyle='--')
+    sns.lineplot(x='repair', y='regression_error_3', data=df, ax=ax2, marker='d', color='red', dashes=(5, 2), linestyle='-.')
+    sns.lineplot(x='repair', y='regression_error_5', data=df, ax=ax2, marker='*', color='purple', dashes=(2, 2), linestyle='--', markersize=10)
 
-    ax2.set_ylabel('Error (%)', fontsize=14)
+    ax2.set_ylabel('Maximum Absolute Error (%)', fontsize=14)
     ax2.tick_params(axis='y', labelsize=12)
 
     # Add a legend with a grey box for the barplot
     legend_elements = [
-        plt.Line2D([0], [0], color='blue', marker='s', label='Majority Ensemble Error', linestyle='--'),
-        plt.Line2D([0], [0], color='red', marker='o', label='Best Ensemble Error', linestyle=':'),
-        plt.Line2D([0], [0], color='green', marker='x', label='Regression Error @ k=1', linestyle='--'),
-        plt.Line2D([0], [0], color='orange', marker='^', label='Regression Error @ k=3', linestyle='--'),
-        plt.Line2D([0], [0], color='purple', marker='d', label='Regression Error @ k=5', linestyle='--'),
-        Patch(facecolor='lightgray', edgecolor='black', label='Missing Values')
+        plt.Line2D([0], [0], color='black', marker='x', label='Regression @ s=0', linestyle='-'),
+
+        plt.Line2D([0], [0], color='brown', marker='v', label='Majority Consensus'),
+        plt.Line2D([0], [0], color='blue', marker='o', label='Minority Veto', linestyle=':'),
+
+        plt.Line2D([0], [0], color='green', marker='s', label='Regression @ s=1', linestyle='--'),
+        plt.Line2D([0], [0], color='red', marker='d', label='Regression @ s=3', linestyle='-.'),
+        plt.Line2D([0], [0], color='purple', marker='*', label='Regression @ s=5', dashes=(2, 2), linestyle='--', markersize=10),
+        Patch(facecolor='lightgray', label='Missing Values')
     ]
-    ax2.legend(handles=legend_elements, fontsize=14, loc='upper right')
+    ax2.legend(handles=legend_elements, fontsize=14, loc='upper center', bbox_to_anchor=(0.5, 1.45), ncol=2)
 
     # Set the x-ticks to be the repair configurations
     ax1.set_xticks(range(len(df['repair'])))
@@ -145,7 +150,7 @@ def plot_repair_vs_ensemble(df):
     plt.yticks(fontsize=12)
 
     plt.tight_layout()
-    plt.savefig(f'{pathEnsemble}/repair_vs_ensemble_error{VALIDATOR_REPAIR_SUFFIX}.pdf', bbox_inches='tight')
+    plt.savefig(f'{pathEnsemble}/repair_vs_ensemble_error.pdf', bbox_inches='tight')
 
 ####################
 # Main
