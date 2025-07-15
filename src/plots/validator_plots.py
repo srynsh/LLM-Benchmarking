@@ -31,7 +31,7 @@ def gv_plot(GV):
     df_gv = get_df_gv(GV)
 
     # Create a figure
-    plt.figure(figsize=(14, 5))
+    plt.figure(figsize=(8, 6))
 
     # Group by generator to get statistics for each
     grouped = df_gv.groupby('generator')
@@ -72,26 +72,26 @@ def gv_plot(GV):
                         ha='center', 
                         color='darkgoldenrod',
                         fontweight='bold',
-                        fontsize=12)
+                        fontsize=10)
     
     # Add scatter for min precision (after Gold)
     plt.scatter(range(len(stats)), stats['min'], color='red', s=70, zorder=3, marker='v', label='Validator Min')
 
     # Set x-tick labels to model names, using shorthand for readability
     plt.xticks(range(len(stats)), [MODELS_SHORT.get(model, model) for model in stats['generator']], 
-            rotation=45, ha='right', fontsize=13)
+            rotation=45, ha='right', fontsize=14)
 
     plt.ylabel('Precision', fontsize=16)
     plt.xlabel('Generator', fontsize=16)
     plt.grid(True, axis='y', alpha=0.3)
     # plt.title('Generator Precision by Different Validators', fontsize=18, pad=15)
-    plt.legend(fontsize=13)
-    plt.tight_layout()
+    plt.legend(fontsize=14, loc='upper center', bbox_to_anchor=(0.5, 1.25), ncols=2)
 
     # Increase the size of tick labels
-    plt.yticks(fontsize=13)
+    plt.yticks(fontsize=14)
 
     # Save with high DPI for crisp text
+    plt.tight_layout()
     plt.savefig(f'{pathValidator}/gv{VALIDATOR_REPAIR_SUFFIX}.pdf', bbox_inches='tight')
 
 def gv_boxplot(GV):
@@ -232,8 +232,8 @@ def tpr_tnr_validator(validator_tpr, validator_tnr, ensemble_tpr, ensemble_tnr):
     plt.xlim(82,100)
 
     # Labels and fontsize
-    plt.xlabel('True Positive Rate %', fontsize=14)
-    plt.ylabel('True Negative Rate %', fontsize=14)
+    plt.xlabel('True Positive Rate %', fontsize=16)
+    plt.ylabel('True Negative Rate %', fontsize=16)
 
     # Add dotted line for the ensemble
     rows_valid = []

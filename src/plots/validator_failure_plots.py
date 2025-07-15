@@ -50,12 +50,12 @@ def plot_failure_counts(error_message_counts_validator):
     plt.figure(figsize=(6.5, 3.5))
     df_pivot.plot(kind='bar', stacked=True)
     # plt.yscale('log')
-    plt.xlabel('LLM Validator')
+    plt.xlabel('LLM Validator', fontsize=14)
+    plt.ylabel('Count', fontsize=14)
+    plt.xticks(rotation=45, ha='right', fontsize=12)
     plt.ylim(0, 2500)  # Set y-axis limit to 2500
-    plt.ylabel('Count')
-    plt.xticks(rotation=45, ha='right')
     handles, labels = plt.gca().get_legend_handles_labels()
-    plt.legend(handles[::-1], labels[::-1], title='Error Type', bbox_to_anchor=(0.5, 1.05), loc='lower center', ncol=2)
+    plt.legend(handles[::-1], labels[::-1], bbox_to_anchor=(0.5, 1.05), loc='lower center', ncol=2, fontsize=12)
     plt.tight_layout()
     plt.savefig(f'{pathValidator}/failure_counts{VALIDATOR_REPAIR_SUFFIX}.pdf', bbox_inches='tight')
 
@@ -127,14 +127,13 @@ def plot_validator_valid():
 
     # Create side-by-side bar plots
     sns.barplot(x='count', y='cumulative_percentage', hue='type', data=df_combined, alpha=0.8)
-    plt.xlabel('Number of Validator Models that Got Valid Label Right', fontsize=14)
-    plt.ylabel('Percentage of Valid Labels', fontsize=14)
-    plt.legend()
+    plt.xlabel('Number of Validator Models that Got Valid Label Right', fontsize=16)
+    plt.ylabel('Percentage of Valid Labels', fontsize=16)
 
     # Font size adjustments
-    plt.xticks(fontsize=12)
-    plt.yticks(fontsize=12)
-    plt.legend(fontsize=12)
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
+    plt.legend(fontsize=14)
     
     plt.savefig(f'{pathValidator}/validator_validCount.pdf', bbox_inches='tight')
 
