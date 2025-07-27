@@ -308,6 +308,8 @@ def regress(GV, pGa, PVVA, PVIVA, gens, k1, VALIDATOR_COUNTS, w=[1, 0, 0]):
     min_pG, max_pG, mean_pG, mean_pVv, mean_pViv = extract_values_logs(pGa, VALIDATOR_COUNTS, logs)
     write_latex_table(k1, mean_pVv, mean_pViv, min_pG, max_pG, mean_pG, PVVA, PVIVA, pGa)
 
+    print(f"\n\nk = {k1} | {numComb} combinations")
+    print(f"Min G Error: {100*np.mean(min_pG)}")
     return pGs, max_errors, avg_errors, logs
 
 
