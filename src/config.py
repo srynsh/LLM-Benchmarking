@@ -19,8 +19,8 @@ class ValidatorRepairConfig:
             self.clip_feedback_lazy = True # Validator got lazy and gave short feedback
 
             # Line number matching
-            self.line_num_number = True # Replace "line-num" with "line number"
-            self.line_number_hyphens = True # Line numbers contain hyphens "1-3"
+            self.line_num_number = False # Replace "line-num" with "line number"
+            self.line_number_hyphens = False # Line numbers contain hyphens "1-3"
 
             # Classification labeling
             self.partially_valid_label = False # Validator gave new label "partially valid"
@@ -65,7 +65,7 @@ class ValidatorRepairConfig:
         return config_str
 
 # Global instance
-VALIDATOR_REPAIR = ValidatorRepairConfig(False)
+VALIDATOR_REPAIR = ValidatorRepairConfig(True)
 VALIDATOR_REPAIR_NAME = str(VALIDATOR_REPAIR)
 VALIDATOR_REPAIR_SUFFIX = VALIDATOR_REPAIR.getSuffix()
 

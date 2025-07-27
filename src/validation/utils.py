@@ -2,6 +2,7 @@ import pprint
 from typing import List
 import pandas as pd
 import json
+import numpy as np
 
 ####################
 # DF mergers
@@ -155,6 +156,10 @@ def tpr_tnr_list(confusion_matrices):
 # Printing
 ####################
 
+def default_print(x):
+    '''Convert numpy integers to Python int'''
+    return int(x) if isinstance(x, (np.integer, np.int64)) else str(x)
+
 def pretty_print_into_file(varName, var, fpath, comment = ''):
     """
     Pretty print the contents of a variable into a specified path.
@@ -163,7 +168,10 @@ def pretty_print_into_file(varName, var, fpath, comment = ''):
         var: The variable to be pretty printed.
     """
     with open(fpath, 'a') as f:
-        value = json.dumps(var, indent=2, default=str)  # Use JSON for serialization
+        # print(var)
+        value = json.dumps(var, indent=2, # Use JSON for serialization
+                    default=default_print) # Convert numpy integers to Python int
         value = value.replace('NaN', 'None')  # Replace NaN with None for JSON compatibility
+        # print(value)
         f.write(f"\n# {comment}\n{varName} = {value}\n")
         
