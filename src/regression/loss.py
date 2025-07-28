@@ -11,6 +11,86 @@ from enum import Enum
 #   PREDICTION LOSS
 # =========================
 
+def loss_pred_crossEntropy_weighted(pVv, pViv, pG, GV, alpha=0.3):
+    """
+    Calculate the cross-entropy loss between the predicted and actual gene-variant matrices.
+    
+    This function computes a binary cross-entropy loss between the generator precision 
+    prediction by validator (GV) and its estimate by regression method (GV_hat). 
+    The GV_hat matrix is constructed using outer products of generator and validator performance vectors.
+    
+    Parameters:
+    -----------
+    pVv : numpy.ndarray
+        Probability vector of a validator classifying output as valid.
+    pViv : numpy.ndarray
+        Probability vector of a validator classifying output as invalid.
+    pG : numpy.ndarray
+        Probability vector for generator output being valid.
+    GV : numpy.ndarray
+        Generator precision prediction by validator matrix.
+
+    alpha : float, optional
+        Weighting factor for the cross-entropy loss. Default is 0.3.
+    
+    Returns:
+    --------
+    float
+        Negative mean of the cross-entropy values, representing the loss.
+        
+    Notes:
+    ------
+    A small epsilon (1e-9) is added to avoid log(0) errors through clipping.
+    """
+    GV_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
+    epsilon = 1e-9
+    return -np.mean([
+        alpha*GV[i, j]*np.log(np.clip(GV_hat[i, j], epsilon, 1))
+        + (1-alpha)*(1 - GV[i, j])*np.log(np.clip(1 - GV_hat[i, j], epsilon, 1))
+        for i in range(GV.shape[0])
+        for j in range(GV.shape[1])
+    ])
+
+def loss_pred_focal(pVv, pViv, pG, GV, gamma=2.0):
+    """
+    Calculate the focal loss between the predicted and actual gene-variant matrices.
+    
+    This function computes a focal loss, which is a modified version of cross-entropy loss 
+    that focuses more on hard-to-classify examples. The GV_hat matrix is constructed using 
+    outer products of generator and validator performance vectors.
+    
+    Parameters:
+    -----------
+    pVv : numpy.ndarray
+        Probability vector of a validator classifying output as valid.
+    pViv : numpy.ndarray
+        Probability vector of a validator classifying output as invalid.
+    pG : numpy.ndarray
+        Probability vector for generator output being valid.
+    GV : numpy.ndarray
+        Generator precision prediction by validator matrix.
+    
+    gamma : float, optional
+        Focusing parameter for the focal loss. Default is 2.0.
+    
+    Returns:
+    --------
+    float
+        Negative mean of the focal loss values, representing the loss.
+        
+    Notes:
+    ------
+    A small epsilon (1e-9) is added to avoid log(0) errors through clipping.
+    """
+    GV_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
+    epsilon = 1e-9
+    return -50*np.mean([
+        (GV[i, j] * (1 - GV_hat[i, j])**gamma * np.log(np.clip(GV_hat[i, j], epsilon, 1)) +
+         (1 - GV[i, j]) * GV_hat[i, j]**gamma * np.log(np.clip(1 - GV_hat[i, j], epsilon, 1)))
+        for i in range(GV.shape[0])
+        for j in range(GV.shape[1])
+    ])
+
 def loss_pred_crossEntropy(pVv, pViv, pG, GV):
     """
     Calculate the cross-entropy loss between the predicted and actual gene-variant matrices.
@@ -171,6 +251,10 @@ def loss_pred(pVv, pViv, pG, GV):
         return loss_pred_mae(pVv, pViv, pG, GV)
     elif LOSS_PRED == 'huber':
         return loss_pred_huber(pVv, pViv, pG, GV)
+    elif LOSS_PRED == 'crossEntropy_weighted':
+        return loss_pred_crossEntropy_weighted(pVv, pViv, pG, GV)
+    elif LOSS_PRED == 'focal':
+        return loss_pred_focal(pVv, pViv, pG, GV)
     else:
         raise ValueError(f"Unknown loss function: {LOSS_PRED}")
 
