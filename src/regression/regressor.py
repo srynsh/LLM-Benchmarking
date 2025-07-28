@@ -50,25 +50,19 @@ class RegressionModel(nn.Module):
     def __init__(self, num_validators, num_generators, pVv_init=None, pViv_init=None, pG_init=None):
         super(RegressionModel, self).__init__()
         
-        # Initialize with provided values or defaults
+        # Initialize with provided values or defaults (no logit conversion)
         if pVv_init is not None:
-            # Convert to logit space for unconstrained optimization
-            pVv_logits = np.log(pVv_init / (1 - pVv_init + 1e-9))
-            self.pVv = nn.Parameter(torch.tensor(pVv_logits, dtype=torch.float32))
+            self.pVv = nn.Parameter(torch.tensor(pVv_init, dtype=torch.float32))
         else:
             self.pVv = nn.Parameter(torch.rand(num_validators))
             
         if pViv_init is not None:
-            # Convert to logit space for unconstrained optimization
-            pViv_logits = np.log(pViv_init / (1 - pViv_init + 1e-9))
-            self.pViv = nn.Parameter(torch.tensor(pViv_logits, dtype=torch.float32))
+            self.pViv = nn.Parameter(torch.tensor(pViv_init, dtype=torch.float32))
         else:
             self.pViv = nn.Parameter(torch.rand(num_validators))
             
         if pG_init is not None:
-            # Convert to logit space for unconstrained optimization
-            pG_logits = np.log(pG_init / (1 - pG_init + 1e-9))
-            self.pG = nn.Parameter(torch.tensor(pG_logits, dtype=torch.float32))
+            self.pG = nn.Parameter(torch.tensor(pG_init, dtype=torch.float32))
         else:
             self.pG = nn.Parameter(torch.rand(num_generators))
         
@@ -76,11 +70,8 @@ class RegressionModel(nn.Module):
         self.to(device)
         
     def forward(self):
-        # Apply sigmoid to ensure bounds [0, 1]
-        pVv = torch.sigmoid(self.pVv)
-        pViv = torch.sigmoid(self.pViv)
-        pG = torch.sigmoid(self.pG)
-        return pVv, pViv, pG
+        # Return parameters directly without sigmoid activation
+        return self.pVv, self.pViv, self.pG
 
 
 ####################
@@ -304,12 +295,16 @@ def estimate_probs_grad_descent(k, GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]
                             pVv_init=pVv_hat, pViv_init=pViv_hat, pG_init=pG)
 
     # Setup optimizer
-    optimizer = optim.Adam(model.parameters(), lr=0.01)
+    optimizer = optim.Adam(model.parameters(), lr=0.0001)
+    
+    # Setup learning rate scheduler
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, 
+                                                    patience=200, verbose=True, min_lr=1e-7)
     
     # Training loop
-    num_epochs = 1000
+    num_epochs = 100000
     best_loss = float('inf')
-    patience = 100
+    patience = 1000
     patience_counter = 0
     
     for epoch in range(num_epochs):
@@ -322,6 +317,9 @@ def estimate_probs_grad_descent(k, GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]
         
         loss.backward()
         optimizer.step()
+        
+        # Step the scheduler
+        scheduler.step(loss.item())
         
         # Early stopping
         if loss.item() < best_loss:
