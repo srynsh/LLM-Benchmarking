@@ -252,9 +252,16 @@ def estimate_probs(k, GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]):
         if(res.success == False):
             print(f"\033[91mRun {run_count} failed to converge\033[0m")
         
-        final_loss, final_loss_best, pVv, pViv, pG = write_loss_to_csv(
+        final_loss, final_loss_best, pVv_t, pViv_t, pG_t = write_loss_to_csv(
             k, idG, res, GV, pVva, pViva, pGa, idV, idG, w, NUM_VALIDATORS, final_loss_best
         )
+
+        if pVv_t is not None:
+            pVv = pVv_t
+        if pViv_t is not None:
+            pViv = pViv_t
+        if pG_t is not None:
+            pG = pG_t
         
     return pVv, pViv, pG
 

@@ -458,5 +458,9 @@ def write_loss_to_csv(k, j, res, GV, pVva, pViva, pGa, idV, idG, w, NUM_VALIDATO
         pVv = pVv_hat
         pViv = pViv_hat
         pG = pG_hat
+    else:
+        pVv = None
+        pViv = None
+        pG = None
     
     return final_loss, final_loss_best, pVv, pViv, pG
