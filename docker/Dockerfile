@@ -35,7 +35,8 @@ COPY src/ /app/src/
 COPY data/ /app/data/
 
 # Set working directory to the src directory
-WORKDIR /app/src/
+WORKDIR /app/
 
 # Command to run when container starts
-CMD ["python3", "helloWorld.py"]
+# CMD ["/bin/bash"]
+CMD ["python3", "-m", "src.regression.regressor"]

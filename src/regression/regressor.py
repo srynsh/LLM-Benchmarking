@@ -107,6 +107,8 @@ def read_data():
 # =========================
 
 # Initialize the file to empty
+if not os.path.exists(PATH_LATEX):
+    os.makedirs(PATH_LATEX)
 with open(f"{PATH_LATEX}GV_hat.tex", "w") as f:
     f.write('')
 

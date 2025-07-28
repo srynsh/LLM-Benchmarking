@@ -45,7 +45,7 @@ PATH_IMAGES = PATH_OUTPUT + 'images/'
 PATH_REGRESSION = PATH_IMAGES + f'regression/{VALIDATOR_REPAIR_NAME}/'
 PATH_LATEX = PATH_OUTPUT + 'latex/'
 PATH_LOGS = pathLogs
-PATH_LOGS_LOSS_ITER = PATH_LOGS + 'loss iteration/'
+PATH_LOGS_LOSS_ITER = PATH_LOGS + 'loss_iteration/'
 PATH_LOGS_PREDICTED = PATH_LOGS + 'predicted/'
 
 pathRegressionGenScripts = f'./src/regression/generated_scripts/'
