@@ -310,6 +310,8 @@ def total_loss(x, GV, pVva, pViva, pGa, idV, idG, w):
 GLOBAL_LOSS_COUNT = 0
 
 # Initialize CSV file for iteration losses
+if not os.path.exists(PATH_LOGS_LOSS_ITER):
+    os.makedirs(PATH_LOGS_LOSS_ITER)
 csv_path = f"{PATH_LOGS_LOSS_ITER}iter_losses.csv"
 with open(csv_path, 'w') as f:
     f.write("iter,train_loss_GV,train_loss_g,train_loss_vv,train_loss_viv,test_loss_GV,test_loss_g,test_loss_vv,test_loss_viv\n")

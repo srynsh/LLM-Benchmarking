@@ -9,3 +9,11 @@ scikit-learn==1.5.1
 scipy==1.14.0
 seaborn==0.13.2
 tqdm==4.67.1
+fuzzywuzzy==0.18.0
+jsonschema==4.21.1
+python-dotenv==1.0.1
+openai==1.55.3
+requests==2.31.0
+boto3==1.37.37
+google-api-python-client==2.139.0
+google-generativeai==0.7.2
