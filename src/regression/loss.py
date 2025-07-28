@@ -255,6 +255,8 @@ def loss_pred(pVv, pViv, pG, GV):
         return loss_pred_crossEntropy_weighted(pVv, pViv, pG, GV)
     elif LOSS_PRED == 'focal':
         return loss_pred_focal(pVv, pViv, pG, GV)
+    elif LOSS_PRED == 'custom':
+        return 0.5*loss_pred_crossEntropy(pVv, pViv, pG, GV) + loss_pred_rmse(pVv, pViv, pG, GV)
     else:
         raise ValueError(f"Unknown loss function: {LOSS_PRED}")
 
