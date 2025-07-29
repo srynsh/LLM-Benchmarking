@@ -1,6 +1,5 @@
-# cd .. (comment retained for context)
-# sudo docker build --no-cache -t llm-benchmarking -f docker/Dockerfile .
-# sudo docker run --rm -v $(pwd)/output:/app/output llm-benchmarking
+# docker build -t llm-benchmarking -f docker/Dockerfile .
+# docker run --rm -v $(pwd)/output:/app/output llm-benchmarking
 
 FROM ubuntu:22.04
 
@@ -19,7 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 
 # Install Python dependencies
-RUN python3 -m pip install --no-cache-dir -r requirements.txt
+RUN python3 -m pip install -r requirements.txt
 
 # Create directory for output images
 RUN mkdir -p /app/src
@@ -35,7 +34,9 @@ COPY src/ /app/src/
 COPY data/ /app/data/
 
 # Set working directory to the src directory
-WORKDIR /app/src/
+WORKDIR /app/
 
 # Command to run when container starts
-CMD ["python3", "helloWorld.py"]
+# CMD ["/bin/bash"]
+CMD ["python3", "-m", "src.regression.regressor"]
+# CMD ["python3", "-m", "src.regression.weight_optimization"]
