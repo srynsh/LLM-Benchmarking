@@ -32,6 +32,7 @@ RUN mkdir -p /app/src
 # Copy the rest of the code
 COPY src/ /app/src/
 COPY data/ /app/data/
+COPY logs/ /app/logs/
 
 # Set working directory to the src directory
 WORKDIR /app/

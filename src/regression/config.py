@@ -87,8 +87,8 @@ GV_CONST = np.array(GV)
 # =========================
 #   EXPERIMENT CONSTANTS
 # =========================
-NUM_RUNS = 1 # number of runs to min over
-MAX_WORKERS = 6 # number of workers for parallelization
+NUM_RUNS = 10 # number of runs to min over
+MAX_WORKERS = 16 # number of workers for parallelization
 K_LIST = range(0, len(GENS)+1) # number of generators to peek at
 # K_LIST = [5] 
 
@@ -98,7 +98,7 @@ K_LIST = range(0, len(GENS)+1) # number of generators to peek at
 # WEIGHTS = [0.1, 0.01, 0.1] # weights for each loss function
 WEIGHTS = [2, 1, 10] # weights for each loss function
 # WEIGHTS = [1, 1, 1] # weights for each loss function
-LOSS_PRED = 'rmse' # options are 'crossEntropy', 'rmse', 'mse', 'mae', 'huber', 'crossEntropy_weighted', 'focal'
+LOSS_PRED = 'crossEntropy' # options are 'crossEntropy', 'rmse', 'mse', 'mae', 'huber', 'crossEntropy_weighted', 'focal'
 LOSS_REG = 'rmse' # options are 'rmse', 'mae', 'huber'
 
 # =========================
