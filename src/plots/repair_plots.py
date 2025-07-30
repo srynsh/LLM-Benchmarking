@@ -139,8 +139,11 @@ def plot_repair_vs_ensemble(df):
     # Set the x-ticks to be the repair configurations
     ax1.set_xticks(range(len(df['repair'])))
     ax1.set_xticklabels(df['repair'], fontsize=14) #  rotation=45, ha='right', 
-    ax1.set_ylim(0, 15)
-    ax2.set_ylim(0, 15)  # Set y-axis limit to 0-100% for better visibility
+    ax1.set_ylim(0, 18)
+    ax2.set_ylim(0, 18)  # Set y-axis limit to 0-18 for better visibility
+
+    # Ensure both axes have the same y-axis ticks
+    ax1.set_yticks(ax2.get_yticks())
 
     # Add a legend
     # ax2.legend(['Majority Error', 'Best Error'], fontsize=12, loc='upper left')
