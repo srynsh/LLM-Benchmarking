@@ -110,11 +110,11 @@ def plot_repair_vs_ensemble(df):
     ax1.tick_params(axis='y', labelsize=14)
 
     # Plot the error percentages on the second y-axis
-    sns.lineplot(x='repair', y='error_majority', data=df, ax=ax2, marker='v', color='brown')
+    sns.lineplot(x='repair', y='error_majority', data=df, ax=ax2, marker='^', color='brown')
     sns.lineplot(x='repair', y='error_best', data=df, ax=ax2, marker='o', color='blue', dashes=(4, 4), linestyle=':')
 
     # Plot the regression errors
-    sns.lineplot(x='repair', y='regression_error_0', data=df, ax=ax2, marker='x', color='black', linestyle='-', markersize=10)
+    sns.lineplot(x='repair', y='regression_error_0', data=df, ax=ax2, marker='x', color='black', linestyle='-', markeredgecolor='black')
     sns.lineplot(x='repair', y='regression_error_1', data=df, ax=ax2, marker='s', color='green', dashes=(3, 1), linestyle='--')
     sns.lineplot(x='repair', y='regression_error_3', data=df, ax=ax2, marker='d', color='red', dashes=(5, 2), linestyle='-.')
     sns.lineplot(x='repair', y='regression_error_5', data=df, ax=ax2, marker='*', color='purple', dashes=(2, 2), linestyle='--', markersize=10)
@@ -124,9 +124,9 @@ def plot_repair_vs_ensemble(df):
 
     # Add a legend with a grey box for the barplot
     legend_elements = [
-        plt.Line2D([0], [0], color='black', marker='x', label='Regression @ s=0', linestyle='-', markersize=10),
+        plt.Line2D([0], [0], color='black', marker='x', label='Regression @ s=0', linestyle='-', markersize=10, ),
 
-        plt.Line2D([0], [0], color='brown', marker='v', label='Majority Consensus'),
+        plt.Line2D([0], [0], color='brown', marker='^', label='Majority Consensus'),
         plt.Line2D([0], [0], color='blue', marker='o', label='Minority Veto', linestyle=':'),
 
         plt.Line2D([0], [0], color='green', marker='s', label='Regression @ s=1', linestyle='--'),
