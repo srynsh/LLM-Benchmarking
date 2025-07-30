@@ -91,7 +91,6 @@ with open(fpathRegressionSummary, 'w') as f:
 # =========================
 
 def read_data():
-    # Always use hardcoded constants to avoid dependency on stale modules
     GV = GV_CONST
     pGa = pGa_CONST
     VALIDATOR_COUNTS = VALIDATOR_COUNTS_CONST
