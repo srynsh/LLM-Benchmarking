@@ -1,5 +1,5 @@
 # docker build -t llm-benchmarking -f docker/Dockerfile .
-# docker run --rm -v $(pwd)/output:/app/output llm-benchmarking
+# docker run --rm -v $(pwd)/output:/app/output -v $(pwd)/logs:/app/logs -v $(pwd)/src:/app/src llm-benchmarking
 
 FROM ubuntu:22.04
 
@@ -19,15 +19,6 @@ COPY requirements.txt .
 
 # Install Python dependencies
 RUN python3 -m pip install -r requirements.txt
-
-# Create directory for output images
-RUN mkdir -p /app/src
-# RUN mkdir -p /app/output /app/output/images /app/output/images/pdf_files /app/output/images/png_files /app/output/latex /app/output/interim /app/output/logs
-# RUN mkdir -p /app/output /app/output/images /app/output/images/pdfs /app/output/images/pngs /app/output/latex /app/output/interim /app/output/logs
-# RUN chmod -R 777 /app/output
-
-# docker
-
 
 # Copy the rest of the code
 COPY src/ /app/src/
