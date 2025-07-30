@@ -4,7 +4,7 @@ import numpy as np
 import sys
 from src.regression.config import GENS, MODELS, MODEL_NAMES, MODEL_ENUM
 
-from src.regression.dataGenerator import get_data, get_row_4o, get_row_4_turbo, get_row_3_opus, get_row_35, get_row_gemini_15_pro, get_row_deepseek_chat, get_row_qwen_coder_plus
+from src.regression.stale.dataGenerator import get_data, get_row_4o, get_row_4_turbo, get_row_3_opus, get_row_35, get_row_gemini_15_pro, get_row_deepseek_chat, get_row_qwen_coder_plus
 import logging
 
 # from data import *
