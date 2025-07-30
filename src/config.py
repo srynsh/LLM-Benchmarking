@@ -19,11 +19,11 @@ class ValidatorRepairConfig:
             self.clip_feedback_lazy = True # Validator got lazy and gave short feedback
 
             # Line number matching
-            self.line_num_number = False # Replace "line-num" with "line number"
-            self.line_number_hyphens = False # Line numbers contain hyphens "1-3"
+            self.line_num_number = True # Replace "line-num" with "line number"
+            self.line_number_hyphens = True # Line numbers contain hyphens "1-3"
 
             # Classification labeling
-            self.partially_valid_label = False # Validator gave new label "partially valid"
+            self.partially_valid_label = True # Validator gave new label "partially valid"
         else:
             # Set all flags to True if default is provided
             self.feedback_match_fuzzy = default

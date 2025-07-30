@@ -1,6 +1,6 @@
 
 
-from src.regression.config import GENS, GV_CONST, IS_WRITE_LOGS, IS_WRITE_LOGS_ITER, MODEL_ENUM, MODELS, PATH_LOGS, PATH_LOGS_LOSS_ITER, PATH_LOGS_PREDICTED
+from src.regression.config import GENS, GV_CONST, IS_WRITE_LOGS_LOSS, IS_WRITE_LOGS_ITER, MODEL_ENUM, MODELS, PATH_LOGS, PATH_LOGS_LOSS_ITER, PATH_LOGS_PREDICTED
 from src.regression.config import LOSS_PRED, LOSS_REG
 
 import numpy as np
@@ -398,9 +398,11 @@ GLOBAL_LOSS_COUNT = 0
 # Initialize CSV file for iteration losses
 if not os.path.exists(PATH_LOGS_LOSS_ITER):
     os.makedirs(PATH_LOGS_LOSS_ITER)
-csv_path = f"{PATH_LOGS_LOSS_ITER}iter_losses.csv"
-with open(csv_path, 'w') as f:
-    f.write("iter,train_loss_GV,train_loss_g,train_loss_vv,train_loss_viv,test_loss_GV,test_loss_g,test_loss_vv,test_loss_viv\n")
+
+path_iter_loss_csv = f"{PATH_LOGS_LOSS_ITER}iter_losses.csv"
+if IS_WRITE_LOGS_ITER:
+    with open(path_iter_loss_csv, 'w') as f:
+        f.write("iter,train_loss_GV,train_loss_g,train_loss_vv,train_loss_viv,test_loss_GV,test_loss_g,test_loss_vv,test_loss_viv\n")
 
 def write_iterLoss_csv(x, pGa, pVva, pViva, idG, idV):
     """
@@ -452,7 +454,7 @@ def write_iterLoss_csv(x, pGa, pVva, pViva, idG, idV):
     loss_test_viv = loss_reg(pViv_hat, pViva, idVIV_test)
 
     # Append the current results
-    with open(csv_path, 'a') as f:
+    with open(path_iter_loss_csv, 'a') as f:
         f.write(f"{GLOBAL_LOSS_COUNT},{loss_train_GV},{loss_train_g},{loss_train_vv},{loss_train_viv},{loss_test_GV},{loss_test_g},{loss_test_vv},{loss_test_viv}\n")
 
     # Write detailed results to a file with actual vs predicted values
@@ -512,9 +514,12 @@ def write_iterLoss_csv(x, pGa, pVva, pViva, idG, idV):
 
 
 # Initialize CSV file for regression losses
-with open(csv_path, 'w') as f:
-    f.write("k,models,final_loss,gv_loss,pg_loss,pvv_loss,pviv_loss\n")
+path_overall_loss_csv = f"{PATH_LOGS_LOSS_ITER}regression_losses.csv"
+if IS_WRITE_LOGS_LOSS:
+    with open(path_overall_loss_csv, 'w') as f:
+        f.write("k,models,final_loss,gv_loss,pg_loss,pvv_loss,pviv_loss\n")
 
+# Function to write the final loss to CSV
 def write_loss_to_csv(k, j, res, GV, pVva, pViva, pGa, idV, idG, w, NUM_VALIDATORS, final_loss_best):
     # find the hats
     pVv_hat = res.x[:NUM_VALIDATORS]
@@ -528,15 +533,12 @@ def write_loss_to_csv(k, j, res, GV, pVva, pViva, pGa, idV, idG, w, NUM_VALIDATO
     pvv_loss = loss_reg(pVv_hat, pVva, idV)
     pviv_loss = loss_reg(pViv_hat, pViva, idV)
 
-    # Record the results in a CSV file
-    csv_path = f"{PATH_LOGS}regression_losses.csv"
-
     # Convert the validation model combo to string
     models_str = ';'.join([str(m) for m in j])
 
     # Append the current results
-    if IS_WRITE_LOGS:
-        with open(csv_path, 'a') as f:
+    if IS_WRITE_LOGS_LOSS:
+        with open(path_overall_loss_csv, 'a') as f:
             f.write(f"{k},{models_str},{final_loss},{gv_loss},{pg_loss},{pvv_loss},{pviv_loss}\n")
 
     # Check if this is the best loss so far

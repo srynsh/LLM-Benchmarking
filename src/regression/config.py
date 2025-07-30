@@ -87,7 +87,7 @@ GV_CONST = np.array(GV)
 # =========================
 #   EXPERIMENT CONSTANTS
 # =========================
-NUM_RUNS = 10 # number of runs to min over
+NUM_RUNS = 1 # number of runs to min over
 MAX_WORKERS = 16 # number of workers for parallelization
 K_LIST = range(0, len(GENS)+1) # number of generators to peek at
 # K_LIST = [5] 
@@ -121,7 +121,7 @@ ERR_EPSILON_PG = 0.001 # For adding to start point
 
 COLOR_GREEN_DELTA = 0.02    # 2% tolerance
 COLOR_YELLOW_DELTA = 0.05   # 5%
-IS_WRITE_LOGS = True
+IS_WRITE_LOGS_LOSS = True
 IS_WRITE_LOGS_ITER = False
 
 # =========================
