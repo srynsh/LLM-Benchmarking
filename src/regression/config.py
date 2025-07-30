@@ -121,7 +121,8 @@ ERR_EPSILON_PG = 0.001 # For adding to start point
 
 COLOR_GREEN_DELTA = 0.02    # 2% tolerance
 COLOR_YELLOW_DELTA = 0.05   # 5%
-IS_WRITE_LOGS = False
+IS_WRITE_LOGS = True
+IS_WRITE_LOGS_ITER = False
 
 # =========================
 #   LLM JUDGE

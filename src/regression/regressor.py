@@ -91,21 +91,11 @@ with open(fpathRegressionSummary, 'w') as f:
 # =========================
 
 def read_data():
-    if COMPUTE_REFERENCE_VALUES:
-        GV = get_GV(GENS)
-        pGa = get_precision(GV, GENS)
-        VALIDATOR_COUNTS = get_VALIDATOR_COUNTS()
-
-        _piv, _pv = get_pViv_full(GENS, VALIDATOR_COUNTS)
-        PVVA = np.array([_pv[m] for m in MODELS])
-        PVIVA = np.array([_piv[m] for m in MODELS])
-
-    else:
-        GV = GV_CONST
-        pGa = pGa_CONST
-        VALIDATOR_COUNTS = VALIDATOR_COUNTS_CONST
-        PVVA = PVVA_CONST
-        PVIVA = PVIVA_CONST
+    GV = GV_CONST
+    pGa = pGa_CONST
+    VALIDATOR_COUNTS = VALIDATOR_COUNTS_CONST
+    PVVA = PVVA_CONST
+    PVIVA = PVIVA_CONST
 
     return GV, pGa, VALIDATOR_COUNTS, PVVA, PVIVA
         

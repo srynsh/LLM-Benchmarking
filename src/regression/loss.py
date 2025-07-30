@@ -1,6 +1,6 @@
 
 
-from src.regression.config import GENS, GV_CONST, IS_WRITE_LOGS, MODEL_ENUM, MODELS, PATH_LOGS, PATH_LOGS_LOSS_ITER, PATH_LOGS_PREDICTED
+from src.regression.config import GENS, GV_CONST, IS_WRITE_LOGS, IS_WRITE_LOGS_ITER, MODEL_ENUM, MODELS, PATH_LOGS, PATH_LOGS_LOSS_ITER, PATH_LOGS_PREDICTED
 from src.regression.config import LOSS_PRED, LOSS_REG
 
 import numpy as np
@@ -384,7 +384,7 @@ def total_loss(x, GV, pVva, pViva, pGa, idV, idG, w):
     l3_1 = loss_reg(x[:NUM_VALIDATORS], pVva, idV)
     l3_2 = loss_reg(x[NUM_VALIDATORS:2*NUM_VALIDATORS], pViva, idV)
 
-    if IS_WRITE_LOGS:
+    if IS_WRITE_LOGS_ITER:
         write_iterLoss_csv(x, pGa, pVva, pViva, idG, idV)
 
     return l1 + w[0]*l2 + w[1]*l3_1 + w[2]*l3_2
