@@ -202,6 +202,7 @@ def extract_values_logs(pGa, VALIDATOR_COUNTS, logs):
 
 def estimate_probs(k, GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]):
     final_loss_best = np.inf
+    pVv, pViv, pG = {}, {}, {}
 
     NUM_VALIDATORS = GV.shape[1]
     NUM_GENERATORS = GV.shape[0]
@@ -225,31 +226,30 @@ def estimate_probs(k, GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]):
 
     for run_count in range (NUM_RUNS):
         if run_count != 0:
-            pG = pG_ + np.random.uniform(-ERR_EPSILON_PG/2, ERR_EPSILON_PG/2, NUM_GENERATORS)
+            pG_hat = pG_ + np.random.uniform(-ERR_EPSILON_PG/2, ERR_EPSILON_PG/2, NUM_GENERATORS)
             pVv_hat = pVv_hat_ + np.random.uniform(-ERR_EPSILON_PV/2, ERR_EPSILON_PV/2, NUM_VALIDATORS)
             pViv_hat = pViv_hat_ + np.random.uniform(-ERR_EPSILON_PIV/2, ERR_EPSILON_PIV/2, NUM_VALIDATORS)
         else:
-            pG, pVv_hat, pViv_hat = pG_, pVv_hat_, pViv_hat_
+            pG_hat, pVv_hat, pViv_hat = pG_, pVv_hat_, pViv_hat_
 
-        pG = np.clip(pG, 0, 1)
+        pG_hat = np.clip(pG_hat, 0, 1)
         pVv_hat = np.clip(pVv_hat, 0, 1)
         pViv_hat = np.clip(pViv_hat, 0, 1)  
 
-        x = np.concatenate([pVv_hat, pViv_hat, pG])
+        x = np.concatenate([pVv_hat, pViv_hat, pG_hat])
 
         res = minimize(total_loss, x, args=(GV, pVva, pViva, pGa, idV, idG, w), bounds=[(0, 1)] * len(x), method='L-BFGS-B')
         if(res.success == False):
             print(f"\033[91mRun {run_count} failed to converge\033[0m")
-        
+
         final_loss, final_loss_best, pVv_t, pViv_t, pG_t = write_loss_to_csv(
-            k, idG, res, GV, pVva, pViva, pGa, idV, idG, w, NUM_VALIDATORS, final_loss_best
+            k, res, GV, pVva, pViva, pGa, idV, idG, w, NUM_VALIDATORS, final_loss_best
         )
 
-        if pVv_t is not None:
+        if final_loss_best > final_loss:
+            final_loss_best = final_loss
             pVv = pVv_t
-        if pViv_t is not None:
             pViv = pViv_t
-        if pG_t is not None:
             pG = pG_t
         
     return pVv, pViv, pG

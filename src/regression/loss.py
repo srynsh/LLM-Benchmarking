@@ -517,10 +517,10 @@ def write_iterLoss_csv(x, pGa, pVva, pViva, idG, idV):
 path_overall_loss_csv = f"{PATH_LOGS_LOSS_ITER}regression_losses.csv"
 if IS_WRITE_LOGS_LOSS:
     with open(path_overall_loss_csv, 'w') as f:
-        f.write("k,models,final_loss,gv_loss,pg_loss,pvv_loss,pviv_loss\n")
+        f.write("k,models,final_loss,gv_loss,pg_loss,pvv_loss,pviv_loss,pg_mae,pvv_mae,pviv_mae,pg_err\n")
 
 # Function to write the final loss to CSV
-def write_loss_to_csv(k, j, res, GV, pVva, pViva, pGa, idV, idG, w, NUM_VALIDATORS, final_loss_best):
+def write_loss_to_csv(k, res, GV, pVva, pViva, pGa, idV, idG, w, NUM_VALIDATORS, final_loss_best):
     # find the hats
     pVv_hat = res.x[:NUM_VALIDATORS]
     pViv_hat = res.x[NUM_VALIDATORS:2*NUM_VALIDATORS]
@@ -533,24 +533,18 @@ def write_loss_to_csv(k, j, res, GV, pVva, pViva, pGa, idV, idG, w, NUM_VALIDATO
     pvv_loss = loss_reg(pVv_hat, pVva, idV)
     pviv_loss = loss_reg(pViv_hat, pViva, idV)
 
+
+    pg_err = np.abs(np.array([pGa[model] for model in GENS]) - np.array([pG_hat[MODEL_ENUM[model]] for model in GENS]))
+    pg_max = np.max(pg_err)
+    pvv_max = np.max(np.abs(np.array([pVva[model] for model in MODELS]) - pVv_hat)) if len(pVva) > 0 else 0
+    pviv_max = np.max(np.abs(np.array([pViva[model] for model in MODELS]) - pViv_hat)) if len(pViva) > 0 else 0
     # Convert the validation model combo to string
-    models_str = ';'.join([str(m) for m in j])
+    models_str = ';'.join([str(m) for m in idG])
 
     # Append the current results
     if IS_WRITE_LOGS_LOSS:
         with open(path_overall_loss_csv, 'a') as f:
-            f.write(f"{k},{models_str},{final_loss},{gv_loss},{pg_loss},{pvv_loss},{pviv_loss}\n")
+            f.write(f"{k},{models_str},{final_loss},{gv_loss},{pg_loss},{pvv_loss},{pviv_loss},{pg_max},{pvv_max},{pviv_max}, {pg_err}\n")
 
-    # Check if this is the best loss so far
-    if final_loss < final_loss_best:
-        final_loss_best = final_loss
-        
-        pVv = pVv_hat
-        pViv = pViv_hat
-        pG = pG_hat
-    else:
-        pVv = None
-        pViv = None
-        pG = None
     
-    return final_loss, final_loss_best, pVv, pViv, pG
+    return final_loss, final_loss_best, pVv_hat, pViv_hat, pG_hat
