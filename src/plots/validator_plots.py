@@ -49,11 +49,11 @@ def gv_plot(GV):
 
     # Plot vertical lines from min to max
     for i, row in enumerate(stats.itertuples()):
-        plt.plot([i, i], [row.min, row.max], 'k-', linewidth=1.5)
+        plt.plot([i, i], [row.min, row.max], 'k-', linewidth=1.5, color='gray', alpha=0.75)
         
     # Plot max and mean markers
     plt.scatter(range(len(stats)), stats['max'], color='green', s=70, zorder=3, marker='^', label='Validator Max')
-    plt.scatter(range(len(stats)), stats['mean'], color='blue', s=100, zorder=3, label='Validator Mean')
+    plt.scatter(range(len(stats)), stats['mean'], color='black', s=200, zorder=3, marker='_', label='Validator Mean')
 
     # Add a scatter for human ground truth evaluations from df_pg
     for i, row in df_pg.iterrows():
@@ -61,34 +61,34 @@ def gv_plot(GV):
         gen_idx = stats[stats['generator'] == row['generator']].index
         if len(gen_idx) > 0:
             idx = stats.index.get_loc(gen_idx[0])
-            plt.scatter([idx], [row['precision']], color='gold', marker='*', s=250, zorder=4, 
+            plt.scatter([idx], [row['precision']], color='blue', marker='o', s=50, zorder=4, alpha=0.8,
                         label='Ground Truth' if i == 0 else "")
             
             # Add annotation for the human evaluation with precision multiplied by 100
-            plt.annotate(f"{row['precision']:.1f}", 
-                        xy=(idx, row['precision']), 
-                        xytext=(20, -15),  # Offset below the point
-                        textcoords='offset points', 
-                        ha='center', 
-                        color='darkgoldenrod',
-                        fontweight='bold',
-                        fontsize=10)
+            # plt.annotate(f"{row['precision']:.1f}", 
+            #             xy=(idx, row['precision']), 
+            #             xytext=(20, -15),  # Offset below the point
+            #             textcoords='offset points', 
+            #             ha='center', 
+            #             color='darkgoldenrod',
+            #             fontweight='bold',
+            #             fontsize=10)
     
     # Add scatter for min precision (after Gold)
     plt.scatter(range(len(stats)), stats['min'], color='red', s=70, zorder=3, marker='v', label='Validator Min')
 
     # Set x-tick labels to model names, using shorthand for readability
     plt.xticks(range(len(stats)), [MODELS_SHORT.get(model, model) for model in stats['generator']], 
-            rotation=45, ha='right', fontsize=14)
+            rotation=45, ha='right', fontsize=16)
 
-    plt.ylabel('Precision', fontsize=16)
-    plt.xlabel('Generator', fontsize=16)
+    plt.ylabel('Precision', fontsize=18)
+    plt.xlabel('Generator', fontsize=18)
     plt.grid(True, axis='y', alpha=0.3)
     # plt.title('Generator Precision by Different Validators', fontsize=18, pad=15)
-    plt.legend(fontsize=14, loc='upper center', bbox_to_anchor=(0.5, 1.25), ncols=2)
+    plt.legend(fontsize=16, loc='upper center', bbox_to_anchor=(0.5, 1.35), ncols=2)
 
     # Increase the size of tick labels
-    plt.yticks(fontsize=14)
+    plt.yticks(fontsize=16)
 
     # Save with high DPI for crisp text
     plt.tight_layout()

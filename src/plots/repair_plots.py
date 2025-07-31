@@ -106,7 +106,7 @@ def plot_repair_vs_ensemble(df):
     # Plot the count of invalids on the first y-axis
     sns.barplot(x='repair', y='percentage_invalids', data=df, ax=ax1, color='lightgray', alpha=0.7)
     ax1.set_ylabel('Missing Values (%)', fontsize=16)
-    ax1.set_xlabel('Repair Undertaken', fontsize=16)
+    ax1.set_xlabel('Repairs Undertaken', fontsize=16)
     ax1.tick_params(axis='y', labelsize=14)
 
     # Plot the error percentages on the second y-axis
@@ -137,20 +137,19 @@ def plot_repair_vs_ensemble(df):
     ax2.legend(handles=legend_elements, fontsize=16, loc='upper center', bbox_to_anchor=(0.5, 1.45), ncol=2)
 
     # Set the x-ticks to be the repair configurations
-    ax1.set_xticks(range(len(df['repair'])))
-    ax1.set_xticklabels(df['repair'], fontsize=14) #  rotation=45, ha='right', 
+    xticks = ['+ ' + i if i != 'Original' else i for i in df['repair'].tolist()]
+    ax1.set_xticks(range(len(xticks)))
+    ax1.set_xticklabels(xticks, fontsize=14) #  rotation=45, ha='right',
     ax1.set_ylim(0, 18)
     ax2.set_ylim(0, 18)  # Set y-axis limit to 0-18 for better visibility
 
     # Ensure both axes have the same y-axis ticks
+    ax2.set_yticklabels(ax1.get_yticks(), fontsize=14)
     ax1.set_yticks(ax2.get_yticks())
+    ax1.set_yticklabels(ax2.get_yticks(), fontsize=14)
 
     # Add a legend
     # ax2.legend(['Majority Error', 'Best Error'], fontsize=12, loc='upper left')
-
-    # Font size adjustments
-    plt.xticks(fontsize=12)
-    plt.yticks(fontsize=12)
 
     plt.tight_layout()
     plt.savefig(f'{pathEnsemble}/repair_vs_ensemble_error.pdf', bbox_inches='tight')
