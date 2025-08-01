@@ -13,26 +13,26 @@ NUM_SIDS = 366
 # =========================
 # Feature toggle configuration
 class ValidatorRepairConfig:
-    def __init__(self, f, c, n, h, p, default=None):
-        # if default is None:
-        print(f,c,n,h,p)
-        # Feedback matching 
-        self.feedback_match_fuzzy = f # Fuzzy match for feedback
-        self.clip_feedback_lazy = c # Validator got lazy and gave short feedback
+    def __init__(self, f=True, c=True, n=True, h=True, p=True, default=None):
+        if default is None:
+        
+            # Feedback matching 
+            self.feedback_match_fuzzy = f # Fuzzy match for feedback
+            self.clip_feedback_lazy = c # Validator got lazy and gave short feedback
 
-        # Line number matching
-        self.line_num_number = n # Replace "line-num" with "line number"
-        self.line_number_hyphens = h # Line numbers contain hyphens "1-3"
+            # Line number matching
+            self.line_num_number = n # Replace "line-num" with "line number"
+            self.line_number_hyphens = h # Line numbers contain hyphens "1-3"
 
-        # Classification labeling
-        self.partially_valid_label = p # Validator gave new label "partially valid"
-        # else:
-        #     # Set all flags to True if default is provided
-        #     self.feedback_match_fuzzy = default
-        #     self.clip_feedback_lazy = default
-        #     self.line_num_number = default
-        #     self.line_number_hyphens = default
-        #     self.partially_valid_label = default
+            # Classification labeling
+            self.partially_valid_label = p # Validator gave new label "partially valid"
+        else:
+            # Set all flags to True if default is provided
+            self.feedback_match_fuzzy = default
+            self.clip_feedback_lazy = default
+            self.line_num_number = default
+            self.line_number_hyphens = default
+            self.partially_valid_label = default
 
     def __str__(self):
         '''Returns a shorthand string representation of the config. Gives an initial for each flag on/off'''
