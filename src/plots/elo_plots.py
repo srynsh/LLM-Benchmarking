@@ -65,7 +65,8 @@ def elo_vs_precision():
     plt.xlabel('Elo Rating', fontsize=14)
     plt.ylabel('Precision %', fontsize=14)
     plt.legend().remove()  # Remove the legend since we have annotations
-    plt.savefig(f'{pathImages}/others/elo_precision.pdf', bbox_inches='tight')
+    plt.tight_layout()
+    plt.savefig(f'{pathImages}/others/elo_precision.pdf')
 
 
 def elo_vs_tnr():
@@ -74,8 +75,6 @@ def elo_vs_tnr():
         'tnr': [validator_tnr[i] * 100 for i in range(len(MODELS_VAL))],
         'validator': MODELS_VAL
     })
-
-    print(df_plot)
 
     plt.figure(figsize=(8, 4))
     # Create the scatterplot without jitter to keep actual data points accurate
@@ -133,4 +132,4 @@ def elo_vs_tnr():
     plt.yticks(fontsize=12)
     plt.legend().remove()  # Remove the legend since we have annotations
     plt.tight_layout()
-    plt.savefig(f'{pathImages}/others/elo_tnr.pdf', bbox_inches='tight')
+    plt.savefig(f'{pathImages}/others/elo_tnr.pdf')
