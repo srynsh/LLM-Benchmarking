@@ -48,7 +48,7 @@ def valid_voting(df, validation_columns, valid_count):
 
     return df
 
-def calculate_ensemble_accuracy(df, model_gen, ensemble_label):
+def calculate_ensemble_prediction(df, ensemble_label):
     """
     Calculate ensemble accuracy for a specific model generation.
 
@@ -82,10 +82,8 @@ def calculate_ensemble_accuracy(df, model_gen, ensemble_label):
 
     # Predicted error
     predScore = (tp + fp) / (tp + tn + fp + fn) if (tp + tn + fp + fn) > 0 else 0
-    error = abs(predScore - pGa_CONST[model_gen])
-
-    return error
-
+    return predScore
+    
 ####################
 # Ensemble TPR and TNR
 ####################
@@ -132,6 +130,29 @@ def write_tpr_tnr_to_file(dfs_ensemble):
 # Ensemble Prediction
 ####################
 
+def ensemble_writePg_hat_to_file(dfs_all, MODEL_VALS):
+    """
+    Write the predicted precisions to a file.
+    
+    Args:
+        pG_hat: Dictionary containing predicted precisions
+        fpath: File path to write the results
+    """
+    # Get model validation columns (exclude 'classification' which is ground truth)
+    validation_columns = [f'classification_{model}' for model in MODEL_VALS]
+
+    # Compute predicted precisions for all models
+    pG_hat = []
+    for model in MODEL_VALS:
+        df = dfs_all[model].copy()
+        i = 4
+        df = invalid_voting(df, validation_columns, i)  # Perform invalid voting
+        predScore_i = calculate_ensemble_prediction(df, f'ensemble_i{i}')
+        pG_hat.append(predScore_i)
+
+    # Print the predicted precisions
+    pretty_print_into_file('ensemble_predicted_precisions', pG_hat, fpathLLMAsJudge, comment='Ensemble Predicted Precisions')
+
 def ensemble_prediction(dfs_gen, MODEL_GENS, MODEL_VALS, valid_count=None, invalid_count=None):
     """
     Create ensemble predictions and calculate errors for each dataset.
@@ -165,14 +186,16 @@ def ensemble_prediction(dfs_gen, MODEL_GENS, MODEL_VALS, valid_count=None, inval
         # Perform valid and invalid voting for each validator
         for i in range(1, num_validators + 1):
             df = valid_voting(df, validation_columns, i)
-            error_v = calculate_ensemble_accuracy(df, model_gen, f'ensemble_v{i}')
+            predScore_v = calculate_ensemble_prediction(df, f'ensemble_v{i}')
+            error_v = abs(predScore_v - pGa_CONST[model_gen])
             max_error_v = max(ensemble_max_errors[f'v{i}'], error_v)
             ensemble_max_errors[f'v{i}'] = max_error_v
             ensemble_max_errors_modelGen[f'v{i}'] = model_gen if max_error_v == error_v else ensemble_max_errors_modelGen[f'v{i}']
             ensemble_mean_errors[f'v{i}'] += error_v
 
             df = invalid_voting(df, validation_columns, i)
-            error_i = calculate_ensemble_accuracy(df, model_gen, f'ensemble_i{i}')
+            predScore_i = calculate_ensemble_prediction(df, f'ensemble_i{i}')
+            error_i = abs(predScore_i - pGa_CONST[model_gen])
             max_error_i = max(ensemble_max_errors[f'i{i}'], error_i)
             ensemble_max_errors[f'i{i}'] = max_error_i
             ensemble_max_errors_modelGen[f'i{i}'] = model_gen if max_error_i == error_i else ensemble_max_errors_modelGen[f'i{i}']

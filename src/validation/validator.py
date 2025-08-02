@@ -19,7 +19,7 @@ from src.validation.data import DataProvider
 from src.validation.models import ValidationBatch, ValidationResult
 from src.utils import print_warning, print_error
 from src.validation.utils import merge_df_y_yhat, merge_df_merged_yhat, calculate_confusion_matrix_merge, tpr_tnr_list, pretty_print_into_file
-from src.validation.ensemble import ensemble_prediction
+from src.validation.ensemble import ensemble_prediction, ensemble_writePg_hat_to_file
 from collections import defaultdict
 
 
@@ -204,6 +204,7 @@ if __name__ == "__main__":
     llm_judge_errors(MODELS_GEN, MODELS_VAL, GV_gen)
 
     # Run the ensemble prediction and write the results
+    ensemble_writePg_hat_to_file(dfs_all, MODELS_VAL)
     ensemble_results = ensemble_prediction(dfs_gen, MODELS_GEN, MODELS_VAL)
 
     # Final summary
