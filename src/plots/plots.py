@@ -25,7 +25,8 @@ else:
 if __name__ == "__main__":
     # Elo vs Precision plot
     elo_plots.elo_vs_precision()
-    
+    elo_plots.elo_vs_tnr()
+
     # Plots for AI4X slides
     slide_plots.llm_release_plot()
     slide_plots.llm_release_plot_trendline()
