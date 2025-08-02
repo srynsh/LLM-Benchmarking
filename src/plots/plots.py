@@ -1,4 +1,5 @@
 from src.config import VALIDATOR_REPAIR_NAME
+import src.plots.elo_plots as elo_plots
 import src.plots.ensemble_plots as ensemble_plots
 import src.plots.validator_plots as validator_plots
 import src.plots.validator_failure_plots as validator_failure_plots
@@ -22,6 +23,9 @@ else:
 #   MAIN
 # =========================
 if __name__ == "__main__":
+    # Elo vs Precision plot
+    elo_plots.elo_vs_precision()
+    
     # Plots for AI4X slides
     slide_plots.llm_release_plot()
     slide_plots.llm_release_plot_trendline()

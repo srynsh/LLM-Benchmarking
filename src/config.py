@@ -252,6 +252,23 @@ MODELS_VERSION_NUMBER = {
     Model.DEEPSEEK_CHAT.value: "deepseek-chat"
 }
 
+ELO_RATING = {
+    Model.GPT_4_TURBO.value: 1256,
+    Model.GPT_4O_MINI.value: 1272,
+    Model.GPT_4O.value: 1285,
+    Model.CLAUDE_3_OPUS.value: 1247,
+    Model.CLAUDE_3_5_SONNET.value: 1268,
+    Model.GEMINI_1_5_FLASH.value: 1227,
+    Model.GEMINI_1_5_PRO.value: 1260,
+    Model.QWEN_CODER_PLUS.value: 1217,
+    Model.DEEPSEEK_CHAT.value: 1306,
+    Model.CLAUDE_3_5_HAIKU.value: 1237,
+    Model.GEMINI_2_5_FLASH.value: 1394,
+    Model.GEMINI_2_5_PRO.value: 1446,
+    Model.GPT_4_1.value: 1366,
+    Model.GPT_4_1_MINI.value: 1322,
+}
+
 # =========================
 #   GENERATOR CONSTANTS
 # =========================
