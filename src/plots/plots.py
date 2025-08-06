@@ -5,6 +5,7 @@ import src.plots.validator_plots as validator_plots
 import src.plots.validator_failure_plots as validator_failure_plots
 import src.plots.repair_plots as repair_plots
 import src.plots.slide_plots as slide_plots
+import src.plots.regression_plots as regression_plots
 import sys
 
 # =========================
@@ -23,6 +24,8 @@ else:
 #   MAIN
 # =========================
 if __name__ == "__main__":
+    regression_plots.regression_plot()
+
     # Elo vs Precision plot
     elo_plots.elo_vs_precision()
     elo_plots.elo_vs_tnr()
