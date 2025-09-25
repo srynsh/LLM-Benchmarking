@@ -94,12 +94,12 @@ def valid_invalid_error(ensemble_max_errors):
     plt.legend(['Invalid Voting', 'Valid Voting'], fontsize=12)
 
     # Adjust the labels and sizing
-    plt.xlabel('Number of Votes Required to Cross Threshold', fontsize=14)
-    plt.ylabel('Maximum Absolute Error (%)', fontsize=14)
-    plt.legend(fontsize=12)
+    plt.xlabel('Number of Votes Required to Cross Threshold', fontsize=16)
+    plt.ylabel('Maximum Absolute Error (%)', fontsize=16)
+    plt.legend(fontsize=16)
     plt.grid(True, alpha=0.3)
-    plt.xticks(range(1, 15), fontsize=12)
-    plt.yticks(fontsize=12)
+    plt.xticks(range(1, 15), fontsize=14)
+    plt.yticks(fontsize=14)
     plt.ylim(0, 50)  # Set y-axis limit to 0-50% for better visibility
     plt.tight_layout()
     plt.savefig(f'{pathEnsemble}/valid_invalid_error{VALIDATOR_REPAIR_SUFFIX}.pdf')
