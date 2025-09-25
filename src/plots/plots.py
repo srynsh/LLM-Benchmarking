@@ -6,6 +6,7 @@ import src.plots.validator_failure_plots as validator_failure_plots
 import src.plots.repair_plots as repair_plots
 import src.plots.slide_plots as slide_plots
 import src.plots.regression_plots as regression_plots
+import src.plots.regression_variance_plots as regression_variance_plots
 import sys
 
 # =========================
@@ -52,3 +53,6 @@ if __name__ == "__main__":
 
     # Repair plots
     repair_plots.repair_vs_error()
+
+    # Variance plots
+    regression_variance_plots.regression_variance()

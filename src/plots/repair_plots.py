@@ -6,6 +6,7 @@ import numpy as np
 from src.config import MODELS_SHORT, MODELS_VAL, VALIDATOR_REPAIR_SUFFIX, ValidatorRepairConfig
 from src.plots.validator_plots import get_df_validator_tpr_tnr
 from matplotlib.patches import Patch
+from matplotlib.ticker import MaxNLocator
 
 pathEnsemble = f'{pathImages}/ensemble'
 
@@ -105,8 +106,8 @@ def plot_repair_vs_ensemble(df):
 
     # Plot the count of invalids on the first y-axis
     sns.barplot(x='repair', y='percentage_invalids', data=df, ax=ax1, color='lightgray', alpha=0.7)
-    ax1.set_ylabel('Missing Values (%)', fontsize=16)
-    ax1.set_xlabel('Repairs Undertaken', fontsize=16)
+    ax1.set_ylabel('Missing Values (%)', fontsize=18)
+    ax1.set_xlabel('Repairs Undertaken', fontsize=18)
     ax1.tick_params(axis='y', labelsize=14)
 
     # Plot the error percentages on the second y-axis
@@ -119,7 +120,7 @@ def plot_repair_vs_ensemble(df):
     sns.lineplot(x='repair', y='regression_error_3', data=df, ax=ax2, marker='d', color='red', dashes=(5, 2), linestyle='-.')
     sns.lineplot(x='repair', y='regression_error_5', data=df, ax=ax2, marker='*', color='purple', dashes=(2, 2), linestyle='--', markersize=10)
 
-    ax2.set_ylabel('Maximum Absolute Error (%)', fontsize=16)
+    ax2.set_ylabel('Maximum Absolute Error (%)', fontsize=18)
     ax2.tick_params(axis='y', labelsize=12)
 
     # Add a legend with a grey box for the barplot
@@ -142,6 +143,16 @@ def plot_repair_vs_ensemble(df):
     ax1.set_xticklabels(xticks, fontsize=14) #  rotation=45, ha='right',
     ax1.set_ylim(0, 18)
     ax2.set_ylim(0, 18)  # Set y-axis limit to 0-18 for better visibility
+
+    # Convert to ints
+    ax1.yaxis.set_major_locator(MaxNLocator(integer=True))
+    ax2.yaxis.set_major_locator(MaxNLocator(integer=True))
+
+    ticks = ax1.get_yticks()
+    ax1.set_yticks(ticks)
+    ax1.set_yticklabels([f'{int(y)}' for y in ticks], fontsize=14)
+    ax2.set_yticks(ticks)
+    ax2.set_yticklabels([f'{int(y)}' for y in ticks], fontsize=14)
 
     # Ensure both axes have the same y-axis ticks
     ax2.set_yticklabels(ax1.get_yticks(), fontsize=14)
