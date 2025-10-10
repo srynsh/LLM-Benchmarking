@@ -31,7 +31,7 @@ def gv_plot(GV):
     df_gv = get_df_gv(GV)
 
     # Create a figure
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=(12, 4))
 
     # Group by generator to get statistics for each
     grouped = df_gv.groupby('generator')
@@ -79,19 +79,23 @@ def gv_plot(GV):
 
     # Set x-tick labels to model names, using shorthand for readability
     plt.xticks(range(len(stats)), [MODELS_SHORT.get(model, model) for model in stats['generator']], 
-            rotation=45, ha='right', fontsize=16)
+            rotation=30, ha='right', fontsize=14)
+    plt.yticks(fontsize=14)
 
-    plt.ylabel('Precision', fontsize=18)
-    plt.xlabel('Generator', fontsize=18)
+    plt.ylabel('Precision', fontsize=16)
+    plt.xlabel('Generator', fontsize=16)
     plt.grid(True, axis='y', alpha=0.3)
     # plt.title('Generator Precision by Different Validators', fontsize=18, pad=15)
-    plt.legend(fontsize=16, loc='upper center', bbox_to_anchor=(0.5, 1.35), ncols=2)
+    # plt.legend(fontsize=16, loc='upper center', bbox_to_anchor=(0.5, 1.15), ncols=4)
+    plt.legend(fontsize=14, loc='center left', bbox_to_anchor=(1, 0.5))
+
+    
 
     # Increase the size of tick labels
     plt.yticks(fontsize=16)
 
     # Save with high DPI for crisp text
-    plt.tight_layout()
+    # plt.tight_layout()
     plt.savefig(f'{pathValidator}/gv{VALIDATOR_REPAIR_SUFFIX}.pdf', bbox_inches='tight')
 
 def gv_boxplot(GV):
@@ -204,7 +208,7 @@ def add_offsets(df_validator):
                             arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.1', alpha=0.6))
 
 def tpr_tnr_validator(validator_tpr, validator_tnr, ensemble_tpr, ensemble_tnr):
-    plt.figure(figsize=(8, 5))
+    plt.figure(figsize=(12, 3))
 
     df_validator = get_df_validator_tpr_tnr(validator_tpr, validator_tnr)
 
@@ -226,14 +230,16 @@ def tpr_tnr_validator(validator_tpr, validator_tnr, ensemble_tpr, ensemble_tnr):
     # Sort the handles and labels based on the order of MODELS_SHORT_ORDERED_RELEASE
     # sorted_labels = [MODELS_SHORT[model] for model in MODELS_SHORT_ORDERED_RELEASE if model in MODELS_SHORT]
     # sorted_handles = [handles[labels.index(label)] for label in sorted_labels if label in labels]
-    plt.legend(handles, labels, bbox_to_anchor=(0.5, 1.05), loc='lower center', ncol=4, fontsize=12)
+    # plt.legend(handles, labels, bbox_to_anchor=(0.5, 1.05), loc='lower center', ncol=4, fontsize=12)
+    plt.legend(handles, labels, bbox_to_anchor=(1.05, 0.5), loc='center left', ncol=2, fontsize=14)
+
 
     plt.ylim(0,60)
     plt.xlim(82,100)
 
     # Labels and fontsize
-    plt.xlabel('True Positive Rate %', fontsize=16)
-    plt.ylabel('True Negative Rate %', fontsize=16)
+    plt.xlabel('True Positive Rate %', fontsize=14)
+    plt.ylabel('True Negative Rate %', fontsize=14)
 
     # Add dotted line for the ensemble
     rows_valid = []
