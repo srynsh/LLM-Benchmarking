@@ -798,7 +798,7 @@ llm_judge_mean_error_range = [
 
 # Ensemble Predicted Precisions
 ensemble_predicted_precisions = [
-  0.8931297709923665,
+  0.8923076923076924,
   0.9237029501525941,
   0.9656526005888125,
   0.9564719358533792,
@@ -818,10 +818,10 @@ ensemble_predicted_precisions = [
 ensemble_majority_max_error = 0.047149756097561
 
 # Mean error range for the majority ensemble
-ensemble_majority_mean_error = 0.023677713976356745
+ensemble_majority_mean_error = 0.024817159772291097
 
 # Max error range for the best model
 ensemble_best_max_error = 0.02908114093959724
 
 # Mean error range for the best model
-ensemble_best_mean_error = 0.01805668973800519
+ensemble_best_mean_error = 0.01824962657216341

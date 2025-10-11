@@ -87,7 +87,7 @@ GV_CONST = np.array(GV)
 # =========================
 #   EXPERIMENT CONSTANTS
 # =========================
-NUM_RUNS = 25 # number of runs to min over
+NUM_RUNS = 10 # number of runs to min over
 MAX_WORKERS = 32 # number of workers for parallelization
 K_LIST = range(0, len(GENS)+1) # number of generators to peek at
 # K_LIST = [5] 
