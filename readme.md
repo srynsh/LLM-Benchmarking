@@ -51,3 +51,10 @@
         F=1 C=1 N=1 H=1 P=1 python -m src.regression.regressor
     } > regression.log 2>&1 &
     ```
+
+7. **Generate plots**
+
+    ```bash
+    F=0 C=0 N=0 H=0 P=0 python -m src.plots.plots &&
+    F=1 C=1 N=1 H=1 P=1 python -m src.plots.plots
+    ```
