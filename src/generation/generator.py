@@ -118,8 +118,6 @@ def generate_feedback_for_sid(sid: int) -> 'GeneratorData':
             }
         ]
         
-        print(f"Processing SID {sid}...")
-        
         # Use unified model invocation with retry logic
         raw_response, parsed_response, success = LLM.invoke_model(
             model=model,
