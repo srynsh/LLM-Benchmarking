@@ -148,7 +148,11 @@ def generate_feedback_for_sid(sid: int) -> 'GeneratorData':
 
         result = GeneratorData(
             sid=sid,
-            generator_data=generator_data,
+            repaired_code=generator_data.get('repaired_code'),
+            feedback=generator_data.get('feedback'),
+            student_code=generator_data.get('student_code'),
+            pid=pid,
+            category_required=category_required,
             success=True,
             model=model
         )
@@ -199,14 +203,15 @@ def main():
     # Process each SID with progress bar
     for sid in tqdm(remaining_sids, desc=f"Generating feedback with {model}"):
         try:
-            result = generate_feedback_for_sid(sid)
+            result_genData : GeneratorData = generate_feedback_for_sid(sid)
+            result = result_genData.model_dump()
             results.append(result)
             
             # If successful, also save the generator data to a separate validated file
-            if result.get('success') and result.get('generator_data'):
+            if result:
                 # Save individual validated generator data
                 validated_path = path_model_feedback.replace('.json', '_validated.json')
-                if not validate_and_save_generator_data(result['generator_data'], validated_path, category_required):
+                if not validate_and_save_generator_data(result, validated_path, category_required):
                     print_warning(f"Failed to save validated data for SID {sid}")
             
             # Save progress periodically (every 10 items)
