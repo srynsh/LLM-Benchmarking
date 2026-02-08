@@ -127,6 +127,11 @@ class Model(Enum):
     QWEN_CODER_PLUS = "qwen-coder-plus"
     DEEPSEEK_CHAT = "deepseek-chat"
 
+    # Latest models can be added here
+    GPT_5_2_codex = "gpt-5.2-codex"
+    GPT_5_2 = "gpt-5.2"
+    GEMINI_3_PRO = "gemini-3-pro"
+
 
 # List of all model values
 MODELS_GEN = [

@@ -123,7 +123,7 @@ def get_openai_response(messages, model):
         )
 
         response = response.choices[0].message.content
-
+        
         return response
     except Exception as e:
         # print(e)

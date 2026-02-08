@@ -7,6 +7,7 @@ from pydantic import BaseModel, ValidationError, validator, Field, model_validat
 from src.utils import print_warning, print_error
 import pandas as pd
 import os
+from src.config import MODELS_GEN, NUM_SIDS, VALIDATOR_REPAIR
 
 
 class LLMFeedback(BaseModel):
@@ -193,6 +194,36 @@ def validate_llm_output(llm_response: Dict[str, Any]) -> bool:
         print_error(f"LLM output validation failed: {e}")
         return False
 
+
+def validate_generator_data(data: Dict[str, Any], category_required: bool = True) -> bool:
+    """
+    Validate that data matches the complete Generator data structure.
+    
+    Args:
+        data: Data dictionary to validate
+        category_required: Whether category field is required in feedback
+        
+    Returns:
+        bool: True if valid, False otherwise
+    """
+    try:
+        # Add category_required to data if not present
+        if 'category_required' not in data:
+            data['category_required'] = category_required
+
+        # Handle line_number ranges like "1-3"
+        if VALIDATOR_REPAIR.line_number_hyphens:
+            if 'feedback' in data:
+                for line in data['feedback']:
+                    if 'line_number' in line and isinstance(line['line_number'], str):
+                        if '-' in line['line_number']:
+                            line['line_number'] = line['line_number'].split('-')[0]
+
+        GeneratorData(**data)
+        return True
+    except ValidationError as e:
+        print(f"- {e}")
+        return False
 
 def convert_llm_to_generator_data(llm_output: Dict[str, Any], sid: int, pid: int, 
                                 student_code_mapping: Dict[int, str], category_required: bool = False) -> Optional[Dict[str, Any]]:

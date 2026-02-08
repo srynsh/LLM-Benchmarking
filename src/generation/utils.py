@@ -7,7 +7,7 @@ import os
 from typing import Optional, Dict, Any, List
 
 from src.config import NUM_SIDS
-from src.generation.data import load_existing_results
+from src.generation.data import load_existing_results, load_student_code_mapping
 from src.generation.models import GeneratorData
 from src.utils import print_warning, print_error
 
@@ -43,7 +43,7 @@ def transform_llm_output_to_generator_data(llm_output: Dict[str, Any], sid: int,
     Returns:
         Dict or None: Complete generator data structure if successful, None otherwise
     """
-    from .models import convert_llm_to_generator_data, load_student_code_mapping
+    from .models import convert_llm_to_generator_data
     
     # Load student code mapping (cached after first call)
     if not hasattr(transform_llm_output_to_generator_data, '_student_code_mapping'):

@@ -254,6 +254,7 @@ def invoke_model(model: str, messages: list, system_prompt: str = None,
     """
     try:
         provider = determine_provider(model)
+        print(f"Invoking model '{model}' from provider '{provider}'")
         return invoke_model_with_retry(
             provider=provider,
             model=model,
