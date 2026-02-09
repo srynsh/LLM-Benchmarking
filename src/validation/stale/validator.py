@@ -1,4 +1,5 @@
 
+import os
 import sys
 import json
 import numpy as np
@@ -15,53 +16,35 @@ from src.validation.service import ValidationRunner, ValidationService
 from src.validation.data import DataProvider
 from src.validation.models import ValidationBatch, ValidationResult
 from src.utils import print_warning, print_error
-from src.config import pGa_CONST
+from src.config import pGa_CONST, pathLogs
+
+# Configuration: Set generator and validator models here
+# TODO: Manually create the data/validator/gen=gen director
+# TODO: Manually touch the ./data//validator//gen=gen/val=val.json file with "[]"
+MODEL_GENERATOR = Model.GPT_5_2.value
+MODEL_VALIDATOR = Model.GEMINI_1_5_FLASH.value
+sids_restrict = [1] # Set to None to run all SIDs
+
+# Constants (don't change)
+use_ground_truth = False
+pathValidationRuns = f'{pathLogs}/validation_runs/'
+existing_file = f'{pathValidationRuns}/gen_{MODEL_GENERATOR}_val_{MODEL_VALIDATOR}.json'
 
 def main():
     """Main entry point for validation operations."""
-    
-    # TODO: remove hardcoding
-    # Configuration
-    generator_model = 'claude_3.5_haiku'
-    validator_model = 'gemini-2.5-pro-preview-03-25'
-    use_ground_truth = False
-    
-    # Option 1: Resume from existing file (for quota exceeded errors)
-    resume_mode = True
-    existing_file = './new_logs/new_labeller_gen_claude_3.5_haiku_val_gemini-2.5-pro-preview-03-25_2025-05-05_13-06-52.json'
-    
-    if resume_mode and existing_file:
-        # Extract failed SIDs from existing file
-        failed_sids = filter_quota_exceeded_sids(existing_file)
-        
-        if not failed_sids:
-            print("No SIDs with quota exceeded errors found.")
-            return
-        
-        print(f"Found {len(failed_sids)} SIDs with quota exceeded errors: {failed_sids}")
-        
-        # Create validation runner
-        runner = ValidationRunner(generator_model, validator_model, use_ground_truth)
-        
-        # Run quota recovery
-        runner.run_quota_recovery(existing_file)
-        
+    # Determine SIDs to process
+    if sids_restrict is None:
+        sids = range(1, NUM_SIDS + 1)
     else:
-        # Option 2: Run fresh validation
-        sids = list(range(1, NUM_SIDS + 1))  # Replace NUM_SIDS with actual number of SIDs
-        # sids = list(range(1, 367))  # All SIDs
-        sids = [1, 2, 3, 4, 6, 8, 9, 12, 13, 15]  # Sample SIDs for testing
-        
-        # Create validation runner
-        runner = ValidationRunner(generator_model, validator_model, use_ground_truth)
-        
-        # Run validation
-        runner.run_validation(sids)
+        sids = sids_restrict
+
+    # Create validation runner
+    runner = ValidationRunner(MODEL_GENERATOR, MODEL_VALIDATOR, use_ground_truth)
     
-    print("Validation completed successfully!")
-
-
-
+    # Run quota recovery
+    runner.run_validation(sids)
+    
+    print("Validation LLM invocation completed successfully!")
 
 def validate_specific_sids(sids: List[int], generator_model: str, validator_model: str, 
                           use_ground_truth: bool = False) -> ValidationBatch:
@@ -130,3 +113,7 @@ def compare_validation_runs(file_paths: List[str]) -> None:
         print(f"  Precision: {stats['precision']:.4f}")
         print(f"  Total Valid: {stats['total_valid']}")
         print(f"  Total Invalid: {stats['total_invalid']}")
+
+
+if __name__ == "__main__":
+    main()

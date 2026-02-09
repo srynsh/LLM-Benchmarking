@@ -127,47 +127,7 @@ class DataProvider:
         )
 
 
-def load_existing_validation_results(file_path: str) -> List[Dict[str, Any]]:
-    """
-    Load existing validation results from a JSON file.
-    
-    Args:
-        file_path: Path to the validation results file
-        
-    Returns:
-        List of existing results
-    """
-    if os.path.exists(file_path):
-        try:
-            with open(file_path, 'r') as f:
-                return json.load(f)
-        except Exception as e:
-            print_warning(f"Error loading existing results from {file_path}: {e}")
-    
-    return []
 
-
-def save_validation_results(results: List[Dict[str, Any]], file_path: str) -> bool:
-    """
-    Save validation results to a JSON file.
-    
-    Args:
-        results: List of validation results
-        file_path: Path to save the results
-        
-    Returns:
-        bool: True if successful, False otherwise
-    """
-    try:
-        # Ensure directory exists
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        
-        with open(file_path, 'w') as f:
-            json.dump(results, f, indent=4)
-        return True
-    except Exception as e:
-        print_error(f"Error saving validation results to {file_path}: {e}")
-        return False
 
 
 def get_failed_sids_from_log(file_path: str, error_pattern: str = "429 You exceeded your current quota.") -> List[int]:
@@ -223,31 +183,3 @@ def filter_quota_exceeded_sids(file_path: str) -> List[int]:
     return get_failed_sids_from_log(file_path, "429 You exceeded your current quota.")
 
 
-def update_validation_result_in_file(file_path: str, sid: int, new_result: Dict[str, Any]) -> bool:
-    """
-    Update a specific validation result in a file.
-    
-    Args:
-        file_path: Path to the validation results file
-        sid: Student ID to update
-        new_result: New result data
-        
-    Returns:
-        bool: True if successful, False otherwise
-    """
-    try:
-        # Load existing results
-        existing_results = load_existing_validation_results(file_path)
-        
-        # Remove old result for this SID if it exists
-        existing_results = [r for r in existing_results if r.get('sid') != sid]
-        
-        # Add new result
-        existing_results.append(new_result)
-        
-        # Save updated results
-        return save_validation_results(existing_results, file_path)
-        
-    except Exception as e:
-        print_error(f"Error updating validation result for SID {sid}: {e}")
-        return False
