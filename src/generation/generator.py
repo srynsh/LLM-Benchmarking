@@ -30,7 +30,7 @@ from src.utils import print_warning, print_error
 # GPT_4O: 2 SIDs
 
 # Current selected model
-model = Model.GPT_5_2.value
+model = Model.GEMINI_3_PRO_PREVIEW.value
 
 # Configuration for category requirement
 # Set to False if generating initial feedback without categories

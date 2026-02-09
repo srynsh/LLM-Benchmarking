@@ -130,7 +130,7 @@ class Model(Enum):
     # Latest models can be added here
     GPT_5_2_codex = "gpt-5.2-codex"
     GPT_5_2 = "gpt-5.2"
-    GEMINI_3_PRO = "gemini-3-pro"
+    GEMINI_3_PRO_PREVIEW = "gemini-3-pro-preview"
 
 
 # List of all model values
