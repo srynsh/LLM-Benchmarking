@@ -97,7 +97,7 @@ class ValidationService:
             return ValidationResult(
                 sid=sid,
                 raw_response=str(raw_response),
-                output=validation_output,
+                output=parsed_response,
                 success=success,
                 generator_model=self.generator_model,
                 validator_model=self.validator_model,

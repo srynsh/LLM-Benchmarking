@@ -91,6 +91,7 @@ class ValidationResult(BaseModel):
     output: Optional[ValidationOutput] = Field(None, description="Parsed validation output")
     fidFailureCount: int = Field(0, description="Count of failed feedback lines")
     timestamp: Optional[str] = Field(None, description="Timestamp of validation")
+    success: Optional[bool] = Field(..., description="Whether validation was successful")
 
             
     @classmethod
