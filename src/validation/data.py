@@ -248,8 +248,13 @@ class DataProvider:
         print(f"Generator Model: {batch.generator_model}")
         print(f"Validator Model: {batch.validator_model}")
         print(f"")
-        print(f"Successful SIDs: {stats['successful_results']} / {stats['total_results']} ({stats['success_rate']:.2%})")
-        print(f"Successful FIDs: {stats['successful_fids']} / {stats['total_fids']} ({stats['successful_fids'] / stats['total_fids']:.2%})")
+        
+        if stats['total_results'] == 0:
+            print("Successful SIDs: 0 / 0 (0.00%)")
+            print("Successful FIDs: 0 / 0 (0.00%)")
+        else:
+            print(f"Successful SIDs: {stats['successful_results']} / {stats['total_results']} ({stats['success_rate']:.2%})")
+            print(f"Successful FIDs: {stats['successful_fids']} / {stats['total_fids']} ({stats['successful_fids'] / stats['total_fids']:.2%})")
         print(f"")
         print(f"Classification Results:")
         print(f"  Valid Feedback: {stats['total_valid']}")
