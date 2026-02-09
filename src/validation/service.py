@@ -7,10 +7,11 @@ from typing import Tuple, Dict, Any, Optional, List
 import datetime
 import json
 
+from src import LLM
 from src.validation.models import (
     ValidationOutput, ValidationResult
 )
-from src.validation.data import DataProvider
+from src.validation.stale.data import DataProvider
 from src.validation.prompt import get_validation_prompt, get_validation_prompt_with_ground_truth
 from src.LLM import invoke_model_with_retry, ValidationOutput as LLMValidationOutput
 from src.utils import print_warning, print_error
@@ -32,7 +33,7 @@ class ValidationService:
         self.generator_model = generator_model
         self.validator_model = validator_model
         self.use_ground_truth = use_ground_truth
-        self.data_provider = DataProvider(self.generator_model, self.validator_model)
+        # self.data_provider = DataProvider(self.generator_model, self.validator_model)
     
     def validate_single_sid(self, sid: int) -> ValidationResult:
         """
@@ -46,9 +47,12 @@ class ValidationService:
         """
         try:
             # Get validation input data
-            validation_input = self.data_provider.create_validation_input(
+            validation_input = DataProvider.create_validation_input(
                 sid, self.generator_model, self.use_ground_truth
             )
+
+            if validation_input is None or not validation_input.feedback:
+                raise ValueError(f"No validation input or feedback available for SID {sid}")
             
             # Generate prompt messages
             if self.use_ground_truth and validation_input.ground_truth:
@@ -72,8 +76,9 @@ class ValidationService:
             # TODO: Don't invoke LLMs unless specified in a class variable. Also, invoke LLM only after validation output failure (on reading the file)
             # TODO: After invoking LLM, store each intermediate result along with number of tries, to understand the mistakes made by LLM in each try. Eg. "iteration": 2, "issue": "missing-line-number", "fix": "rename line-num to line-number"
             # Invoke model with retry logic
+            provider = LLM.determine_provider(self.validator_model)
             raw_response, parsed_response, success = invoke_model_with_retry(
-                provider=None,  # Auto-detect provider
+                provider=provider,
                 model=self.validator_model,
                 messages=messages,
                 expected_output_model=LLMValidationOutput

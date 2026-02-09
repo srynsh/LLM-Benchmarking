@@ -29,6 +29,10 @@ class GroundTruthFeedback(BaseModel):
         """Convert line_number to string for consistency."""
         return str(v)
 
+class ValidatedFeedbackLineInput(BaseModel):
+    """Model for feedback line with validation results."""
+    line_number: Union[str, int] = Field(..., description="Line number referenced by the feedback")
+    feedback: str = Field(..., description="The feedback provided by the TA")
 
 class ValidatedFeedbackLine(BaseModel):
     """Model for feedback line with validation results."""
@@ -53,6 +57,23 @@ class ValidatedFeedbackLine(BaseModel):
         if v.lower() not in ['valid', 'invalid']:
             raise ValueError("[ID=invalid_label] Classification must be either 'valid' or 'invalid'")
         return v.lower()
+
+
+class TestCase(BaseModel):
+    """Model for test case data."""
+    status: str = Field(..., description="Test case status (PASS/FAIL)")
+    input: str = Field(..., description="Test case input")
+    expected_output: str = Field(..., description="Expected output for the test case")
+
+
+class ValidationInput(BaseModel):
+    """Model for validation input data."""
+    question: str = Field(..., description="Problem description/question")
+    student_code: str = Field(..., description="Student's submitted code")
+    correct_code: str = Field(..., description="Correct solution code")
+    feedback: List[ValidatedFeedbackLineInput] = Field(..., description="List of feedback lines to validate")
+    test_cases: List[TestCase] = Field(..., description="List of test cases")
+    ground_truth: Optional[List[GroundTruthFeedback]] = Field(None, description="Ground truth feedback (if available)")
 
 
 class ValidationOutput(BaseModel):

@@ -4,11 +4,10 @@ import ast
 import numpy as np
 import os
 import sklearn.metrics as skm
+from src.config import pathDataGAIED, pathGenerator
 
-DATA_PATH = './data/GAIED' # path relative to a folder inside src.
-
-gpt_4o_PATH = f'{DATA_PATH}/dataset_4o.xlsx'
-gpt_4N_PATH = f'{DATA_PATH}/dataset.xlsx'
+gpt_4o_PATH = f'{pathDataGAIED}/dataset_4o.xlsx'
+gpt_4N_PATH = f'{pathDataGAIED}/dataset.xlsx'
 
 gpt4o_benchmark = pd.read_excel(gpt_4o_PATH, sheet_name="gpt4o_refined")
 GPT4_N_benchmark = pd.read_excel(gpt_4N_PATH, sheet_name="gpt4_N_refined")
@@ -221,14 +220,10 @@ def get_data(row):
     orignial_feedback = []
 
     for f in feedback:
-        try:
-            if f['category'] in ["TP", "FP-H", "FP-I", "FP-E"]:
-                unlabelled_feedback.append({"line_number": f['line_number'], "feedback": f['feedback']})
-                orignial_feedback.append(f)
-        except:
-            unlabelled_feedback.append(f)
+        if f['category'] not in ["FN"]:
+            unlabelled_feedback.append({"line_number": f['line_number'], "feedback": f['feedback']})
             orignial_feedback.append(f)
-
+       
     failing_testcases = get_testcase_json(buggy_submission['failing_testcases'], 'FAIL')
     passing_testcases = get_testcase_json(buggy_submission['passing_testcases'], 'PASS')
 
@@ -270,107 +265,11 @@ def get_correct_code(sid):
             return row['repaired_code']
         
 def get_row(sid, modelname):
-    with open(f'{DATA_PATH}/{modelname}_feedback.json', 'r') as f:
+    with open(f'{pathGenerator}/{modelname}_feedback.json', 'r') as f:
         feedback = json.load(f)
 
     for row in feedback:
         if (row['sid'] == sid):
             return row
 
-def get_row_4_1(sid):
-    for row in gpt_4_1_feedback:
-        if (row['sid'] == sid):
-            return row
-
-def get_row_4o(sid):
-    with open(f'{DATA_PATH}/gpt-4o_feedback.json', 'r') as f:
-        feedback = json.load(f)
-
-    for row in feedback:
-        if (row['sid'] == sid):
-            return row
-
-def get_row_4_turbo(sid):
-    with open(f'{DATA_PATH}/gpt-4-turbo_feedback.json', 'r') as f:
-        feedback = json.load(f)
-
-    for row in feedback:
-        if (row['sid'] == sid):
-            return row
-        
-def get_row_4_N(sid):
-    for _, row in GPT4_N_benchmark.iterrows():
-        if (row['sid'] == sid):
-            return row
-
-def get_row_3_opus(sid):
-    with open(f'{DATA_PATH}/claude_3_opus_feedback.json', 'r') as f:
-        claude_feedback = json.load(f)
-
-    for row in claude_feedback:
-        if (row['sid'] == sid):
-            return row
-
-def get_row_35(sid):
-    with open(f'{DATA_PATH}/gpt-3.5-turbo_feedback.json', 'r') as f:
-        feedback = json.load(f)
-
-    for row in feedback:
-        if (row['sid'] == sid):
-            return row
-
-def get_row_35(sid):
-    with open(f'{DATA_PATH}/gpt-3.5-turbo_feedback.json', 'r') as f:
-        feedback = json.load(f)
-
-    for row in feedback:
-        if (row['sid'] == sid):
-            return row
-        
-def get_row_4o_mini(sid):
-    with open(f'{DATA_PATH}/gpt-4o-mini_feedback.json', 'r') as f:
-        feedback = json.load(f)
-
-    for row in feedback:
-        if (row['sid'] == sid):
-            return row
-        
-def get_row_35_sonnet(sid):
-    with open(f'{DATA_PATH}/claude_3.5_sonnet_feedback.json', 'r') as f:
-        feedback = json.load(f)
-
-    for row in feedback:
-        if (row['sid'] == sid):
-            return row
-        
-def get_row_deepseek_chat(sid):
-    with open(f'{DATA_PATH}/deepseek-chat_feedback.json', 'r') as f:
-        feedback = json.load(f)
-
-    for row in feedback:
-        if (row['sid'] == sid):
-            return row
-        
-def get_row_gemini_15_pro(sid):
-    with open(f'{DATA_PATH}/gemini-1.5-pro_feedback.json', 'r') as f:
-        feedback = json.load(f)
-
-    for row in feedback:
-        if (row['sid'] == sid):
-            return row
-        
-def get_row_gemini_15_flash(sid):
-    with open(f'{DATA_PATH}/gemini-1.5-flash_feedback.json', 'r') as f:
-        feedback = json.load(f)
-
-    for row in feedback:
-        if (row['sid'] == sid):
-            return row
-        
-def get_row_qwen_coder_plus(sid):
-    with open(f'{DATA_PATH}/qwen-coder-plus_feedback.json', 'r') as f:
-        feedback = json.load(f)
-
-    for row in feedback:
-        if (row['sid'] == sid):
-            return row
+    raise ValueError(f"SID {sid} not found for model {modelname}")

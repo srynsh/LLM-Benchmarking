@@ -10,18 +10,17 @@ from functools import lru_cache
 from src.config import NUM_SIDS
 
 from src.utils import print_warning, print_error
+from src.validation.data import parse_feedback_from_json, parse_test_cases_from_json
 from src.validation.models import (
-    ValidationInput, FeedbackLine, TestCase, GroundTruthFeedback,
-    parse_feedback_from_json, parse_test_cases_from_json, convert_ground_truth_categories
+    ValidatedFeedbackLineInput, ValidationInput, ValidatedFeedbackLine, TestCase, GroundTruthFeedback,
 )
 
 
 # Import existing data functions from dataGenerator
 try:
     from .dataGenerator import (
-        get_data, get_row, get_row_4o_mini, get_row_4_1, get_row_3_opus, 
-        get_annonated_data, get_row_35, get_row_35_sonnet, get_row_gemini_15_pro, 
-        get_row_gemini_15_flash, get_row_qwen_coder_plus, get_row_deepseek_chat
+        get_data, get_row,
+        get_annonated_data,
     )
 except ImportError as e:
     print_error(f"Error importing data functions: {e}")
@@ -31,23 +30,8 @@ except ImportError as e:
 class DataProvider:
     """Centralized data provider for validation operations."""
     
-    # TODO: Use the mapping from config.py instead of strings here
-    # Model to data function mapping
-    MODEL_DATA_MAP = {
-        "gpt-4o": get_row,
-        "gpt-4-turbo": get_row_4_1,
-        "gpt-3.5-turbo": get_row_35,
-        "gpt-4o-mini": get_row_4o_mini,
-        "claude_3_opus": get_row_3_opus,
-        "claude_3.5_sonnet": get_row_35_sonnet,
-        "gemini-1.5-pro": get_row_gemini_15_pro,
-        "gemini-1.5-flash": get_row_gemini_15_flash,
-        "qwen-coder-plus": get_row_qwen_coder_plus,
-        "deepseek-chat": get_row_deepseek_chat,
-    }
-    
     @classmethod
-    def get_validation_data(cls, sid: int, generator_model: str) -> Tuple[str, List[FeedbackLine], str, str, str, List[TestCase]]:
+    def get_validation_data(cls, sid: int, generator_model: str) -> Tuple[str, List[ValidatedFeedbackLineInput], str, str, str, List[TestCase]]:
         """
         Get validation data for a specific SID and generator model.
         
@@ -58,15 +42,11 @@ class DataProvider:
         Returns:
             Tuple containing: (question, feedback_lines, student_code, correct_code, all_testcases_str, test_cases)
         """
-        # Get the appropriate data function
-        data_func = cls.MODEL_DATA_MAP.get(generator_model)
-        if data_func is None:
-            # Default fallback
-            data_func = lambda sid: get_row(sid, generator_model)
-        
+
         try:
             # Get raw data
-            labelled_feedback, unlabelled_feedback, student_code, correct_code, question, all_testcases, _, _, _ = get_data(data_func(sid))
+            row = get_row(sid, generator_model)
+            labelled_feedback, unlabelled_feedback, student_code, correct_code, question, all_testcases, _, _, _ = get_data(row)
             
             # Parse feedback
             feedback_lines = parse_feedback_from_json(unlabelled_feedback)
@@ -92,6 +72,7 @@ class DataProvider:
             List of ground truth feedback or None if not available
         """
         try:
+            from src.validation.models import convert_ground_truth_categories
             ground_truth, _, _, _, _, _, _, _, _ = get_annonated_data(get_row_3_opus(sid))
             return convert_ground_truth_categories(ground_truth)
         except Exception as e:
