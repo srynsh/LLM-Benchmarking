@@ -15,7 +15,7 @@ from src.validation.stale.data import DataProvider
 from src.validation.prompt import get_validation_prompt, get_validation_prompt_with_ground_truth
 from src.LLM import invoke_model_with_retry, ValidationOutput as LLMValidationOutput
 from src.utils import print_warning, print_error
-from src.config import pathLogs
+from src.config import pathValidator
 
 
 class ValidationService:
@@ -157,9 +157,9 @@ def create_attempt_name(generator_model: str, validator_model: str, use_ground_t
     """
     
     if use_ground_truth:
-        return f"gen_{generator_model}_val_{validator_model}_cheat"
+        return f"gen={generator_model}/val={validator_model}_cheat"
     else:
-        return f"gen_{generator_model}_val_{validator_model}"
+        return f"gen={generator_model}/val={validator_model}"
 
 
 def calculate_precision_stats(results: List[ValidationResult]) -> Dict[str, Any]:
@@ -300,10 +300,7 @@ class ValidationRunner:
         """
         self.service = ValidationService(generator_model, validator_model, use_ground_truth)
         self.attempt_name = create_attempt_name(generator_model, validator_model, use_ground_truth)
-        self.pathAttemptLogs = f'{pathLogs}/validation_runs/'
-        if not os.path.exists(self.pathAttemptLogs):
-            os.makedirs(self.pathAttemptLogs)
-        self.results_file = f"{self.pathAttemptLogs}/{self.attempt_name}.json"
+        self.results_file = f"{pathValidator}/{self.attempt_name}.json"
     
     def run_validation(self, sids_all: List[int]) -> None:
         """

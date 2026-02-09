@@ -19,16 +19,12 @@ from src.utils import print_warning, print_error
 from src.config import pGa_CONST, pathLogs
 
 # Configuration: Set generator and validator models here
-# TODO: Manually create the data/validator/gen=gen director
-# TODO: Manually touch the ./data//validator//gen=gen/val=val.json file with "[]"
 MODEL_GENERATOR = Model.GPT_5_2.value
-MODEL_VALIDATOR = Model.GEMINI_1_5_FLASH.value
-sids_restrict = [1] # Set to None to run all SIDs
+MODEL_VALIDATOR = Model.GEMINI_2_5_FLASH.value
+sids_restrict = None # [1,2] # Set to None to run all SIDs
 
 # Constants (don't change)
 use_ground_truth = False
-pathValidationRuns = f'{pathLogs}/validation_runs/'
-existing_file = f'{pathValidationRuns}/gen_{MODEL_GENERATOR}_val_{MODEL_VALIDATOR}.json'
 
 def main():
     """Main entry point for validation operations."""
