@@ -128,9 +128,12 @@ class Model(Enum):
     DEEPSEEK_CHAT = "deepseek-chat"
 
     # Latest models can be added here
-    GPT_5_2_codex = "gpt-5.2-codex"
     GPT_5_2 = "gpt-5.2"
+    GPT_5_mini = "gpt-5-mini"
     GEMINI_3_PRO_PREVIEW = "gemini-3-pro-preview"
+    GEMINI_3_FLASH_PREVIEW = "gemini-3-flash-preview"
+    CLAUDE_4_5_SONNET = "claude_4.5_sonnet"
+    CLAUDE_4_5_HAIKU = "claude_4.5_haiku"
 
 
 # List of all model values
@@ -253,7 +256,7 @@ MODELS_VERSION_NUMBER = {
     Model.GEMINI_1_5_PRO.value: "gemini-1.5-pro-002",
     Model.GEMINI_2_5_FLASH.value: "gemini-2.5-flash-preview-04-17",
     Model.GEMINI_2_5_PRO.value: "gemini-2.5-pro-preview-03-25",
-    Model.QWEN_CODER_PLUS.value: "qwen-coder-plus-2024-11-06",
+    Model.QWEN_CODER_PLUS.value: "qwen-2.5-coder-plus-2024-11-06",
     Model.DEEPSEEK_CHAT.value: "deepseek-chat"
 }
 

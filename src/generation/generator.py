@@ -31,7 +31,8 @@ from src.utils import print_warning, print_error
 
 # Current selected model
 # TODO: Currently, need to manually copy the "generator_feedback.json" and rename it to the model name being used for a new model run
-model = Model.GEMINI_3_PRO_PREVIEW.value 
+# model = Model.GEMINI_3_PRO_PREVIEW.value 
+model = Model.GEMINI_3_FLASH_PREVIEW.value
 
 # Configuration for category requirement
 # Set to False if generating initial feedback without categories
