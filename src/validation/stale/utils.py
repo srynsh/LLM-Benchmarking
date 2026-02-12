@@ -87,8 +87,8 @@ def get_claude_response(prompt, system_prompt, model, sleep_time=10):
     try:    
         kwargs = {
             "modelId": modelId,
-            "contentType": "application/json",
-            "accept": "application/json",
+            # "contentType": "application/json",
+            # "accept": "application/json",
             "body": json.dumps({
                 "anthropic_version": anthropic_version,
                 "max_tokens": 4096,

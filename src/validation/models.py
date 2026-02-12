@@ -79,7 +79,7 @@ class ValidationInput(BaseModel):
 class ValidationOutput(BaseModel):
     """Model for LLM validation output format."""
     mistakes: Optional[List[str]] = Field([], description="List of mistakes found in the student's code")
-    fixes: Optional[List[str]] = Field([], description="List of corrections proposed in the fixed code")
+    fixes: Optional[List[str]] = Field([], description="List of fixes proposed in the fixed code")
     feedback_lines: List[ValidatedFeedbackLine] = Field(..., description="List of validated feedback lines")
 
 # Contains one validation result for a given submission ID (sid)

@@ -199,7 +199,9 @@ MODELS_SHORT = OrderedDict({
     Model.GEMINI_2_5_FLASH.value : 'Gemini 2.5-F',
     Model.GEMINI_2_5_PRO.value : 'Gemini 2.5-P',
     Model.GPT_4_1.value : 'GPT 4.1',
-    Model.GPT_4_1_MINI.value : 'GPT 4.1-M'
+    Model.GPT_4_1_MINI.value : 'GPT 4.1-M',
+    Model.GEMINI_3_PRO_PREVIEW.value : 'Gemini 3-P',
+    Model.GPT_5_2.value : 'GPT 5.2'
 })
 
 
@@ -236,7 +238,9 @@ MODELS_RELEASE_DATE = {
     Model.GEMINI_2_5_FLASH.value: '2025-04-17',
     Model.GEMINI_2_5_PRO.value: '2025-03-25',
     Model.QWEN_CODER_PLUS.value: '2024-11-06',
-    Model.DEEPSEEK_CHAT.value: '2024-12-10'
+    Model.DEEPSEEK_CHAT.value: '2024-12-10',
+    Model.GEMINI_3_PRO_PREVIEW.value: '2025-11-18',
+    Model.GPT_5_2.value: '2025-12-11'
 }
 MODELS_ORDERED_RELEASE = [item[0] for item in sorted(MODELS_RELEASE_DATE.items(), key=lambda x: datetime.strptime(x[1], '%Y-%m-%d'))]
 MODELS_SHORT_ORDERED_RELEASE = [MODELS_SHORT[key] for key in MODELS_ORDERED_RELEASE]

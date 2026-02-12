@@ -309,11 +309,10 @@ class ValidationRunner:
         Args:
             sids_all: List of Student IDs to validate
         """
-        print('-'*100)
         
         # Load existing results if resuming
         existing_results = load_existing_validation_results(self.results_file)
-        processed_sids = {r['sid'] for r in existing_results}
+        processed_sids = {r['sid'] for r in existing_results if r and r.get('success') and r.get('output')}
         sids = [sid for sid in sids_all if sid not in processed_sids]
         print(f"Resuming validation. Skipping {len(processed_sids)} already processed SIDs.")
         print(f"Remaining SIDs to process: {len(sids)}")
