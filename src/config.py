@@ -201,7 +201,11 @@ MODELS_SHORT = OrderedDict({
     Model.GPT_4_1.value : 'GPT 4.1',
     Model.GPT_4_1_MINI.value : 'GPT 4.1-M',
     Model.GEMINI_3_PRO_PREVIEW.value : 'Gemini 3-P',
-    Model.GPT_5_2.value : 'GPT 5.2'
+    Model.GEMINI_3_FLASH_PREVIEW.value : 'Gemini 3-F',
+    Model.GPT_5_2.value : 'GPT 5.2',
+    Model.GPT_5_mini.value : 'GPT 5-M',
+    Model.CLAUDE_4_5_SONNET.value : 'Sonnet 4.5',
+    Model.CLAUDE_4_5_HAIKU.value : 'Haiku 4.5',
 })
 
 
@@ -240,7 +244,11 @@ MODELS_RELEASE_DATE = {
     Model.QWEN_CODER_PLUS.value: '2024-11-06',
     Model.DEEPSEEK_CHAT.value: '2024-12-10',
     Model.GEMINI_3_PRO_PREVIEW.value: '2025-11-18',
-    Model.GPT_5_2.value: '2025-12-11'
+    Model.GEMINI_3_FLASH_PREVIEW.value: '2026-03-01',  # Default date for missing models
+    Model.GPT_5_2.value: '2025-12-11',
+    Model.GPT_5_mini.value: '2026-03-01',  # Default date for missing models
+    Model.CLAUDE_4_5_SONNET.value: '2026-03-01',  # Default date for missing models
+    Model.CLAUDE_4_5_HAIKU.value: '2026-03-01',  # Default date for missing models
 }
 MODELS_ORDERED_RELEASE = [item[0] for item in sorted(MODELS_RELEASE_DATE.items(), key=lambda x: datetime.strptime(x[1], '%Y-%m-%d'))]
 MODELS_SHORT_ORDERED_RELEASE = [MODELS_SHORT[key] for key in MODELS_ORDERED_RELEASE]
