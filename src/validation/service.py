@@ -45,6 +45,9 @@ class ValidationService:
         Returns:
             ValidationResult: Result of the validation
         """
+        raw_response = None
+        error_msg = None
+        
         try:
             # Get validation input data
             validation_input = DataProvider.create_validation_input(
@@ -52,7 +55,8 @@ class ValidationService:
             )
 
             if validation_input is None or not validation_input.feedback:
-                raise ValueError(f"No validation input or feedback available for SID {sid}")
+                error_msg = f"No validation input or feedback available for SID {sid}"
+                raise ValueError(error_msg)
             
             # Generate prompt messages
             if self.use_ground_truth and validation_input.ground_truth:
@@ -86,18 +90,23 @@ class ValidationService:
             
             # Convert parsed response to ValidationOutput if successful
             validation_output = None
+            error_msg = None
             if success and parsed_response:
                 try:
                     validation_output = ValidationOutput(**parsed_response)
                 except Exception as e:
+                    error_msg = f"Error parsing validation output: {str(e)}"
                     print_warning(f"Error parsing validation output for SID {sid}: {e}")
                     success = False
+            elif not success:
+                error_msg = "Failed to get valid JSON response from LLM"
             
             # Create result
             return ValidationResult(
                 sid=sid,
-                raw_response=str(raw_response),
-                output=parsed_response,
+                raw_response=str(raw_response) if raw_response else None,
+                output=parsed_response if success else None,
+                error=error_msg,
                 success=success,
                 generator_model=self.generator_model,
                 validator_model=self.validator_model,
@@ -108,8 +117,9 @@ class ValidationService:
             print_error(f"Error validating SID {sid}: {e}")
             return ValidationResult(
                 sid=sid,
-                raw_response=f"Error: {str(e)}",
+                raw_response=None,
                 output=None,
+                error=str(e),
                 success=False,
                 generator_model=self.generator_model,
                 validator_model=self.validator_model,

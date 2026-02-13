@@ -87,11 +87,14 @@ class ValidationResult(BaseModel):
     """Model for complete validation result."""
     generatorData: Optional[GeneratorData] = Field(None, description="Corresponding Generator data used for validation")
     sid: int = Field(..., description="Student ID")
-    raw_response: str = Field(..., description="Raw LLM response")
+    raw_response: Optional[str] = Field(None, description="Raw LLM response")
     output: Optional[ValidationOutput] = Field(None, description="Parsed validation output")
+    error: Optional[str] = Field(None, description="Error message if validation failed")
     fidFailureCount: int = Field(0, description="Count of failed feedback lines")
     timestamp: Optional[str] = Field(None, description="Timestamp of validation")
     success: Optional[bool] = Field(..., description="Whether validation was successful")
+    generator_model: Optional[str] = Field(None, description="Model used for generation")
+    validator_model: Optional[str] = Field(None, description="Model used for validation")
 
             
     @classmethod
