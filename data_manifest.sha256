@@ -11,7 +11,7 @@ data/generator/gemini-1.5-flash_feedback.json 9eb138ad5bef27e987ffb6bd94e5bcd475
 data/generator/gemini-1.5-pro_feedback.json 82f979f18aad83ee482e09fe9d43edf3fa08bd96782dbaecb8ffded7937adb06
 data/generator/gemini-2.5-flash_feedback.json e3fb8509dcb77cf28600c8454174274595b7238de96c691b87feb27dd2a12087
 data/generator/gemini-2.5-pro_feedback.json e6dddc23b70d8a9cdee97a449dd5d2caccbf1f0fa00c9ec15d08b8e16c69c97a
-data/generator/gemini-3-flash-preview_feedback.json 9ff55ca492228d710f01ac20f2e5f191c77069fe8a5fd84d3992a63c872d32e5
+data/generator/gemini-3-flash-preview_feedback.json cceb2c4c8b8642a031c7b65884d12b97070832b5cc4c701db6a0e86d9a19971f
 data/generator/gemini-3-pro-preview_feedback.json 492c82f0ebade7f04d465c72f21da09728bb6b8ca7f42df7832755eb7137b910
 data/generator/generator_feedback.json 389b41c047f5ccc8a631c11520537c268ad5c8978b1704589cfeb49f242a93bf
 data/generator/gpt-3.5-turbo_feedback.json 6051b840355d2259a18eb6c4e1b1bbd0f3104d9ae515374da2e9b0ece11f62b9
@@ -38,6 +38,8 @@ data/validator/gen=claude_3_opus/val=gpt-4.1-mini.json 0911f8b829e16ad74e37f25bf
 data/validator/gen=claude_3_opus/val=gpt-4.1.json 37d5dd007bf9deef572ad173ceb7546374c3fae0ec1dadf1a2926740b08ae5ee
 data/validator/gen=claude_3_opus/val=gpt-4o-mini.json a9c0a0ee9a80b09741e229fcfd07919aff230d0ddcdaec63b64c161e85fcebe0
 data/validator/gen=claude_3_opus/val=gpt-4o.json 838af892f426aff2c437f2d353b83c0548899f8d307a25a9d5c77e9f6d86c74e
+data/validator/gen=claude_3_opus/val=gpt-5-mini.json d5259e87671bbd960244817472e7f8a13e9a890b6bc72ae3d41751df2fe10000
+data/validator/gen=claude_3_opus/val=gpt-5.2.json 0ec626173b23fd39df8776d66d9dee716099d4c79bec1d989a618f692b8a0db1
 data/validator/gen=claude_3_opus/val=qwen-coder-plus.json 6b960ff9d8ec0d341257723434a0ea3db21310589648e35122046d6d10421b42
 data/validator/gen=claude_3.5_haiku/val=claude_3_opus.json b061e188e1860864afe269aaacb51ccf02f9d15e755b22a6ebeb3c9eba0e547e
 data/validator/gen=claude_3.5_haiku/val=claude_3.5_haiku.json 819f7699a0acac8d35cf5bfcaec0aace8bbb234f7fe4e4107e8a5a65ca54a9c7
@@ -83,6 +85,8 @@ data/validator/gen=deepseek-chat/val=gpt-4.1-mini.json 0e678365e9eb6ca435e77d2c6
 data/validator/gen=deepseek-chat/val=gpt-4.1.json 2c8820f054672694b0c1b58e20b94172f3f217df718f9babd7e682ddc7c904f8
 data/validator/gen=deepseek-chat/val=gpt-4o-mini.json 77e9fffaaecf47444992d6105f83cb8306e13397f82493632a51fe3ec375b4c9
 data/validator/gen=deepseek-chat/val=gpt-4o.json f730caf07ffdaf599295c31ee48ff8569f87b30e2d03be764fa2cb84b188496f
+data/validator/gen=deepseek-chat/val=gpt-5-mini.json 8515d996322b7bbda924f52482c55c503563547d3b0ae3fd6fafac9e9798a0df
+data/validator/gen=deepseek-chat/val=gpt-5.2.json 8ecad2591124840bb722d87b4e16c9ba6347bcfd38b3ba7e62a2f066601b3577
 data/validator/gen=deepseek-chat/val=qwen-coder-plus.json 7e4b7be996ed787304c6c6eade8d8047a1567ce7b57233255237968296fa57d7
 data/validator/gen=gemini-1.5-flash/val=claude_3_opus.json 61c0730870d6e575ab13f11ba17caf430a76dd173d8583b9d50ff965f332ee80
 data/validator/gen=gemini-1.5-flash/val=claude_3.5_haiku.json d88fb5c9850121bf2d40e78d91c0138457e2441f88139d6dafbb4dedc49ab25d
@@ -113,6 +117,8 @@ data/validator/gen=gemini-1.5-pro/val=gpt-4.1-mini.json 595a6beb9cbc2de25c053efa
 data/validator/gen=gemini-1.5-pro/val=gpt-4.1.json 0eccd18c164d76617e1bf925e6d4fd8233dced2e1c9b57db7b466354eaf3fe8c
 data/validator/gen=gemini-1.5-pro/val=gpt-4o-mini.json f9dacdc78e2c259b741dddacb3ee7e15ca6babe4922c3fa8237bcc299a2d3ec9
 data/validator/gen=gemini-1.5-pro/val=gpt-4o.json 15768b6a6da89557c306099c78a335d8fd782e12e32796939d768f16d8a9e025
+data/validator/gen=gemini-1.5-pro/val=gpt-5-mini.json 32754a6e5cdd0f173b7b7c84dff8469420e274f1f4073c662f8b718186ab06b2
+data/validator/gen=gemini-1.5-pro/val=gpt-5.2.json a7d2770684f1ef8050b9a5cb91eedcc87673b2e730159d30a86b1f03b2f44ce7
 data/validator/gen=gemini-1.5-pro/val=qwen-coder-plus.json 1385fd4f13d5b008041eb6e176781e37258ae513bcd820a1f7aa28bd7002bc52
 data/validator/gen=gemini-2.5-flash/val=claude_3_opus.json 2bd6c4fb4b24da282fb3ac518ec1939f97c6b6af34573889c7fbcd361357095c
 data/validator/gen=gemini-2.5-flash/val=claude_3.5_haiku.json 49f7949e72704da033b057e01e24735e655aeca896628c2e4d0cd13430ae4a3d
@@ -144,13 +150,20 @@ data/validator/gen=gemini-2.5-pro/val=gpt-4.1.json ea76d09ab1348600180ab2c436160
 data/validator/gen=gemini-2.5-pro/val=gpt-4o-mini.json 5187eef9cd454a6f77734146f60ba94dd1ead59718327de0421dbf5280ec5ae1
 data/validator/gen=gemini-2.5-pro/val=gpt-4o.json e05dcbd5d352384b097ec6bfdad77d918cd9316dd703ddbe36ac189b2d334419
 data/validator/gen=gemini-2.5-pro/val=qwen-coder-plus.json 2d7dee1846f18ccd86df8940f156c10d7085aaea192079d268d812cac2b987cc
-data/validator/gen=gemini-3-pro-preview/val=gemini-2.5-flash.json 659590733d3e5555eb1a80ac3e45a4b29ee1b14f2db5da0fa5a2efd01a9e344c
-data/validator/gen=gemini-3-pro-preview/val=gemini-2.5-pro.json 71ad2f2fc228a72e321d6ed63f534543bfc769ad57aa1e0b4829e83062d558f0
-data/validator/gen=gemini-3-pro-preview/val=gpt-4-turbo.json 4267db3210f88eee46b1b5f21d2c090cb0763deb0f5c5448a2a0696eb6289064
+data/validator/gen=gemini-3-pro-preview/val=claude_3_opus.json 79b4680644b33843b70f5247c7fee8ee5398f76e6eeaa4e308f8a58cc41eadee
+data/validator/gen=gemini-3-pro-preview/val=claude_3.5_haiku.json 1fef8c9b5040ed4008149ca98db4ac56b26a7dc234a91f3fdadfa6f9abc52a52
+data/validator/gen=gemini-3-pro-preview/val=claude_3.5_sonnet.json f16826ee9516e57b26bb65d547a27dfb925c1a8180026734be80a261ea070ace
+data/validator/gen=gemini-3-pro-preview/val=gemini-2.5-flash.json 4ff529ed0b3044e25d08b24305a67caa6489ac617762f99993c0515d2e969639
+data/validator/gen=gemini-3-pro-preview/val=gemini-2.5-pro.json b7ac43395aba8ab4b03f0a2cf546109e0eb9c254c6fe54bac5842d1ac64a54dd
+data/validator/gen=gemini-3-pro-preview/val=gemini-3-flash-preview.json 0ca88d6ffd00e8f640e199500afc60240c619c25b397446a519cf0d70f1020f9
+data/validator/gen=gemini-3-pro-preview/val=gemini-3-pro-preview.json 0907fc5bc5ae76431bc97c9f25bcf77c64fae2ed1cd0e421f7a8643bae65d99b
+data/validator/gen=gemini-3-pro-preview/val=gpt-4-turbo.json dc275bbd70bf4060accda46280a0c02086c766395ce9bd6b253bf398bdb5f066
 data/validator/gen=gemini-3-pro-preview/val=gpt-4.1-mini.json d2469b33184a56b1d630323b844bb6db742a04443b47682398dbe34a79df1d7a
-data/validator/gen=gemini-3-pro-preview/val=gpt-4.1.json 078664c6aa9388394c46fdef464373ad9539a3c6b820ef62795bce13239d9000
-data/validator/gen=gemini-3-pro-preview/val=gpt-4o-mini.json 28479f22364a672fab18eba1d67aa27c9344ad34e7f692f948164ea45979a659
-data/validator/gen=gemini-3-pro-preview/val=gpt-4o.json 2c5a1091bd866089e3654a865b6a01aa27042f0c5d1ff03306a53eb2901d4262
+data/validator/gen=gemini-3-pro-preview/val=gpt-4.1.json d9f3ec0400612f953abfdb28906452ec94de783484eb4f51c4685c11ab64f0c7
+data/validator/gen=gemini-3-pro-preview/val=gpt-4o-mini.json 0fad692412bb19efe9f57ae85a1821ac114bf1881b42b9398a190e3a3048ea9a
+data/validator/gen=gemini-3-pro-preview/val=gpt-4o.json b9d6ba45f45a424ff75e5167e03de5208252e757c5b716fd7518f06558690c0f
+data/validator/gen=gemini-3-pro-preview/val=gpt-5-mini.json 4726f5d93de2fb007b412b6f8dcca075760b06fe465a3e3aa8d3cc20c53eb0dc
+data/validator/gen=gemini-3-pro-preview/val=gpt-5.2.json 95ce525394387ca29439aca03554bc7d3cb28e0b5f6f560ac0d43beffad5179f
 data/validator/gen=gpt-3.5-turbo/val=claude_3_opus.json 70a66b94b6d0a3d7de2689add01d374fbe58ec9573ac254708512988107c9d10
 data/validator/gen=gpt-3.5-turbo/val=claude_3.5_haiku.json 93459975f817df4165a538d34dbd3228e59732c8a65570e816fd01af44ce4853
 data/validator/gen=gpt-3.5-turbo/val=claude_3.5_sonnet.json 1b8443ee56210b99aa2da4f72e64ee1ba5c88b020cd12b2bcb34956574f9cd87
@@ -180,6 +193,8 @@ data/validator/gen=gpt-4-turbo/val=gpt-4.1-mini.json cc11562dd3e869cb1c5b9857a4a
 data/validator/gen=gpt-4-turbo/val=gpt-4.1.json 70c62dc9663116adf7b03033bef51f91bd9ad9028c48c5eec13efed2dba5b448
 data/validator/gen=gpt-4-turbo/val=gpt-4o-mini.json 421eea9714868ee09299d4eed0782f37e6d0b59458ea8f9fff9e4dacf5e07caa
 data/validator/gen=gpt-4-turbo/val=gpt-4o.json 2fbfcfd35e66d7d72a77770843db41810332ad0bc809810319e75cde73424327
+data/validator/gen=gpt-4-turbo/val=gpt-5-mini.json 6f6c3e7e400d4b7f45c01078252d18177c33782b061e464af7f8d8859b04ff36
+data/validator/gen=gpt-4-turbo/val=gpt-5.2.json 03861c96339f90ba43e42f3bebcac53dc1a65b4498eab5c51c24c17019c5456a
 data/validator/gen=gpt-4-turbo/val=qwen-coder-plus.json 29a7ec573ad5fe72b1d8e84b591778a6cea2f6ea386f1bd013051094bca5c9d8
 data/validator/gen=gpt-4.1-mini/val=claude_3_opus.json 531e0fed7e34822c4c1c937f0d189707f72adecb4f9d46a47812b8a0e33fe1a8
 data/validator/gen=gpt-4.1-mini/val=claude_3.5_haiku.json fb09e1cf99ccc6126033c530925785f03e3ef8d95f19a8807bf6529928740886
@@ -240,6 +255,8 @@ data/validator/gen=gpt-4o/val=gpt-4.1-mini.json d5339e431bee40e23bf6e498d6599487
 data/validator/gen=gpt-4o/val=gpt-4.1.json 87c6477825a8f945bedc1baf3dd9ff859b318c58afb5f0a8916ef130bc14aa29
 data/validator/gen=gpt-4o/val=gpt-4o-mini.json 5df691ab44a823a457c50201dbcd8b77b81efaf752d9d0c454b7348370f70e37
 data/validator/gen=gpt-4o/val=gpt-4o.json 76e5e4c7da3660697a9c4fdae62a128e84eb2b901553f9a2a88863aa5c3c9bc6
+data/validator/gen=gpt-4o/val=gpt-5-mini.json e6ae372eec9af290791a39afe312f81bef23f6bb98fbf61b5bad7321b78fd35b
+data/validator/gen=gpt-4o/val=gpt-5.2.json 6cb442ddcc65e736665e90fb30ac40b96d53c7e8d5009f8d02789b979514538a
 data/validator/gen=gpt-4o/val=qwen-coder-plus.json 2af0aeef7fc61a61d5340a9e45e97fc40eeb33d48c0be08516b682c0f00e9b5a
 data/validator/gen=gpt-5.2/val=gemini-2.5-flash.json c5e2a54f1c68c50d74f6d83fa3012589ff1c7213e724915c4b3fec57342ba753
 data/validator/gen=gpt-5.2/val=gemini-2.5-pro.json e12c7b54f6f350467c454f211f2a7d24ad51e264b89f889f1443dfef3e856612
@@ -262,4 +279,6 @@ data/validator/gen=qwen-coder-plus/val=gpt-4.1-mini.json addc03a70edf311c5e235ea
 data/validator/gen=qwen-coder-plus/val=gpt-4.1.json 553da89c2446f25a4041397c14806406ad7599967f11d9c38cdf1cce1d6c674a
 data/validator/gen=qwen-coder-plus/val=gpt-4o-mini.json 81cbdf1a3fe608562018718324fa06dfb879e0bce6bbd40e22711240226ad8e1
 data/validator/gen=qwen-coder-plus/val=gpt-4o.json c61d4b302f046fe57d641620388c0623e095705bcf06b890b3b3b0e1039f5718
+data/validator/gen=qwen-coder-plus/val=gpt-5-mini.json 43c5303289d2dc6272610ee61707ea0f65c56011bca07319e221fa5ce4e08727
+data/validator/gen=qwen-coder-plus/val=gpt-5.2.json f26a8f920b240b44b9757bc3b25b3e318468e4b16ffecfc01230482f65746d35
 data/validator/gen=qwen-coder-plus/val=qwen-coder-plus.json e0511368337fef142eac7bfec65a0dd4c80b993f5ded93581db0e3b76d308f57
