@@ -92,7 +92,7 @@ class ValidationResult(BaseModel):
     error: Optional[str] = Field(None, description="Error message if validation failed")
     fidFailureCount: int = Field(0, description="Count of failed feedback lines")
     timestamp: Optional[str] = Field(None, description="Timestamp of validation")
-    success: Optional[bool] = Field(..., description="Whether validation was successful")
+    # success: Optional[bool] = Field(..., description="Whether validation was successful")
     generator_model: Optional[str] = Field(None, description="Model used for generation")
     validator_model: Optional[str] = Field(None, description="Model used for validation")
 
@@ -344,7 +344,7 @@ class ValidationBatch(BaseModel):
                         'classification': label
                     })
         
-        df = pd.DataFrame(rows)
+        df = pd.DataFrame(rows, columns=['sid', 'line_number', 'feedback', 'classification'])
         df['sid'] = df['sid'].astype(str)
         df['line_number'] = df['line_number'].astype(str)
         df['feedback'] = df['feedback'].astype(str)

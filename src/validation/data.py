@@ -154,8 +154,14 @@ class DataProvider:
             print_error(f"Error loading validation batch for gen={modelGen}, val={modelVal}: {e}")
             print_warning(f"Full traceback: {traceback.format_exc()}")
             
-            sys.exit(1)
-            self.validation_batch = None
+            # sys.exit(1)
+            results = [ValidationResult(sid=sid, raw_response="", output=None, success=False, error=str(e)) for sid in range(1,NUM_SIDS+1)]
+            self.validation_batch = ValidationBatch(
+                generator_model=modelGen,
+                validator_model=modelVal,
+                results=results,
+                use_ground_truth=False
+            )
 
     def save_validation_batch_to_file(self, file_path: str) -> bool:
         """
@@ -249,7 +255,7 @@ class DataProvider:
         print(f"Validator Model: {batch.validator_model}")
         print(f"")
         
-        if stats['total_results'] == 0:
+        if stats['total_results'] == 0 or stats['total_fids'] == 0:
             print("Successful SIDs: 0 / 0 (0.00%)")
             print("Successful FIDs: 0 / 0 (0.00%)")
         else:
@@ -285,7 +291,9 @@ class DataProvider:
             # Extract error type from raw response
             error_key = "unknown_error"
             
-            if "429" in result.raw_response:
+            if result.error:
+                error_key = result.error.splitlines()[0]  # Take the first line of the error message
+            elif "429" in result.raw_response:
                 error_key = "quota_exceeded"
             elif "timeout" in result.raw_response.lower():
                 error_key = "timeout"

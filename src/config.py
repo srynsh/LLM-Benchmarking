@@ -153,7 +153,10 @@ MODELS_VAL = [
         Model.QWEN_CODER_PLUS.value,
         Model.DEEPSEEK_CHAT.value,
         Model.CLAUDE_3_5_HAIKU.value, Model.GEMINI_2_5_FLASH.value, Model.GEMINI_2_5_PRO.value, 
-        Model.GPT_4_1.value, Model.GPT_4_1_MINI.value
+        Model.GPT_4_1.value, Model.GPT_4_1_MINI.value,
+
+        Model.GPT_5_2.value, Model.GPT_5_mini.value, Model.GEMINI_3_PRO_PREVIEW.value, Model.GEMINI_3_FLASH_PREVIEW.value,
+        Model.CLAUDE_4_5_SONNET.value, Model.CLAUDE_4_5_HAIKU.value
     ]
 
 # For testing purposes, only use the first model
@@ -181,7 +184,13 @@ mapping_latex = {
     Model.GEMINI_2_5_FLASH.value: '\\flashTwoFive',
     Model.GEMINI_2_5_PRO.value: '\\proTwoFive',
     Model.GPT_4_1.value: '\\gptFourOne',
-    Model.GPT_4_1_MINI.value: '\\gptFourOneMini'
+    Model.GPT_4_1_MINI.value: '\\gptFourOneMini',
+    Model.GPT_5_2.value: '\\gptFiveTwo',
+    Model.GPT_5_mini.value: '\\gptFiveMini',
+    Model.GEMINI_3_PRO_PREVIEW.value: '\\geminiThreePro',
+    Model.GEMINI_3_FLASH_PREVIEW.value: '\\geminiThreeFlash',
+    Model.CLAUDE_4_5_SONNET.value: '\\claudeFourPointFiveSonnet',
+    Model.CLAUDE_4_5_HAIKU.value: '\\claudeFourPointFiveHaiku',
 }
 
 MODELS_SHORT = OrderedDict({ 
