@@ -22,7 +22,7 @@ class GroundTruthFeedback(BaseModel):
     """Model for ground truth feedback with category."""
     line_number: Union[str, int] = Field(..., description="Line number where the feedback applies")
     feedback: str = Field(..., description="Feedback text for the student")
-    category: str = Field(..., description="Ground truth category (valid/invalid)")
+    category: Optional[str] = Field(None, description="Ground truth category (valid/invalid)")
     
     @validator('line_number', pre=True)
     def validate_line_number(cls, v):

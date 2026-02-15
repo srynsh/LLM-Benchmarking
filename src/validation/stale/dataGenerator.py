@@ -220,7 +220,7 @@ def get_data(row):
     orignial_feedback = []
 
     for f in feedback:
-        if f['category'] not in ["FN"]:
+        if 'category' not in f or f['category'] not in ["FN"]: # Only include feedback that is not categorized as "FN" (False Negative)
             unlabelled_feedback.append({"line_number": f['line_number'], "feedback": f['feedback']})
             orignial_feedback.append(f)
        
