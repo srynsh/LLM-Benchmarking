@@ -217,25 +217,6 @@ MODELS_SHORT = OrderedDict({
     Model.CLAUDE_4_5_HAIKU.value : 'Haiku 4.5',
 })
 
-
-MODELS_ORDERED_PRECISION = [
-    Model.GPT_4_TURBO.value,
-    Model.GPT_4O_MINI.value,
-    Model.DEEPSEEK_CHAT.value,
-    Model.QWEN_CODER_PLUS.value,
-    Model.GEMINI_1_5_FLASH.value,
-    Model.CLAUDE_3_5_HAIKU.value,
-    Model.GEMINI_1_5_PRO.value,
-    Model.CLAUDE_3_OPUS.value,
-    Model.GPT_4O.value,
-    Model.CLAUDE_3_5_SONNET.value,
-    Model.GPT_4_1_MINI.value,
-    Model.GPT_4_1.value,
-    Model.GEMINI_2_5_FLASH.value,
-    Model.GEMINI_2_5_PRO.value
-]
-MODELS_SHORT_ORDERED_PRECISION = [MODELS_SHORT[item] for item in MODELS_ORDERED_PRECISION]
-
 MODELS_RELEASE_DATE = {
     # Model.GPT_3_5_TURBO.value: '2022-03-15',
     Model.GPT_4_TURBO.value: '2023-11-06',
@@ -253,11 +234,11 @@ MODELS_RELEASE_DATE = {
     Model.QWEN_CODER_PLUS.value: '2024-11-06',
     Model.DEEPSEEK_CHAT.value: '2024-12-10',
     Model.GEMINI_3_PRO_PREVIEW.value: '2025-11-18',
-    Model.GEMINI_3_FLASH_PREVIEW.value: '2026-03-01',  # Default date for missing models
+    Model.GEMINI_3_FLASH_PREVIEW.value: '2025-12-17',  
     Model.GPT_5_2.value: '2025-12-11',
-    Model.GPT_5_mini.value: '2026-03-01',  # Default date for missing models
-    Model.CLAUDE_4_5_SONNET.value: '2026-03-01',  # Default date for missing models
-    Model.CLAUDE_4_5_HAIKU.value: '2026-03-01',  # Default date for missing models
+    Model.GPT_5_mini.value: '2025-08-07',
+    Model.CLAUDE_4_5_SONNET.value: '2025-09-29',
+    Model.CLAUDE_4_5_HAIKU.value: '2025-10-15',
 }
 MODELS_ORDERED_RELEASE = [item[0] for item in sorted(MODELS_RELEASE_DATE.items(), key=lambda x: datetime.strptime(x[1], '%Y-%m-%d'))]
 MODELS_SHORT_ORDERED_RELEASE = [MODELS_SHORT[key] for key in MODELS_ORDERED_RELEASE]
@@ -296,6 +277,12 @@ ELO_RATING = {
     Model.GEMINI_2_5_PRO.value: 1446,
     Model.GPT_4_1.value: 1366,
     Model.GPT_4_1_MINI.value: 1322,
+    Model.GPT_5_2.value: 1464,
+    Model.GPT_5_mini.value: 1375,
+    Model.GEMINI_3_PRO_PREVIEW.value: 1492,
+    Model.GEMINI_3_FLASH_PREVIEW.value: 1470,
+    Model.CLAUDE_4_5_SONNET.value: 1420,
+    Model.CLAUDE_4_5_HAIKU.value: 1378
 }
 
 # =========================
