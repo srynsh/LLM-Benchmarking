@@ -271,15 +271,11 @@ def plot_validator_success(generators: List[str], validators: List[str],
     
     # Create custom colormap: black (-2), yellow (-1), green gradient (low error)
     colors_list = ['#000000',  # -2: No file (black)
-                   '#FFD700',  # -1: Error reading file (yellow)
                    '#006400',  # 0-2%: Very dark green (excellent)
-                   '#228B22',  # 2-5%: Dark green (good)
-                   '#32CD32',  # 5-10%: Medium green (ok)
-                   '#90EE90',  # 10-20%: Light green (moderate errors)
-                   '#FFA500',  # 20%+: Orange (high errors)
+                   '#FFD700',  # -1: Error reading file (yellow)
                    '#FF0000']  # Very high errors: Red
     
-    bounds = [-2.5, -1.5, 0, 2, 5, 10, 20, 50, 100]
+    bounds = [-2.5, -0.01, 5, 15, 100]
     cmap = ListedColormap(colors_list)
     norm = BoundaryNorm(bounds, cmap.N)
     
@@ -299,7 +295,7 @@ def plot_validator_success(generators: List[str], validators: List[str],
                 color = 'black'
             else:
                 text = f'{error:.1f}'
-                color = 'white' if error > 10 or error < 2 else 'black'
+                color = 'white' if error <= 5 or error > 15 else 'black'
             
             ax.text(j, i, text, ha='center', va='center', color=color, fontsize=8)
     
@@ -310,7 +306,7 @@ def plot_validator_success(generators: List[str], validators: List[str],
     ax.set_yticklabels(generators)
     ax.set_xlabel('Validators', fontsize=12)
     ax.set_ylabel('Generators', fontsize=12)
-    ax.set_title('Validator Error Rates per Generator (sorted by release date)\n(Black=No file, Green=Low errors, Orange/Red=High errors)', 
+    ax.set_title('Validator Error Rates per Generator (sorted by release date)\n(Black=No file, Green=Low errors, Yellow/Red=High errors)', 
                 fontsize=14, fontweight='bold')
     
     # Colorbar
