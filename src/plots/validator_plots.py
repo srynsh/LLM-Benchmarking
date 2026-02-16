@@ -234,7 +234,7 @@ def tpr_tnr_validator(validator_tpr, validator_tnr, ensemble_tpr, ensemble_tnr):
     plt.legend(handles, labels, bbox_to_anchor=(1.05, 0.5), loc='center left', ncol=2, fontsize=14)
 
 
-    plt.ylim(0,60)
+    plt.ylim(70,100)
     plt.xlim(82,100)
 
     # Labels and fontsize
