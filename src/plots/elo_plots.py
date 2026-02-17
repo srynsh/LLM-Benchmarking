@@ -36,11 +36,11 @@ def elo_vs_precision():
         offset = (0, -20)
         if shorthand == 'GPT 4T':
             shorthand = 'GPT 4'
-        elif shorthand == 'DeepSeek 2.5':
+        elif shorthand in ['DeepSeek 2.5', 'Gemini 2.5-P']:
             offset = (-20, -30)
         elif shorthand == 'Qwen Coder-P':
             offset = (-10, -30)
-        elif shorthand in ['Sonnet 3.5', 'Gemini 2.5-P', 'Gemini 3-F', 'GPT 5-M', 'Sonnet 4.5']:
+        elif shorthand in ['Sonnet 3.5', 'Gemini 3-F', 'GPT 5-M', 'Sonnet 4.5']:
             offset = (-70, 30)
         elif shorthand == 'Opus 3':
             offset = (-60, 20)
@@ -127,7 +127,7 @@ def elo_vs_tnr():
             arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.1', alpha=0.6)
         )
 
-    plt.ylim(0, 55)
+    plt.ylim(0, 70)
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
     plt.legend().remove()  # Remove the legend since we have annotations

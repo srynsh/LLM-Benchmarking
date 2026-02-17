@@ -16,7 +16,10 @@ def get_df_gv(GV):
         for j, model2 in enumerate(MODELS_VAL):
             generator = MODELS_SHORT[model1]
             validator = MODELS_SHORT[model2]
-            li.append([generator, validator, GV[i][j]*100])
+
+            precision = GV[i][j] * 100
+            if precision > 0:  # Only include points where precision is greater than 0
+                li.append([generator, validator, precision])
     df_gv = pd.DataFrame(li, columns=['generator', 'validator', 'precision'])
     
     return df_gv
@@ -38,6 +41,9 @@ def gv_plot(GV):
     stats = grouped.agg({'precision': ['mean', 'min', 'max']})
     stats.columns = ['mean', 'min', 'max']
     stats = stats.reset_index()
+
+    # Filter out generators with no valid precision values
+    stats = stats[stats['mean'] > 0]
 
     # Sort by mean precision for better visualization
     # stats = stats.sort_values('mean', ascending=True)
@@ -110,6 +116,12 @@ def gv_boxplot(GV):
     df_gv['generator'] = df_gv['generator'].apply(lambda x: MODELS_SHORT.get(x, x))
     df_gv = df_gv.sort_values(by='generator', 
                              key=lambda x: [MODELS_SHORT_ORDERED_RELEASE.index(model) if model in MODELS_SHORT_ORDERED_RELEASE else float('inf') for model in x])
+    
+    # Filter out generators with no valid precision values
+    valid_generators = df_gv.groupby('generator')['precision'].mean()
+    valid_generators = valid_generators[valid_generators > 0].index
+    df_gv = df_gv[df_gv['generator'].isin(valid_generators)]
+    
     
     # Create box plot
     sns.boxplot(data=df_gv, x='generator', y='precision', fill=False, linecolor='black')
@@ -234,7 +246,7 @@ def tpr_tnr_validator(validator_tpr, validator_tnr, ensemble_tpr, ensemble_tnr):
     plt.legend(handles, labels, bbox_to_anchor=(1.05, 0.5), loc='center left', ncol=2, fontsize=14)
 
 
-    plt.ylim(70,100)
+    plt.ylim(0,70)
     plt.xlim(82,100)
 
     # Labels and fontsize

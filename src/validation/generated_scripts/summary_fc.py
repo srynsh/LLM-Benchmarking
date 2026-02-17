@@ -266,7 +266,7 @@ ensemble_mean_errors = {
 
 # Error message counts during validation
 error_message_counts = {
-  "unmatched_feedback": 5658,
+  "unmatched_feedback": 5727,
   "missing_output": 4384,
   "missing_label": 1245,
   "missing_line_number": 432,
@@ -371,7 +371,7 @@ error_message_counts_validator = {
     "unmatched_feedback": 0
   },
   "gemini-3-flash-preview": {
-    "unmatched_feedback": 790,
+    "unmatched_feedback": 859,
     "missing_generator_line_number": 13
   },
   "claude_4.5_sonnet": {
@@ -491,7 +491,7 @@ complete_failed_sids = [
     50,
     11,
     366,
-    22,
+    23,
     9,
     220
   ],
@@ -513,7 +513,7 @@ complete_failed_sids = [
     14,
     1,
     366,
-    12,
+    15,
     8,
     227
   ],
@@ -601,7 +601,7 @@ complete_failed_sids = [
     31,
     5,
     366,
-    22,
+    28,
     8,
     209
   ],
@@ -645,7 +645,7 @@ complete_failed_sids = [
     3,
     1,
     366,
-    2,
+    3,
     3,
     262
   ],
@@ -935,7 +935,7 @@ partial_failed_sids = [
     132,
     74,
     366,
-    117,
+    132,
     10,
     222
   ],
@@ -957,7 +957,7 @@ partial_failed_sids = [
     15,
     7,
     366,
-    23,
+    30,
     9,
     230
   ],
@@ -1045,7 +1045,7 @@ partial_failed_sids = [
     39,
     10,
     366,
-    29,
+    37,
     8,
     210
   ],
@@ -1067,7 +1067,7 @@ partial_failed_sids = [
     0,
     4,
     366,
-    7,
+    8,
     2,
     241
   ],
@@ -1089,7 +1089,7 @@ partial_failed_sids = [
     4,
     3,
     366,
-    8,
+    9,
     3,
     262
   ],
@@ -1111,7 +1111,7 @@ partial_failed_sids = [
     27,
     41,
     366,
-    65,
+    70,
     3,
     224
   ],
@@ -1133,7 +1133,7 @@ partial_failed_sids = [
     12,
     18,
     366,
-    30,
+    40,
     6,
     238
   ],
@@ -1177,7 +1177,7 @@ partial_failed_sids = [
     0,
     2,
     366,
-    2,
+    3,
     1,
     235
   ],
@@ -1313,7 +1313,7 @@ validation_total_fids = [
     983,
     987,
     0,
-    599,
+    683,
     952,
     320
   ],
@@ -1379,7 +1379,7 @@ validation_total_fids = [
     1168,
     1206,
     0,
-    805,
+    914,
     1106,
     366
   ],
@@ -1401,7 +1401,7 @@ validation_total_fids = [
     839,
     862,
     0,
-    580,
+    680,
     834,
     269
   ],
@@ -1489,7 +1489,7 @@ validation_total_fids = [
     967,
     1020,
     0,
-    555,
+    633,
     1002,
     381
   ],
@@ -1511,7 +1511,7 @@ validation_total_fids = [
     1042,
     1045,
     0,
-    954,
+    1051,
     1036,
     240
   ],
@@ -1533,7 +1533,7 @@ validation_total_fids = [
     1108,
     1119,
     0,
-    967,
+    1116,
     1112,
     173
   ],
@@ -1555,7 +1555,7 @@ validation_total_fids = [
     861,
     909,
     0,
-    717,
+    839,
     861,
     282
   ],
@@ -1577,7 +1577,7 @@ validation_total_fids = [
     1009,
     1039,
     0,
-    704,
+    824,
     989,
     280
   ],
@@ -1621,7 +1621,7 @@ validation_total_fids = [
     951,
     953,
     0,
-    872,
+    954,
     950,
     242
   ],
@@ -1687,7 +1687,7 @@ validation_total_fids = [
     858,
     828,
     0,
-    689,
+    836,
     827,
     252
   ],
@@ -1709,7 +1709,7 @@ validation_total_fids = [
     1109,
     1104,
     0,
-    747,
+    872,
     1102,
     301
   ]
@@ -1823,7 +1823,7 @@ validation_failed_fids = [
     148,
     86,
     0,
-    162,
+    184,
     1,
     2
   ],
@@ -1845,7 +1845,7 @@ validation_failed_fids = [
     1,
     6,
     0,
-    12,
+    16,
     1,
     3
   ],
@@ -1933,7 +1933,7 @@ validation_failed_fids = [
     15,
     5,
     0,
-    12,
+    14,
     0,
     1
   ],
@@ -1955,7 +1955,7 @@ validation_failed_fids = [
     0,
     4,
     0,
-    8,
+    9,
     0,
     1
   ],
@@ -1999,7 +1999,7 @@ validation_failed_fids = [
     15,
     47,
     0,
-    72,
+    77,
     1,
     1
   ],
@@ -2021,7 +2021,7 @@ validation_failed_fids = [
     9,
     28,
     0,
-    37,
+    50,
     0,
     2
   ],
@@ -2065,7 +2065,7 @@ validation_failed_fids = [
     0,
     2,
     0,
-    2,
+    3,
     0,
     0
   ],
@@ -2201,7 +2201,7 @@ merge_failed_fids = [
     0,
     4,
     983,
-    392,
+    308,
     31,
     677
   ],
@@ -2267,7 +2267,7 @@ merge_failed_fids = [
     267,
     106,
     1139,
-    658,
+    593,
     35,
     777
   ],
@@ -2289,7 +2289,7 @@ merge_failed_fids = [
     19,
     6,
     856,
-    300,
+    208,
     24,
     595
   ],
@@ -2377,7 +2377,7 @@ merge_failed_fids = [
     91,
     18,
     1028,
-    497,
+    423,
     26,
     650
   ],
@@ -2399,7 +2399,7 @@ merge_failed_fids = [
     0,
     5,
     1042,
-    104,
+    9,
     6,
     806
   ],
@@ -2421,7 +2421,7 @@ merge_failed_fids = [
     24,
     15,
     1130,
-    181,
+    32,
     18,
     957
   ],
@@ -2443,7 +2443,7 @@ merge_failed_fids = [
     33,
     49,
     864,
-    291,
+    179,
     5,
     585
   ],
@@ -2465,7 +2465,7 @@ merge_failed_fids = [
     21,
     28,
     1011,
-    381,
+    287,
     22,
     736
   ],
@@ -2509,7 +2509,7 @@ merge_failed_fids = [
     0,
     2,
     951,
-    83,
+    3,
     1,
     709
   ],
@@ -2575,7 +2575,7 @@ merge_failed_fids = [
     2,
     6,
     834,
-    149,
+    2,
     7,
     582
   ],
@@ -2597,17 +2597,17 @@ merge_failed_fids = [
     0,
     17,
     1109,
-    364,
+    239,
     7,
     816
   ]
 ]
 
 # Invalid FIDs by Validators
-count_invalids_all = 74755
+count_invalids_all = 73638
 
 # Percentage of Invalid FIDs by Validators
-percentage_invalids = 23.45
+percentage_invalids = 23.01
 
 # Worst Generator -> Validator combination
 worst_generator_validator_pair = "claude_3.5_sonnet -> gemini-3-flash-preview"
