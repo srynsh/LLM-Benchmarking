@@ -19,14 +19,15 @@ from src.utils import print_warning, print_error
 from src.config import pGa_CONST, pathLogs
 
 # Configuration: Set generator and validator models here
-MODEL_GENERATOR = Model.GPT_5_mini.value
+MODEL_GENERATOR = Model.GEMINI_1_5_PRO.value
 
-MODELS_VALIDATE = [
-    Model.CLAUDE_4_5_HAIKU.value,
-    Model.CLAUDE_4_5_SONNET.value,
-    Model.GEMINI_3_FLASH_PREVIEW.value,
-    Model.GPT_5_mini.value]
-MODEL_VALIDATOR = MODELS_VALIDATE[3]
+# MODELS_VALIDATE = [
+#     Model.CLAUDE_4_5_HAIKU.value,
+#     Model.CLAUDE_4_5_SONNET.value,
+#     Model.GEMINI_3_FLASH_PREVIEW.value,
+#     Model.GPT_5_mini.value]
+# MODEL_VALIDATOR = MODELS_VALIDATE[3]
+MODEL_VALIDATOR = Model.GEMINI_3_PRO_PREVIEW.value
 sids_restrict = None # [1,2] # Set to None to run all SIDs
 
 # Constants (don't change)

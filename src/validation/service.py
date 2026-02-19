@@ -322,9 +322,9 @@ class ValidationRunner:
         
         # Load existing results if resuming
         existing_results = load_existing_validation_results(self.results_file)
-        processed_sids = {r['sid'] for r in existing_results if r and r.get('success') and r.get('output')}
+        processed_sids = {r['sid'] for r in existing_results if r and r.get('output')}
         sids = [sid for sid in sids_all if sid not in processed_sids]
-        print(f"Resuming validation. Skipping {len(processed_sids)} already processed SIDs.")
+        print(f"Resuming validation for {self.attempt_name}. Skipping {len(processed_sids)} already processed SIDs.")
         print(f"Remaining SIDs to process: {len(sids)}")
         
         # Track cumulative statistics
@@ -338,7 +338,7 @@ class ValidationRunner:
             result = self.service.validate_single_sid(sid)
             
             # Update cumulative stats
-            if result.success and result.output:
+            if result and result.output:
                 counts = result.get_classification_counts()
                 cumulative_valid += counts['valid']
                 cumulative_invalid += counts['invalid']
