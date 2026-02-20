@@ -41,7 +41,9 @@ with open(fpathRegressionSummary, 'w') as f:
 # =========================
 
 def read_data():
-    GV = GV_CONST
+    GV = np.array(GV_CONST, dtype=object)
+    GV[(GV == '') | (GV == None)] = np.nan
+    GV = GV.astype(float)
     pGa = pGa_CONST
     VALIDATOR_COUNTS = VALIDATOR_COUNTS_CONST
     PVVA = PVVA_CONST
@@ -208,7 +210,8 @@ def estimate_probs(k, GV, pVva, pViva, pGa, idV, idG, w = [1, 0, 0]):
     NUM_GENERATORS = GV.shape[0]
 
     if PG_START == 'mean':
-        pG_ = np.mean(GV, axis=1)
+        pG_ = np.nanmean(GV, axis=1)
+        pG_ = np.where(np.isfinite(pG_), pG_, 0.5)
     elif PG_START == 'uniform':
         pG_ = np.random.uniform(0, 1, NUM_GENERATORS)
     else:
