@@ -145,7 +145,7 @@ def ensemble_writePg_hat_to_file(dfs_all, MODEL_VALS):
     pG_hat = []
     for model in MODEL_VALS:
         df = dfs_all[model].copy()
-        i = 4
+        i = 6
         df = invalid_voting(df, validation_columns, i)  # Perform invalid voting
         predScore_i = calculate_ensemble_prediction(df, f'ensemble_i{i}')
         pG_hat.append(predScore_i)

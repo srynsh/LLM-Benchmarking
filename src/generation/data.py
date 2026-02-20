@@ -1,10 +1,10 @@
 import os
-from jsonschema import ValidationError
 import pandas as pd
 from typing import Dict, List, Union, Any, Optional
 import json
+from pydantic import ValidationError
 from src.config import MODELS_GEN, NUM_SIDS, VALIDATOR_REPAIR
-from src.generation.models import GenerationBatch, GeneratorData
+from src.generation.models import GenerationBatch, GeneratorData, validate_generator_data
 from src.utils import print_warning, print_error
 
 
@@ -219,12 +219,13 @@ def load_existing_results(model: str) -> List[Dict[str, Any]]:
     existing_results = []
     if os.path.exists(path_existing):
         try:
-            with open(path_existing, 'r') as f:
+            with open(path_existing, 'r', encoding='utf-8') as f:
                 existing_results = json.load(f)
-
-            assert len(existing_results) == NUM_SIDS, "Number of existing results does not match expected count"
+            print(f"📂 Loaded {len(existing_results)} existing results from {path_existing}")
         except Exception as e:
             print_warning(f"Could not load existing results: {e}")
+    else:
+        print(f"📝 Starting fresh generation for model '{model}' - no existing results found")
     
     return existing_results
 
@@ -245,7 +246,13 @@ def get_processed_sids(existing_results: List[Dict[str, Any]], category_required
     processed_sids = set(valid_sids)
     
     total_sids = len([result for result in existing_results if result.get('sid') is not None])
-    assert total_sids == NUM_SIDS, f"Expected {NUM_SIDS} SIDs, but found {total_sids} in existing results"
+    
+    # Only check SID count if we have existing results
+    if existing_results:
+        if total_sids == NUM_SIDS:
+            print(f"✅ Found all {NUM_SIDS} SIDs in existing results")
+        else:
+            print_warning(f"Found {total_sids}/{NUM_SIDS} SIDs in existing results (generation in progress)")
 
     numInvalid = len(existing_results) - len(processed_sids)
     if numInvalid > 0:
@@ -272,6 +279,7 @@ def get_processed_results(model) -> GenerationBatch:
         return GenerationBatch(generator_model=model, results=[], use_ground_truth=category_required)
     
     processed_sids = get_processed_sids(existing_results, category_required)
+    
     return GenerationBatch(
         generator_model=model,
         results=[item for item in existing_results if item.get('sid') in processed_sids],
@@ -280,35 +288,6 @@ def get_processed_results(model) -> GenerationBatch:
 
 
 
-def validate_generator_data(data: Dict[str, Any], category_required: bool = True) -> bool:
-    """
-    Validate that data matches the complete Generator data structure.
-    
-    Args:
-        data: Data dictionary to validate
-        category_required: Whether category field is required in feedback
-        
-    Returns:
-        bool: True if valid, False otherwise
-    """
-    try:
-        # Add category_required to data if not present
-        if 'category_required' not in data:
-            data['category_required'] = category_required
-
-        # Handle line_number ranges like "1-3"
-        if VALIDATOR_REPAIR.line_number_hyphens:
-            if 'feedback' in data:
-                for line in data['feedback']:
-                    if 'line_number' in line and isinstance(line['line_number'], str):
-                        if '-' in line['line_number']:
-                            line['line_number'] = line['line_number'].split('-')[0]
-
-        GeneratorData(**data)
-        return True
-    except ValidationError as e:
-        print(f"- {e}")
-        return False
 
 def validate_json_file_data(data: List[Dict[str, Any]], category_required: bool = True) -> List[int]:
     """

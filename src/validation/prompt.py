@@ -33,7 +33,7 @@ For each feedback line, classify it as either "valid" or "invalid" and explain y
 ```json
     {
         "mistakes": [], // List of mistakes found in the student's code 
-        "fixes": [], // List of corrections proposed in the TA's fixed code
+        "fixes": [], // List of fixes proposed in the TA's fixed code
         "feedback_lines": [ 
             {
                 "line_number": <integer>, // Line number referenced by the TA feedback
@@ -158,7 +158,7 @@ For each feedback line, classify it as either "valid" or "invalid" and explain y
 ```json
     {
         "mistakes": [], // List of mistakes found in the student's code 
-        "fixes": [], // List of corrections proposed in the TA's fixed code
+        "fixes": [], // List of fixes proposed in the TA's fixed code
         "feedback_lines": [ 
             {
                 "line_number": <integer>, // Line number referenced by the TA feedback

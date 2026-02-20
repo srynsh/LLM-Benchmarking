@@ -36,13 +36,11 @@ def elo_vs_precision():
         offset = (0, -20)
         if shorthand == 'GPT 4T':
             shorthand = 'GPT 4'
-        elif shorthand == 'Gemini 2.5-P':
-            offset = (-90, -5)
-        elif shorthand == 'DeepSeek 2.5':
+        elif shorthand in ['DeepSeek 2.5', 'Gemini 2.5-P']:
             offset = (-20, -30)
         elif shorthand == 'Qwen Coder-P':
             offset = (-10, -30)
-        elif shorthand == 'Sonnet 3.5':
+        elif shorthand in ['Sonnet 3.5', 'Gemini 3-F', 'GPT 5-M', 'Sonnet 4.5']:
             offset = (-70, 30)
         elif shorthand == 'Opus 3':
             offset = (-60, 20)
@@ -97,6 +95,7 @@ def elo_vs_tnr():
         'gpt-4o-mini': (15, 15),      # Move down and right
         'gpt-4o': (35, 0),          # Move down and left
         'claude_3_opus': (-60, 5),    # Move up and left
+        'claude_4.5_sonnet': (-60, 5),    # Move up and left
         'claude_3.5_sonnet': (15, -5),   # Move right
         'gemini-1.5-flash': (10, -5), # Move down and right
         'gemini-1.5-pro': (-10, -20),  # Move down and left
@@ -106,6 +105,7 @@ def elo_vs_tnr():
         'gemini-2.5-flash': (-35, -25), # Keep default
         'gemini-2.5-pro': (-55, -25),   # Keep default
         'gpt-4.1-2025-04-14': (10, -15),  # Move up and left
+        'claude_4.5_haiku': (15, -10), # Move up and right
         'gpt-4.1-mini': (15, -10), # Move up and right
         'gemini-1.5-flash': (-30, -40),  # Move down
     }
@@ -127,7 +127,7 @@ def elo_vs_tnr():
             arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.1', alpha=0.6)
         )
 
-    plt.ylim(0, 55)
+    plt.ylim(0, 70)
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
     plt.legend().remove()  # Remove the legend since we have annotations

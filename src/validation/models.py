@@ -22,13 +22,17 @@ class GroundTruthFeedback(BaseModel):
     """Model for ground truth feedback with category."""
     line_number: Union[str, int] = Field(..., description="Line number where the feedback applies")
     feedback: str = Field(..., description="Feedback text for the student")
-    category: str = Field(..., description="Ground truth category (valid/invalid)")
+    category: Optional[str] = Field(None, description="Ground truth category (valid/invalid)")
     
     @validator('line_number', pre=True)
     def validate_line_number(cls, v):
         """Convert line_number to string for consistency."""
         return str(v)
 
+class ValidatedFeedbackLineInput(BaseModel):
+    """Model for feedback line with validation results."""
+    line_number: Union[str, int] = Field(..., description="Line number referenced by the feedback")
+    feedback: str = Field(..., description="The feedback provided by the TA")
 
 class ValidatedFeedbackLine(BaseModel):
     """Model for feedback line with validation results."""
@@ -55,10 +59,27 @@ class ValidatedFeedbackLine(BaseModel):
         return v.lower()
 
 
+class TestCase(BaseModel):
+    """Model for test case data."""
+    status: str = Field(..., description="Test case status (PASS/FAIL)")
+    input: str = Field(..., description="Test case input")
+    expected_output: str = Field(..., description="Expected output for the test case")
+
+
+class ValidationInput(BaseModel):
+    """Model for validation input data."""
+    question: str = Field(..., description="Problem description/question")
+    student_code: str = Field(..., description="Student's submitted code")
+    correct_code: str = Field(..., description="Correct solution code")
+    feedback: List[ValidatedFeedbackLineInput] = Field(..., description="List of feedback lines to validate")
+    test_cases: List[TestCase] = Field(..., description="List of test cases")
+    ground_truth: Optional[List[GroundTruthFeedback]] = Field(None, description="Ground truth feedback (if available)")
+
+
 class ValidationOutput(BaseModel):
     """Model for LLM validation output format."""
     mistakes: Optional[List[str]] = Field([], description="List of mistakes found in the student's code")
-    fixes: Optional[List[str]] = Field([], description="List of corrections proposed in the fixed code")
+    fixes: Optional[List[str]] = Field([], description="List of fixes proposed in the fixed code")
     feedback_lines: List[ValidatedFeedbackLine] = Field(..., description="List of validated feedback lines")
 
 # Contains one validation result for a given submission ID (sid)
@@ -66,10 +87,14 @@ class ValidationResult(BaseModel):
     """Model for complete validation result."""
     generatorData: Optional[GeneratorData] = Field(None, description="Corresponding Generator data used for validation")
     sid: int = Field(..., description="Student ID")
-    raw_response: str = Field(..., description="Raw LLM response")
+    raw_response: Optional[str] = Field(None, description="Raw LLM response")
     output: Optional[ValidationOutput] = Field(None, description="Parsed validation output")
+    error: Optional[str] = Field(None, description="Error message if validation failed")
     fidFailureCount: int = Field(0, description="Count of failed feedback lines")
     timestamp: Optional[str] = Field(None, description="Timestamp of validation")
+    # success: Optional[bool] = Field(..., description="Whether validation was successful")
+    generator_model: Optional[str] = Field(None, description="Model used for generation")
+    validator_model: Optional[str] = Field(None, description="Model used for validation")
 
             
     @classmethod
@@ -319,7 +344,7 @@ class ValidationBatch(BaseModel):
                         'classification': label
                     })
         
-        df = pd.DataFrame(rows)
+        df = pd.DataFrame(rows, columns=['sid', 'line_number', 'feedback', 'classification'])
         df['sid'] = df['sid'].astype(str)
         df['line_number'] = df['line_number'].astype(str)
         df['feedback'] = df['feedback'].astype(str)

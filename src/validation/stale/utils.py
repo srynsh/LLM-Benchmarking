@@ -77,12 +77,18 @@ def get_claude_response(prompt, system_prompt, model, sleep_time=10):
     elif model == "claude_3.7_sonnet":
         modelId = "anthropic.claude-3-7-sonnet-20250219-v1:0"
         anthropic_version = "bedrock-2023-05-31"
+    elif model == "claude_4.5_sonnet":
+        modelId = "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+        anthropic_version = "bedrock-2023-05-31"
+    elif model == "claude_4.5_haiku":
+        modelId = "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+        anthropic_version = "bedrock-2023-05-31"
 
     try:    
         kwargs = {
             "modelId": modelId,
-            "contentType": "application/json",
-            "accept": "application/json",
+            # "contentType": "application/json",
+            # "accept": "application/json",
             "body": json.dumps({
                 "anthropic_version": anthropic_version,
                 "max_tokens": 4096,
@@ -123,7 +129,7 @@ def get_openai_response(messages, model):
         )
 
         response = response.choices[0].message.content
-
+        
         return response
     except Exception as e:
         # print(e)

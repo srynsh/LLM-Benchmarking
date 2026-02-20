@@ -2,17 +2,20 @@
 Service layer for validation operations.
 """
 
+import os
 from typing import Tuple, Dict, Any, Optional, List
 import datetime
 import json
 
+from src import LLM
 from src.validation.models import (
     ValidationOutput, ValidationResult
 )
-from src.validation.data import DataProvider
+from src.validation.stale.data import DataProvider
 from src.validation.prompt import get_validation_prompt, get_validation_prompt_with_ground_truth
 from src.LLM import invoke_model_with_retry, ValidationOutput as LLMValidationOutput
 from src.utils import print_warning, print_error
+from src.config import pathValidator
 
 
 class ValidationService:
@@ -30,7 +33,7 @@ class ValidationService:
         self.generator_model = generator_model
         self.validator_model = validator_model
         self.use_ground_truth = use_ground_truth
-        self.data_provider = DataProvider()
+        # self.data_provider = DataProvider(self.generator_model, self.validator_model)
     
     def validate_single_sid(self, sid: int) -> ValidationResult:
         """
@@ -42,11 +45,18 @@ class ValidationService:
         Returns:
             ValidationResult: Result of the validation
         """
+        raw_response = None
+        error_msg = None
+        
         try:
             # Get validation input data
-            validation_input = self.data_provider.create_validation_input(
+            validation_input = DataProvider.create_validation_input(
                 sid, self.generator_model, self.use_ground_truth
             )
+
+            if validation_input is None or not validation_input.feedback:
+                error_msg = f"No validation input or feedback available for SID {sid}"
+                raise ValueError(error_msg)
             
             # Generate prompt messages
             if self.use_ground_truth and validation_input.ground_truth:
@@ -70,8 +80,9 @@ class ValidationService:
             # TODO: Don't invoke LLMs unless specified in a class variable. Also, invoke LLM only after validation output failure (on reading the file)
             # TODO: After invoking LLM, store each intermediate result along with number of tries, to understand the mistakes made by LLM in each try. Eg. "iteration": 2, "issue": "missing-line-number", "fix": "rename line-num to line-number"
             # Invoke model with retry logic
+            provider = LLM.determine_provider(self.validator_model)
             raw_response, parsed_response, success = invoke_model_with_retry(
-                provider=None,  # Auto-detect provider
+                provider=provider,
                 model=self.validator_model,
                 messages=messages,
                 expected_output_model=LLMValidationOutput
@@ -79,18 +90,23 @@ class ValidationService:
             
             # Convert parsed response to ValidationOutput if successful
             validation_output = None
+            error_msg = None
             if success and parsed_response:
                 try:
                     validation_output = ValidationOutput(**parsed_response)
                 except Exception as e:
+                    error_msg = f"Error parsing validation output: {str(e)}"
                     print_warning(f"Error parsing validation output for SID {sid}: {e}")
                     success = False
+            elif not success:
+                error_msg = "Failed to get valid JSON response from LLM"
             
             # Create result
             return ValidationResult(
                 sid=sid,
-                raw_response=str(raw_response),
-                output=validation_output,
+                raw_response=str(raw_response) if raw_response else None,
+                output=parsed_response if success else None,
+                error=error_msg,
                 success=success,
                 generator_model=self.generator_model,
                 validator_model=self.validator_model,
@@ -101,8 +117,9 @@ class ValidationService:
             print_error(f"Error validating SID {sid}: {e}")
             return ValidationResult(
                 sid=sid,
-                raw_response=f"Error: {str(e)}",
+                raw_response=None,
                 output=None,
+                error=str(e),
                 success=False,
                 generator_model=self.generator_model,
                 validator_model=self.validator_model,
@@ -148,12 +165,11 @@ def create_attempt_name(generator_model: str, validator_model: str, use_ground_t
     Returns:
         str: Formatted attempt name
     """
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     
     if use_ground_truth:
-        return f"new_labeller_gen_{generator_model}_val_{validator_model}_cheat_{timestamp}"
+        return f"gen={generator_model}/val={validator_model}_cheat"
     else:
-        return f"new_labeller_gen_{generator_model}_val_{validator_model}_{timestamp}"
+        return f"gen={generator_model}/val={validator_model}"
 
 
 def calculate_precision_stats(results: List[ValidationResult]) -> Dict[str, Any]:
@@ -209,6 +225,77 @@ def print_validation_stats(results: List[ValidationResult], prefix: str = "") ->
     print(f"  Precision: {stats['precision']:.4f}")
 
 
+
+def save_validation_results(results: List[Dict[str, Any]], file_path: str) -> bool:
+    """
+    Save validation results to a JSON file.
+    
+    Args:
+        results: List of validation results
+        file_path: Path to save the results
+        
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    try:
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        
+        with open(file_path, 'w') as f:
+            json.dump(results, f, indent=4)
+        return True
+    except Exception as e:
+        print_error(f"Error saving validation results to {file_path}: {e}")
+        return False
+    
+def update_validation_result_in_file(file_path: str, sid: int, new_result: Dict[str, Any]) -> bool:
+    """
+    Update a specific validation result in a file.
+    
+    Args:
+        file_path: Path to the validation results file
+        sid: Student ID to update
+        new_result: New result data
+        
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    try:
+        # Load existing results
+        existing_results = load_existing_validation_results(file_path)
+        
+        # Remove old result for this SID if it exists
+        existing_results = [r for r in existing_results if r.get('sid') != sid]
+        
+        # Add new result
+        existing_results.append(new_result)
+        
+        # Save updated results
+        return save_validation_results(existing_results, file_path)
+        
+    except Exception as e:
+        print_error(f"Error updating validation result for SID {sid}: {e}")
+        return False
+
+def load_existing_validation_results(file_path: str) -> List[Dict[str, Any]]:
+    """
+    Load existing validation results from a JSON file.
+    
+    Args:
+        file_path: Path to the validation results file
+        
+    Returns:
+        List of existing results
+    """
+    if os.path.exists(file_path):
+        try:
+            with open(file_path, 'r') as f:
+                return json.load(f)
+        except Exception as e:
+            print_warning(f"Error loading existing results from {file_path}: {e}")
+    
+    return []
+
 class ValidationRunner:
     """High-level runner for validation operations."""
     
@@ -223,25 +310,22 @@ class ValidationRunner:
         """
         self.service = ValidationService(generator_model, validator_model, use_ground_truth)
         self.attempt_name = create_attempt_name(generator_model, validator_model, use_ground_truth)
-        self.results_file = f"./new_logs/{self.attempt_name}.json"
+        self.results_file = f"{pathValidator}/{self.attempt_name}.json"
     
-    def run_validation(self, sids: List[int], resume_from_file: Optional[str] = None) -> None:
+    def run_validation(self, sids_all: List[int]) -> None:
         """
         Run validation for a list of SIDs with progress tracking and file saving.
         
         Args:
-            sids: List of Student IDs to validate
-            resume_from_file: Optional file to resume from (load existing results)
+            sids_all: List of Student IDs to validate
         """
-        from src.validation.data import load_existing_validation_results, update_validation_result_in_file
         
         # Load existing results if resuming
-        if resume_from_file:
-            existing_results = load_existing_validation_results(resume_from_file)
-            processed_sids = {r['sid'] for r in existing_results}
-            sids = [sid for sid in sids if sid not in processed_sids]
-            print(f"Resuming validation. Skipping {len(processed_sids)} already processed SIDs.")
-            print(f"Remaining SIDs to process: {len(sids)}")
+        existing_results = load_existing_validation_results(self.results_file)
+        processed_sids = {r['sid'] for r in existing_results if r and r.get('output')}
+        sids = [sid for sid in sids_all if sid not in processed_sids]
+        print(f"Resuming validation for {self.attempt_name}. Skipping {len(processed_sids)} already processed SIDs.")
+        print(f"Remaining SIDs to process: {len(sids)}")
         
         # Track cumulative statistics
         cumulative_valid = 0
@@ -254,7 +338,7 @@ class ValidationRunner:
             result = self.service.validate_single_sid(sid)
             
             # Update cumulative stats
-            if result.success and result.output:
+            if result and result.output:
                 counts = result.get_classification_counts()
                 cumulative_valid += counts['valid']
                 cumulative_invalid += counts['invalid']
@@ -277,23 +361,3 @@ class ValidationRunner:
         
         print(f"\nValidation completed. Results saved to {self.results_file}")
     
-    def run_quota_recovery(self, original_file: str) -> None:
-        """
-        Run validation for SIDs that failed due to quota exceeded errors.
-        
-        Args:
-            original_file: Path to the original results file with quota errors
-        """
-        from src.validation.data import filter_quota_exceeded_sids
-        
-        # TODO: Filter all erroneous SIDs from the original file
-        failed_sids = filter_quota_exceeded_sids(original_file)
-        
-        if not failed_sids:
-            print("No SIDs found with quota exceeded errors.")
-            return
-        
-        print(f"Found {len(failed_sids)} SIDs with quota exceeded errors: {failed_sids}")
-        
-        # Run validation for failed SIDs
-        self.run_validation(failed_sids, resume_from_file=original_file)

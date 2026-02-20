@@ -98,7 +98,7 @@ def valid_invalid_error(ensemble_max_errors):
     plt.ylabel('Maximum Absolute Error (%)', fontsize=16)
     plt.legend(fontsize=16)
     plt.grid(True, alpha=0.3)
-    plt.xticks(range(1, 15), fontsize=14)
+    plt.xticks(range(1, 21), fontsize=14)
     plt.yticks(fontsize=14)
     plt.ylim(0, 50)  # Set y-axis limit to 0-50% for better visibility
     plt.tight_layout()

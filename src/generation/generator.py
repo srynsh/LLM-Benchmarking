@@ -10,13 +10,12 @@ from tqdm import tqdm
 
 from src.config import MODELS_GEN, Model
 
-from src.LLM import invoke_model_with_retry, GenerationOutput
 from src.generation.utils import (
     generator_data_failure,
     transform_llm_output_to_generator_data,
     validate_and_save_generator_data
 )
-from src.generation.models import validate_generator_data, validate_llm_output, GeneratorData
+from src.generation.models import validate_llm_output, GeneratorData, validate_generator_data
 from src.generation.data import (load_student_code_mapping, load_pid_mapping, get_all_sids, get_query_data_by_sid, 
     load_existing_results, get_processed_sids)
 from src.utils import print_warning, print_error
@@ -31,12 +30,14 @@ from src.utils import print_warning, print_error
 # GPT_4O: 2 SIDs
 
 # Current selected model
-model = Model.CLAUDE_3_5_HAIKU.value
+# TODO: Currently, need to manually copy the "generator_feedback.json" and rename it to the model name being used for a new model run
+# model = Model.GEMINI_3_PRO_PREVIEW.value 
+model = Model.GEMINI_1_5_FLASH.value
 
 # Configuration for category requirement
 # Set to False if generating initial feedback without categories
 # Set to True if categories are required (for labeled data)
-category_required = True if model in MODELS_GEN else False
+category_required = True if model and model in MODELS_GEN else False
 
 
 ####################
@@ -51,20 +52,25 @@ student_code_mapping = None
 ####################
 # Setup vars
 ####################
-path_existing = f'./data/generator/{model}_feedback.json'
+path_model_feedback = f'./data/generator/{model}_feedback.json'
+path_model_feedback_updated = f'./data/generator/{model}_feedback_updated.json'
 
 ####################
 # Read existing data
 ####################
 
+# Prompt for model if not set
 if model is None:
     raise ValueError("Please select a model by uncommenting one of the model lines above")
 
 print(f"Using model: {model}")
-print(f"Output path: {path_existing}")
+print(f"Output path: {path_model_feedback}")
+print(f"Category required: {category_required}")
+print(f"{'='*60}\n")
 
 # Load available SIDs from GAIED queries
 available_sids = get_all_sids()
+print(f"📊 Total available SIDs: {len(available_sids)}")
 
 # Load existing results if available
 existing_results = load_existing_results(model)
@@ -93,7 +99,8 @@ def generate_feedback_for_sid(sid: int) -> 'GeneratorData':
     Returns:
         GeneratorData: Result with SID, generator data, and success status
     """
-    
+    import src.LLM as LLM
+
     # Get query data for this SID
     sid_data = get_query_data_by_sid(sid)
     if not sid_data:
@@ -113,15 +120,11 @@ def generate_feedback_for_sid(sid: int) -> 'GeneratorData':
             }
         ]
         
-        print(f"Processing SID {sid}...")
-        
         # Use unified model invocation with retry logic
-        raw_response, parsed_response, success = invoke_model_with_retry(
-            provider=None,  # Auto-detect provider from model name
+        raw_response, parsed_response, success = LLM.invoke_model(
             model=model,
             messages=messages,
-            expected_output_model=GenerationOutput,
-            max_retries=3
+            expected_output_model=LLM.GenerationOutput
         )
         
         if not success or not parsed_response:
@@ -145,7 +148,11 @@ def generate_feedback_for_sid(sid: int) -> 'GeneratorData':
 
         result = GeneratorData(
             sid=sid,
-            generator_data=generator_data,
+            repaired_code=generator_data.get('repaired_code'),
+            feedback=generator_data.get('feedback'),
+            student_code=generator_data.get('student_code'),
+            pid=pid,
+            category_required=category_required,
             success=True,
             model=model
         )
@@ -172,7 +179,8 @@ def main():
     remaining_sids = [sid for sid in available_sids if sid not in processed_sids]
     
     if not remaining_sids:
-        print("No new SIDs to process!")
+        print("✅ No new SIDs to process! All SIDs have been completed.")
+        print(f"Total processed: {len(processed_sids)}/{len(available_sids)}")
         return
     
     print(f"Processing {len(remaining_sids)} remaining SIDs...")
@@ -195,14 +203,15 @@ def main():
     # Process each SID with progress bar
     for sid in tqdm(remaining_sids, desc=f"Generating feedback with {model}"):
         try:
-            result = generate_feedback_for_sid(sid)
+            result_genData : GeneratorData = generate_feedback_for_sid(sid)
+            result = result_genData.model_dump()
             results.append(result)
             
             # If successful, also save the generator data to a separate validated file
-            if result.get('success') and result.get('generator_data'):
+            if result:
                 # Save individual validated generator data
-                validated_path = path_existing.replace('.json', '_validated.json')
-                if not validate_and_save_generator_data(result['generator_data'], validated_path, category_required):
+                validated_path = path_model_feedback.replace('.json', '_validated.json')
+                if not validate_and_save_generator_data(result, validated_path, category_required):
                     print_warning(f"Failed to save validated data for SID {sid}")
             
             # Save progress periodically (every 10 items)
@@ -228,12 +237,14 @@ def save_results():
     """Save current results to file."""
     try:
         # Ensure output directory exists
-        os.makedirs(os.path.dirname(path_existing), exist_ok=True)
+        os.makedirs(os.path.dirname(path_model_feedback), exist_ok=True)
         
         # Save all results (including failed ones for debugging)
-        with open(path_existing, 'w') as f:
-            json.dump(results, f, indent=2)
-        print(f"💾 Saved {len(results)} results to {path_existing}")
+        with open(path_model_feedback_updated, 'w', encoding='utf-8') as f:
+            json.dump(results, f, indent=2, ensure_ascii=False)
+        
+        successful = sum(1 for r in results if r.get('success', False))
+        print(f"💾 Saved {len(results)} results ({successful} successful) to {path_model_feedback}")
         
         # Also save only the validated generator data
         validated_results = []
@@ -242,7 +253,7 @@ def save_results():
                 validated_results.append(result['generator_data'])
         
         if validated_results:
-            validated_path = path_existing.replace('.json', '_generator_data.json')
+            validated_path = path_model_feedback.replace('.json', '_generator_data.json')
             with open(validated_path, 'w') as f:
                 json.dump(validated_results, f, indent=2)
             print(f"💾 Saved {len(validated_results)} validated generator data entries to {validated_path}")
@@ -265,14 +276,14 @@ def print_summary():
     print(f"Successful: {successful} ({successful/total*100:.1f}%)")
     print(f"Failed: {failed} ({failed/total*100:.1f}%)")
     print(f"Validated Generator Data: {validated} ({validated/total*100:.1f}%)")
-    print(f"Output file: {path_existing}")
-    print(f"Validated data file: {path_existing.replace('.json', '_generator_data.json')}")
+    print(f"Output file: {path_model_feedback}")
+    print(f"Validated data file: {path_model_feedback.replace('.json', '_generator_data.json')}")
     print("="*60)
 
 if __name__ == "__main__":
     try:
         pass
-        # main()
+        main()
     except Exception as e:
         print(f"❌ Fatal error: {e}")
         traceback.print_exc()

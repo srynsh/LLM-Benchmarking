@@ -16,7 +16,7 @@ from src.config import MODELS_GEN, NUM_SIDS, VALIDATOR_REPAIR, pathValidator
 
 from src.utils import print_warning, print_error
 from src.validation.models import (
-    GroundTruthFeedback, ValidationOutput, ValidationResult, ValidationBatch
+    GroundTruthFeedback, TestCase, ValidatedFeedbackLine, ValidatedFeedbackLineInput, ValidationOutput, ValidationResult, ValidationBatch
 )
 from src.generation.models import GenerationBatch
 import traceback
@@ -154,8 +154,14 @@ class DataProvider:
             print_error(f"Error loading validation batch for gen={modelGen}, val={modelVal}: {e}")
             print_warning(f"Full traceback: {traceback.format_exc()}")
             
-            sys.exit(1)
-            self.validation_batch = None
+            # sys.exit(1)
+            results = [ValidationResult(sid=sid, raw_response="", output=None, success=False, error=str(e)) for sid in range(1,NUM_SIDS+1)]
+            self.validation_batch = ValidationBatch(
+                generator_model=modelGen,
+                validator_model=modelVal,
+                results=results,
+                use_ground_truth=False
+            )
 
     def save_validation_batch_to_file(self, file_path: str) -> bool:
         """
@@ -248,8 +254,13 @@ class DataProvider:
         print(f"Generator Model: {batch.generator_model}")
         print(f"Validator Model: {batch.validator_model}")
         print(f"")
-        print(f"Successful SIDs: {stats['successful_results']} / {stats['total_results']} ({stats['success_rate']:.2%})")
-        print(f"Successful FIDs: {stats['successful_fids']} / {stats['total_fids']} ({stats['successful_fids'] / stats['total_fids']:.2%})")
+        
+        if stats['total_results'] == 0 or stats['total_fids'] == 0:
+            print("Successful SIDs: 0 / 0 (0.00%)")
+            print("Successful FIDs: 0 / 0 (0.00%)")
+        else:
+            print(f"Successful SIDs: {stats['successful_results']} / {stats['total_results']} ({stats['success_rate']:.2%})")
+            print(f"Successful FIDs: {stats['successful_fids']} / {stats['total_fids']} ({stats['successful_fids'] / stats['total_fids']:.2%})")
         print(f"")
         print(f"Classification Results:")
         print(f"  Valid Feedback: {stats['total_valid']}")
@@ -280,7 +291,9 @@ class DataProvider:
             # Extract error type from raw response
             error_key = "unknown_error"
             
-            if "429" in result.raw_response:
+            if result.error:
+                error_key = result.error.splitlines()[0]  # Take the first line of the error message
+            elif "429" in result.raw_response:
                 error_key = "quota_exceeded"
             elif "timeout" in result.raw_response.lower():
                 error_key = "timeout"
@@ -395,3 +408,77 @@ def validate_json_file_data(file_path: str) -> List[ValidationResult]:
     except Exception as e:
         print_error(f"Error reading validation file {file_path}: {e}")
         return []
+
+def parse_feedback_from_json(feedback_data) -> List[ValidatedFeedbackLineInput]:
+    """
+    Parse feedback from JSON format to ValidatedFeedbackLineInput objects.
+    
+    Args:
+        feedback_data: Raw feedback data (list of dicts or JSON string)
+        
+    Returns:
+        List[ValidatedFeedbackLineInput]: Parsed feedback lines
+    """
+    if isinstance(feedback_data, str):
+        try:
+            feedback_data = json.loads(feedback_data)
+        except json.JSONDecodeError as e:
+            print_error(f"Error parsing feedback JSON: {e}")
+            return []
+    
+    if not isinstance(feedback_data, list):
+        print_warning(f"Expected list for feedback_data, got {type(feedback_data)}")
+        return []
+    
+    feedback_lines = []
+    for item in feedback_data:
+        try:
+            # Create ValidatedFeedbackLineInput with default values for validation fields
+            feedback_line = ValidatedFeedbackLineInput(
+                line_number=item.get('line_number', ''),
+                feedback=item.get('feedback', '')
+            )
+            feedback_lines.append(feedback_line)
+        except Exception as e:
+            print_warning(f"Error parsing feedback item: {e}")
+            continue
+    
+    return feedback_lines
+
+
+def parse_test_cases_from_json(test_cases_data) -> List[TestCase]:
+    """
+    Parse test cases from JSON format to TestCase objects.
+    
+    Args:
+        test_cases_data: Raw test case data (list of dicts, JSON string, or already parsed)
+        
+    Returns:
+        List[TestCase]: Parsed test cases
+    """
+    # Handle string input
+    if isinstance(test_cases_data, str):
+        try:
+            test_cases_data = json.loads(test_cases_data)
+        except json.JSONDecodeError as e:
+            print_error(f"Error parsing test cases JSON: {e}")
+            return []
+    
+    if not isinstance(test_cases_data, list):
+        print_warning(f"Expected list for test_cases_data, got {type(test_cases_data)}")
+        return []
+    
+    test_cases = []
+    for item in test_cases_data:
+        try:
+            test_case = TestCase(
+                status=item.get('status', 'UNKNOWN'),
+                input=str(item.get('input', '')),
+                expected_output=str(item.get('expected_output', ''))
+            )
+            test_cases.append(test_case)
+        except Exception as e:
+            print_warning(f"Error parsing test case item: {e}")
+            continue
+    
+    return test_cases

@@ -127,6 +127,14 @@ class Model(Enum):
     QWEN_CODER_PLUS = "qwen-coder-plus"
     DEEPSEEK_CHAT = "deepseek-chat"
 
+    # Latest models can be added here
+    GPT_5_2 = "gpt-5.2"
+    GPT_5_mini = "gpt-5-mini"
+    GEMINI_3_PRO_PREVIEW = "gemini-3-pro-preview"
+    GEMINI_3_FLASH_PREVIEW = "gemini-3-flash-preview"
+    CLAUDE_4_5_SONNET = "claude_4.5_sonnet"
+    CLAUDE_4_5_HAIKU = "claude_4.5_haiku"
+
 
 # List of all model values
 MODELS_GEN = [
@@ -145,7 +153,10 @@ MODELS_VAL = [
         Model.QWEN_CODER_PLUS.value,
         Model.DEEPSEEK_CHAT.value,
         Model.CLAUDE_3_5_HAIKU.value, Model.GEMINI_2_5_FLASH.value, Model.GEMINI_2_5_PRO.value, 
-        Model.GPT_4_1.value, Model.GPT_4_1_MINI.value
+        Model.GPT_4_1.value, Model.GPT_4_1_MINI.value,
+
+        Model.GPT_5_2.value, Model.GPT_5_mini.value, Model.GEMINI_3_PRO_PREVIEW.value, Model.GEMINI_3_FLASH_PREVIEW.value,
+        Model.CLAUDE_4_5_SONNET.value, Model.CLAUDE_4_5_HAIKU.value
     ]
 
 # For testing purposes, only use the first model
@@ -173,7 +184,13 @@ mapping_latex = {
     Model.GEMINI_2_5_FLASH.value: '\\flashTwoFive',
     Model.GEMINI_2_5_PRO.value: '\\proTwoFive',
     Model.GPT_4_1.value: '\\gptFourOne',
-    Model.GPT_4_1_MINI.value: '\\gptFourOneMini'
+    Model.GPT_4_1_MINI.value: '\\gptFourOneMini',
+    Model.GPT_5_2.value: '\\gptFiveTwo',
+    Model.GPT_5_mini.value: '\\gptFiveMini',
+    Model.GEMINI_3_PRO_PREVIEW.value: '\\geminiThreePro',
+    Model.GEMINI_3_FLASH_PREVIEW.value: '\\geminiThreeFlash',
+    Model.CLAUDE_4_5_SONNET.value: '\\claudeFourPointFiveSonnet',
+    Model.CLAUDE_4_5_HAIKU.value: '\\claudeFourPointFiveHaiku',
 }
 
 MODELS_SHORT = OrderedDict({ 
@@ -191,27 +208,14 @@ MODELS_SHORT = OrderedDict({
     Model.GEMINI_2_5_FLASH.value : 'Gemini 2.5-F',
     Model.GEMINI_2_5_PRO.value : 'Gemini 2.5-P',
     Model.GPT_4_1.value : 'GPT 4.1',
-    Model.GPT_4_1_MINI.value : 'GPT 4.1-M'
+    Model.GPT_4_1_MINI.value : 'GPT 4.1-M',
+    Model.GEMINI_3_PRO_PREVIEW.value : 'Gemini 3-P',
+    Model.GEMINI_3_FLASH_PREVIEW.value : 'Gemini 3-F',
+    Model.GPT_5_2.value : 'GPT 5.2',
+    Model.GPT_5_mini.value : 'GPT 5-M',
+    Model.CLAUDE_4_5_SONNET.value : 'Sonnet 4.5',
+    Model.CLAUDE_4_5_HAIKU.value : 'Haiku 4.5',
 })
-
-
-MODELS_ORDERED_PRECISION = [
-    Model.GPT_4_TURBO.value,
-    Model.GPT_4O_MINI.value,
-    Model.DEEPSEEK_CHAT.value,
-    Model.QWEN_CODER_PLUS.value,
-    Model.GEMINI_1_5_FLASH.value,
-    Model.CLAUDE_3_5_HAIKU.value,
-    Model.GEMINI_1_5_PRO.value,
-    Model.CLAUDE_3_OPUS.value,
-    Model.GPT_4O.value,
-    Model.CLAUDE_3_5_SONNET.value,
-    Model.GPT_4_1_MINI.value,
-    Model.GPT_4_1.value,
-    Model.GEMINI_2_5_FLASH.value,
-    Model.GEMINI_2_5_PRO.value
-]
-MODELS_SHORT_ORDERED_PRECISION = [MODELS_SHORT[item] for item in MODELS_ORDERED_PRECISION]
 
 MODELS_RELEASE_DATE = {
     # Model.GPT_3_5_TURBO.value: '2022-03-15',
@@ -228,7 +232,13 @@ MODELS_RELEASE_DATE = {
     Model.GEMINI_2_5_FLASH.value: '2025-04-17',
     Model.GEMINI_2_5_PRO.value: '2025-03-25',
     Model.QWEN_CODER_PLUS.value: '2024-11-06',
-    Model.DEEPSEEK_CHAT.value: '2024-12-10'
+    Model.DEEPSEEK_CHAT.value: '2024-12-10',
+    Model.GEMINI_3_PRO_PREVIEW.value: '2025-11-18',
+    Model.GEMINI_3_FLASH_PREVIEW.value: '2025-12-17',  
+    Model.GPT_5_2.value: '2025-12-11',
+    Model.GPT_5_mini.value: '2025-08-07',
+    Model.CLAUDE_4_5_SONNET.value: '2025-09-29',
+    Model.CLAUDE_4_5_HAIKU.value: '2025-10-15',
 }
 MODELS_ORDERED_RELEASE = [item[0] for item in sorted(MODELS_RELEASE_DATE.items(), key=lambda x: datetime.strptime(x[1], '%Y-%m-%d'))]
 MODELS_SHORT_ORDERED_RELEASE = [MODELS_SHORT[key] for key in MODELS_ORDERED_RELEASE]
@@ -248,7 +258,7 @@ MODELS_VERSION_NUMBER = {
     Model.GEMINI_1_5_PRO.value: "gemini-1.5-pro-002",
     Model.GEMINI_2_5_FLASH.value: "gemini-2.5-flash-preview-04-17",
     Model.GEMINI_2_5_PRO.value: "gemini-2.5-pro-preview-03-25",
-    Model.QWEN_CODER_PLUS.value: "qwen-coder-plus-2024-11-06",
+    Model.QWEN_CODER_PLUS.value: "qwen-2.5-coder-plus-2024-11-06",
     Model.DEEPSEEK_CHAT.value: "deepseek-chat"
 }
 
@@ -267,6 +277,12 @@ ELO_RATING = {
     Model.GEMINI_2_5_PRO.value: 1446,
     Model.GPT_4_1.value: 1366,
     Model.GPT_4_1_MINI.value: 1322,
+    Model.GPT_5_2.value: 1464,
+    Model.GPT_5_mini.value: 1375,
+    Model.GEMINI_3_PRO_PREVIEW.value: 1492,
+    Model.GEMINI_3_FLASH_PREVIEW.value: 1470,
+    Model.CLAUDE_4_5_SONNET.value: 1420,
+    Model.CLAUDE_4_5_HAIKU.value: 1378
 }
 
 # =========================
