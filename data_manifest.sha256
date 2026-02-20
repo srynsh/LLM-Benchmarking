@@ -165,6 +165,7 @@ data/validator/gen=gemini-1.5-pro/val=gemini-1.5-pro.json a9eb8c2416ca3ca242485b
 data/validator/gen=gemini-1.5-pro/val=gemini-2.5-flash.json aae698d7f31a9c77dec3d135e5d5c709407671acc379d7e1cae9be1b492bc94b
 data/validator/gen=gemini-1.5-pro/val=gemini-2.5-pro.json bf3b19bb54365860acd516b0b4e9baf2cbaa0d79d2fa0d0627301c5ed5f0109d
 data/validator/gen=gemini-1.5-pro/val=gemini-3-flash-preview.json 007371d5dad55144dbfb1491d52a56dec432bc80514f7fcd1f4180edf5d9069e
+data/validator/gen=gemini-1.5-pro/val=gemini-3-pro-preview.json 83f99f3f96b9a181b641d0053034046a757f85c30233ba6aef3fa6d800066aaf
 data/validator/gen=gemini-1.5-pro/val=gpt-3.5-turbo.json 9f69580e912a1426281a89c760cf7a871210cfab19c73c9591ddb3ea0a1fea28
 data/validator/gen=gemini-1.5-pro/val=gpt-4-turbo.json 947c34eb4ff4258223480714840955282dfcd35666e80573deb13a359af94fd5
 data/validator/gen=gemini-1.5-pro/val=gpt-4.1-mini.json 595a6beb9cbc2de25c053efa38d141e17dce5fc603a3c890962ad0fa0929676e

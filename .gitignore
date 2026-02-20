@@ -171,3 +171,4 @@ data/*
 **/logs/*
 ~*.*
 stale/*
+.github/copilot-instructions.md
