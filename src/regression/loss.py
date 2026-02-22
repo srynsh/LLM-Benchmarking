@@ -44,12 +44,13 @@ def loss_pred_crossEntropy_weighted(pVv, pViv, pG, GV, alpha=0.3):
     """
     GV_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
     epsilon = 1e-9
-    return -np.mean([
-        alpha*GV[i, j]*np.log(np.clip(GV_hat[i, j], epsilon, 1))
-        + (1-alpha)*(1 - GV[i, j])*np.log(np.clip(1 - GV_hat[i, j], epsilon, 1))
-        for i in range(GV.shape[0])
-        for j in range(GV.shape[1])
-    ])
+    mask = np.isfinite(GV)
+    if not np.any(mask):
+        return 0.0
+
+    y = GV[mask]
+    p = np.clip(GV_hat[mask], epsilon, 1 - epsilon)
+    return -np.mean(alpha * y * np.log(p) + (1 - alpha) * (1 - y) * np.log(1 - p))
 
 def loss_pred_focal(pVv, pViv, pG, GV, gamma=2.0):
     """
@@ -84,12 +85,15 @@ def loss_pred_focal(pVv, pViv, pG, GV, gamma=2.0):
     """
     GV_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
     epsilon = 1e-9
-    return -50*np.mean([
-        (GV[i, j] * (1 - GV_hat[i, j])**gamma * np.log(np.clip(GV_hat[i, j], epsilon, 1)) +
-         (1 - GV[i, j]) * GV_hat[i, j]**gamma * np.log(np.clip(1 - GV_hat[i, j], epsilon, 1)))
-        for i in range(GV.shape[0])
-        for j in range(GV.shape[1])
-    ])
+    mask = np.isfinite(GV)
+    if not np.any(mask):
+        return 0.0
+
+    y = GV[mask]
+    p = np.clip(GV_hat[mask], epsilon, 1 - epsilon)
+    loss_pos = y * (1 - p) ** gamma * np.log(p)
+    loss_neg = (1 - y) * (p ** gamma) * np.log(1 - p)
+    return -50 * np.mean(loss_pos + loss_neg)
 
 def loss_pred_crossEntropy(pVv, pViv, pG, GV):
     """
@@ -121,12 +125,13 @@ def loss_pred_crossEntropy(pVv, pViv, pG, GV):
     """
     GV_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
     epsilon = 1e-9
-    return -np.mean([
-        GV[i, j]*np.log(np.clip(GV_hat[i, j], epsilon, 1))
-        + (1 - GV[i, j])*np.log(np.clip(1 - GV_hat[i, j], epsilon, 1))
-        for i in range(GV.shape[0])
-        for j in range(GV.shape[1])
-    ])
+    mask = np.isfinite(GV)
+    if not np.any(mask):
+        return 0.0
+
+    y = GV[mask]
+    p = np.clip(GV_hat[mask], epsilon, 1 - epsilon)
+    return -np.mean(y * np.log(p) + (1 - y) * np.log(1 - p))
 
 def loss_pred_mse(pVv, pViv, pG, GV):
     """
@@ -153,7 +158,10 @@ def loss_pred_mse(pVv, pViv, pG, GV):
         Mean squared error between GV and GV_hat.
     """
     GV_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
-    return np.mean((GV_hat - GV)**2)
+    mask = np.isfinite(GV)
+    if not np.any(mask):
+        return 0.0
+    return np.mean(((GV_hat - GV) ** 2)[mask])
 
 def loss_pred_mae(pVv, pViv, pG, GV):
     """
@@ -180,7 +188,10 @@ def loss_pred_mae(pVv, pViv, pG, GV):
         Mean absolute error between GV and GV_hat.
     """
     GV_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
-    return np.mean(np.abs(GV_hat - GV))
+    mask = np.isfinite(GV)
+    if not np.any(mask):
+        return 0.0
+    return np.mean(np.abs(GV_hat - GV)[mask])
     
 def loss_pred_huber(pVv, pViv, pG, GV):
     """
@@ -208,9 +219,13 @@ def loss_pred_huber(pVv, pViv, pG, GV):
     """
     GV_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
     delta = 0.01
-    return np.mean(np.where(np.abs(GV_hat - GV) < delta,
-                             0.5 * (GV_hat - GV)**2,
-                             delta * (np.abs(GV_hat - GV) - 0.5 * delta)))
+    mask = np.isfinite(GV)
+    if not np.any(mask):
+        return 0.0
+    diff = (GV_hat - GV)[mask]
+    return np.mean(np.where(np.abs(diff) < delta,
+                             0.5 * diff**2,
+                             delta * (np.abs(diff) - 0.5 * delta)))
 
 def loss_pred_rmse(pVv, pViv, pG, GV):
     """
@@ -237,7 +252,10 @@ def loss_pred_rmse(pVv, pViv, pG, GV):
         RMSE between GV and GV_hat.
     """
     GV_hat = np.outer(pG, pVv) + np.outer((1 - pG), (1 - pViv))
-    return np.sqrt(np.mean((GV_hat - GV)**2))
+    mask = np.isfinite(GV)
+    if not np.any(mask):
+        return 0.0
+    return np.sqrt(np.mean(((GV_hat - GV) ** 2)[mask]))
 
 
 def loss_pred(pVv, pViv, pG, GV):
