@@ -19,7 +19,7 @@ from src.utils import print_warning, print_error
 from src.config import pGa_CONST, pathLogs
 
 # Configuration: Set generator and validator models here
-MODEL_GENERATOR = Model.GEMINI_1_5_PRO.value
+MODEL_GENERATOR = Model.GPT_5_2.value
 
 # MODELS_VALIDATE = [
 #     Model.CLAUDE_4_5_HAIKU.value,
